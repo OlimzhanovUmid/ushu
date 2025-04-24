@@ -1,0 +1,242 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-04-28 08:54+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: judges/admin.py:14 judges/admin.py:18
+msgid "Personal info"
+msgstr ""
+
+#: judges/admin.py:19
+msgid "Permissions"
+msgstr ""
+
+#: judges/admin.py:21
+msgid "Important dates"
+msgstr ""
+
+#: judges/forms.py:16
+msgid "A user with that username already exists."
+msgstr ""
+
+#: judges/forms.py:17
+msgid "The two password fields didn't match."
+msgstr ""
+
+#: judges/forms.py:19 tablo/templates/tablo/login.html:44
+#: tablo/templates/tablo/login.html:45
+msgid "Username"
+msgstr "Логин"
+
+#: judges/forms.py:21
+msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr ""
+
+#: judges/forms.py:24
+msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
+msgstr ""
+
+#: judges/forms.py:26 tablo/templates/tablo/login.html:47
+msgid "Password"
+msgstr "Пароль"
+
+#: judges/forms.py:28
+msgid "Password confirmation"
+msgstr "Пароль"
+
+#: judges/forms.py:30
+msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: participants/models.py:7
+msgid "Men"
+msgstr ""
+
+#: participants/models.py:8
+msgid "Women"
+msgstr ""
+
+#: tablo/templates/tablo/base_tablo_wmenu.html:16
+msgid "Standings"
+msgstr "Табло"
+
+#: tablo/templates/tablo/base_tablo_wmenu.html:17
+msgid "Add participant"
+msgstr "Добавить участников"
+
+#: tablo/templates/tablo/base_tablo_wmenu.html:19
+msgid "Current participant"
+msgstr "Текущий участник"
+
+#: tablo/templates/tablo/judge_empty.html:8
+msgid "Please wait"
+msgstr "Пожалуйста подождите"
+
+#: tablo/templates/tablo/judgea.html:13
+msgid "Click space when encountered mistake!"
+msgstr "При обнаружении ошибки нажмите пробел!"
+
+#: tablo/templates/tablo/judgea.html:18
+msgid "Number of mistakes:"
+msgstr "Количество ошибок:"
+
+#: tablo/templates/tablo/judgea.html:33 tablo/templates/tablo/judgeb.html:47
+#: tablo/templates/tablo/judgec.html:47
+#: tablo/templates/tablo/participant_create.html:111
+#: tablo/templates/tablo/pnt_element.html:31
+#: tablo/templates/tablo/scores.html:160
+#: tablo/templates/tablo/tablo_detail.html:21
+msgid "Save"
+msgstr "Сохранить"
+
+#: tablo/templates/tablo/judgeb.html:8
+msgid "Enter the result:"
+msgstr "Введите результат:"
+
+#: tablo/templates/tablo/judgeb.html:9
+msgid "Enter error code:"
+msgstr "Введите код ошибки:"
+
+#: tablo/templates/tablo/judgeb.html:19 tablo/templates/tablo/judgec.html:24
+#: tablo/templates/tablo/participant_create.html:25
+#: tablo/templates/tablo/pnt_element.html:13
+#: tablo/templates/tablo/scores.html:56
+#: tablo/templates/tablo/tablo_detail.html:31
+#: tablo/templates/tablo/tablo_list.html:13
+msgid "Log out"
+msgstr "Выйти"
+
+#: tablo/templates/tablo/judgeb.html:30
+msgid "Please insert participant result"
+msgstr "Пожалуйста введите результат участника!"
+
+#: tablo/templates/tablo/judgeb.html:42
+msgid "Please insert error code"
+msgstr "Пожалуйста введите код ошибки!"
+
+#: tablo/templates/tablo/judgec.html:9
+msgid "If success click"
+msgstr "Для функции \"Да\" нажмите"
+
+#: tablo/templates/tablo/judgec.html:10
+msgid "If mistake click"
+msgstr "Для функции \"Нет\" нажмите"
+
+#: tablo/templates/tablo/login.html:32 tablo/templates/tablo/login.html:50
+msgid "Log in"
+msgstr "Вход"
+
+#: tablo/templates/tablo/login.html:38
+msgid "Error:"
+msgstr ""
+
+#: tablo/templates/tablo/participant_create.html:34
+#: tablo/templates/tablo/participant_create.html:35
+msgid "Full name"
+msgstr "Ф.И.О"
+
+#: tablo/templates/tablo/participant_create.html:40
+msgid "Man"
+msgstr "Мужчина"
+
+#: tablo/templates/tablo/participant_create.html:45
+msgid "Woman"
+msgstr "Женщина"
+
+#: tablo/templates/tablo/participant_create.html:53
+msgid "Club"
+msgstr "Клуб/Страна"
+
+#: tablo/templates/tablo/participant_create.html:65
+msgid "Age"
+msgstr "Возраст"
+
+#: tablo/templates/tablo/pnt_element.html:27
+msgid "Add element"
+msgstr "Добавить комбинацию"
+
+#: tablo/templates/tablo/scores.html:48 tablo/templates/tablo/scores.html:50
+msgid "Results for"
+msgstr "Результаты"
+
+#: tablo/templates/tablo/scores.html:78
+msgid "Mistakes"
+msgstr "Ошибки"
+
+#: tablo/templates/tablo/scores.html:88 tablo/templates/tablo/scores.html:119
+#: tablo/templates/tablo/scores.html:149
+msgid "Total for"
+msgstr "Итог"
+
+#: tablo/templates/tablo/scores.html:156
+msgid "Total"
+msgstr "Итого"
+
+#: tablo/templates/tablo/scores.html:161
+msgid "Re-open"
+msgstr "Открывать вновь"
+
+#: tablo/templates/tablo/scores.html:163
+msgid "Print results"
+msgstr "Печать"
+
+#: tablo/templates/tablo/scores.html:164
+msgid "Send to monitor"
+msgstr "Отправить монитор"
+
+#: tablo/templates/tablo/tablo_detail.html:19
+msgid "Lot"
+msgstr "Жребий"
+
+#: tablo/templates/tablo/tablo_detail.html:20
+msgid "Stop"
+msgstr "Стоп"
+
+#: tablo/templates/tablo/tablo_detail.html:23
+msgid "Print"
+msgstr "Печать"
+
+#: tablo/templates/tablo/tablo_detail.html:24
+msgid "Monitor"
+msgstr "Монитор"
+
+#: tablo/templates/tablo/tablo_detail.html:43
+#: tablo/templates/tablo/tablo_print.html:14
+msgid "Place"
+msgstr "Место"
+
+#: tablo/templates/tablo/tablo_detail.html:44
+#: tablo/templates/tablo/tablo_print.html:15
+msgid "Country"
+msgstr "Страна"
+
+#: tablo/templates/tablo/tablo_detail.html:45
+#: tablo/templates/tablo/tablo_print.html:16
+msgid "Participant"
+msgstr "Участник"
+
+#: tablo/templates/tablo/tablo_detail.html:46
+msgid "State"
+msgstr "Состояние"
+
+#: tablo/templates/tablo/tablo_detail.html:47
+#: tablo/templates/tablo/tablo_detail.html:67
+#: tablo/templates/tablo/tablo_print.html:17
+msgid "Score"
+msgstr "Очко"

@@ -1,0 +1,164 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load staticfiles i18n query_transform%}
+{% block title %}{{title}}{%endblock%}
+{% block nav_title %}{{title}}{% endblock%}
+
+  {% block content %}
+  <ul class="nav navbar-nav side-nav">
+      <div class="row" style="width: 170px; margin-left: 10px;">
+          <p style="color: white; margin-top: 30%; font-size: 11px;"><span class="label label-default label-orange" style="padding: 5px; font-size: 15px;">V</span> {% blocktrans %}If success click{% endblocktrans%}</p>
+          <p style="color: white; margin-top: 30%; font-size: 11px;"><span class="label label-default label-black" style="padding: 5px; font-size: 15px;">C</span> {% blocktrans %}If mistake click{% endblocktrans%}</p>
+      </div>
+  </ul>
+
+      <div class="row">
+          <div class="col-md-9"></div>
+          <div class="col-md-3 text-top">
+              <a href="{% url "lang_en"%}">
+                  <button class="btn btn-link btn-lg active">En</button>
+              </a>
+              <a href="{% url "lang_en"%}">
+                  <button class="btn btn-link btn-lg">Ru</button>
+              </a>
+              <a href="{% url "logout"%}">
+                  <button class="btn btn-link btn-lg">{% trans "Log out"%}</button>
+              </a>
+          </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12 judge-top text-center">
+        <form method="POST" action="{% url "judgec_submit" %}" autocomplete="off" >
+          {%csrf_token%}
+          <div class="row">
+            <div id="items" class="marks col-lg-10 from-left">
+              {% for comb in score.cclass.all %}
+                {% for el in comb.statuses.all %}
+                {{request.iterator.next}}
+                <div data-item="1" pk="{{el.pk}}" class="label label-default {{el.get_label}}"
+                  style="margin-top:10px; display: inline-block;{% if forloop.last %}margin-right: 30px;{%endif%}">
+                    {{el.element.symbol}}
+                    <input autocomplete="off" type="hidden" value="{{el.get_id}}" name="{{el.pk}}">
+                </div>
+                {% endfor %}
+              {% endfor %}
+            </div>
+          </div>
+          <input type="submit" style="position: absolute; left: -9999px"/>
+        </form>
+      </div>
+    </div>
+  {% endblock %}
+
+  {% block js_assets_add %}
+  <script type="text/javascript">
+    $(document).ready(function(){
+      {% if score.get_c_is_reopen == True %}
+      var glCurrentCounter = {{score.get_max_comb_count}};
+      {%else%}
+      var glCurrentCounter = 0;
+      {%endif%}
+      var maxCounter = {{score.get_max_comb_count}};
+
+      function show_current() {
+        try {
+          if (glCurrentCounter < maxCounter) {
+            var selector = 'div[data-item="1"]';
+            $(selector).removeClass('label-current');
+            var target = $(selector)[glCurrentCounter];
+            target.setAttribute('class', target.getAttribute('class') + ' label-current');
+            console.log(target);
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      };
+      show_current();
+
+      $(document).on('keypress', function(e) {
+          if (e.which === 10 || e.which === 13) {
+            // enter pressed
+            $('form').submit();
+            return;
+          }
+
+          var value = glCurrentCounter;
+          if (e.which === 120) {
+            value -= 1;
+          }
+          console.log(e.which, value);
+          var curr = 'label-current';
+          var def = 'label label-default label-blue';
+          var yes = 'label label-default label-orange';
+          var no = 'label label-default label-black';
+          var selector = 'div[data-item="1"]';
+          console.log(value, $(selector));
+          var target = $(selector)[value];
+          var inpSelector = 'input[name="'+ target.getAttribute('pk') +'"]';
+          var inp = $(inpSelector)[0];
+
+          // 'c' and 'C'
+          // 'v' and 'V' 118, 86
+          if(e.which === 99 || e.which === 67){
+             // user has pressed space
+             inp.setAttribute('value',0);
+             target.setAttribute('class',no);
+             glCurrentCounter += 1;
+             glCurrentCounter = Math.min(glCurrentCounter, maxCounter);
+             show_current();
+          }
+          if (e.which == 118 || e.which == 86) {
+             inp.setAttribute('value',1);
+             target.setAttribute('class',yes);
+             glCurrentCounter += 1;
+             glCurrentCounter = Math.min(glCurrentCounter, maxCounter);
+             show_current();
+          }
+          if (e.which === 120) {
+            // removing last selected choice
+            inp.setAttribute('value',2);
+            target.setAttribute('class',def);
+            glCurrentCounter -= 1;
+            glCurrentCounter = Math.max(glCurrentCounter, 0);
+            show_current();
+          }
+      });
+
+      (function worker() {
+        var finish = false;
+        $.ajax({
+          url: 'has_update', 
+          success: function(data) {
+            if (data.result == false) {
+              location.reload();
+              finish = true;
+              return;
+            }
+          },
+          complete: function() {
+            // Schedule the next request when the current one's complete
+            if (finish == false) setTimeout(worker, 5000);
+          }
+        });
+      })();
+    });
+  </script>
+  {% endblock %}
+
+  {% block css_assets_add %}
+  <style>
+      .btn-link {
+        color: white;
+      }
+
+      .main-mark {
+        color: #f1c40f;
+      }
+
+      .marks div {
+        display: inline;
+        font-size: 40px;
+        padding: 10px;
+      }
+    </style>
+  {% endblock %}

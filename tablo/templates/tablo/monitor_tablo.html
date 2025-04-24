@@ -1,0 +1,69 @@
+{% load staticfiles i18n query_transform%}
+<div class="container-fluid" style="margin: 0px 10px;">
+  <h1 class="text-center" style="font-size: 2em;">{{title.upper}}</h1>
+  <!-- <p class="lead" style="font-size: 2em;"></p> -->
+
+  <table class="table table-responsive" style="">
+      <thead>
+          <th style="text-align: center;" class="lead" width="10%">Placing</th>
+          {% if is_group == False %}
+          <th style="" class="lead" width="10%">Country</th>
+          {%endif%}
+          <th class="lead" width="55%">Name</th>
+          <th class="lead" width="10%">Score</th>
+      </thead>
+
+      {% for p in participations %}
+        <tr>
+          <td class="lead" style="text-align: center;"><span style="">{% if p.rank %}{{p.rank}}{%else%}-{%endif%}</span></td>
+          {% if is_group == False %}
+          <td class="lead clubname">
+            <img src="{{p.participant.club.country.image.url}}" style="max-width:100%;">
+            <!-- <span class="clubname">
+              
+            </span> -->
+          </td>
+          {%endif%}
+          <td class="lead">
+            {% if not is_group %}
+              {{p.participant.name_en}}
+            {%else%}
+              {{p.participant.club.name}}
+            {%endif%}
+          </td>
+
+          <td class="lead"><span style="color: red;">{{p.finalscore|stringformat:".2f"}}</span></td>
+        </tr>
+      {% endfor %}
+  </table>
+</div> <!-- /container -->
+
+<style>
+    span.clubname {
+      color: orange;
+    }
+
+    .circle-item {
+        width: 50px;
+        height: 50px;
+        margin: 0;
+        padding: 0;
+        background: red;
+    }
+    .black {
+        background: black;
+    }
+    .center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    td.lead {
+      font-size: 4em;
+    }
+
+    th.lead {
+      font-size: 2em;
+    }
+
+</style>

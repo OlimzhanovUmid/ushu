@@ -1,0 +1,63 @@
+{% load staticfiles i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>O'zbekiston Ushu Federatsiyasi</title>
+
+    <link rel="short icon" href="{% static "img/portfolio/logo.png" %}">
+    <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{% static "css/style.css" %}" rel="stylesheet">
+
+
+</head>
+<body>
+	 <div class="container">
+
+	  <div class="row text-center">
+		<img class="logo" src="{% static "img/logo.png" %}" alt="O'zbekiston Ushu Federatsiyasi">
+      </div>
+
+      <form class="form-signin" method="POST" action="?" autocomplete="off">
+        {% csrf_token %}
+        <h2 class="form-signin-heading">{%trans "Log in"%}</h2>
+        {% if form.non_field_errors %}
+            <p>
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                    <span class="sr-only">{%trans "Error:"%}</span>
+                    {{ error }}
+                </div>
+            {% endfor %}
+            </p>
+        {% endif %}
+        <label for="inputEmail" class="sr-only">{%trans "Username"%}</label>
+        <input autocomplete="off"  name="username" required="required" id="inputEmail" class="form-control" placeholder="{%trans "Username"%}" autofocus>
+
+        <label for="inputPassword" class="sr-only">{%trans "Password"%}</label>
+        <input autocomplete="off"  name="password" type="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
+
+        <button class="btn btn-lg btn-white btn-block" type="submit">{%trans "Log in"%}</button>
+      </form>
+
+    </div> <!-- /container -->
+
+	<!-- jQuery -->
+    <script src="{% static "js/jquery.js" %}"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+
+	<script src="{% static "js/jqBootstrapValidation.js" %}"></script>
+</body>
+</html>

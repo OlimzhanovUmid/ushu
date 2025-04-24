@@ -1,0 +1,100 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load staticfiles i18n query_transform%}
+{% block title %}{{title}}{%endblock%}
+{% block nav_title %}{{title}}{% endblock%}
+
+{% block content %}
+  <ul class="nav navbar-nav side-nav">
+    <p class="enter-data">{% trans "Enter the result:" %}</p>
+    <p class="enter-data">{% trans "Enter error code:" %}</p>
+  </ul>
+
+  <form method="POST" action="{% url "judgeb_submit" %}" autocomplete="off">
+      {% csrf_token %}
+      <div class="from-left">
+        <div class="row">
+          <div class="col-md-9"></div>
+
+          <div class="col-md-3 text-top">
+            <a href="{% url "logout"%}">{%trans "Log out"%}</a>
+          </div>
+        </div>
+
+        <div class="row text-center">
+            <input autocomplete="off"  name="score" type="number" step="0.01" class="form-control input-center input-heading input-no-bg" maxlength="10" value={{score.bclass|stringformat:".2f"}}>
+            <hr class="main resized">
+        </div>
+
+        <div class="row text-center">
+          <div class="">
+            <p class="lead">{% trans "Please insert participant result"%}</p>
+            <hr class="resized">
+          </div>
+        </div>
+
+        <div class="row text-center">
+          <ul class="circle">
+            {% for e in score.berrors.all %}
+            <li class="circle-item designed"><div class="col-sm-12"><input autocomplete="off"  name="error" type="text" maxlength="2" class="form-control input-center" value={{e.error_code.number}}></div></li>
+            {% endfor %}
+            <li id="last-circle-item"></li>
+          </ul>
+        </div>
+
+        <div class="row text-center">
+          <p class="lead">{% trans "Please insert error code"%}</p>
+          <hr class="resized">
+        </div>
+
+        <input type="submit" style="position: absolute; left: -9999px"/>
+      </div>
+
+    </form>
+{% endblock %}
+
+{% block js_assets_add %}
+<script type="text/javascript">
+    $(document).on('keypress', function(e) {
+        if(e.which === 32){
+           // user has pressed space
+           $('#last-circle-item').before('<li class="circle-item designed"><div class="col-sm-12"><input autocomplete="off"  name="error" type="text" maxlength="2" class="form-control input-center" /></div></li>');
+        }
+        if (e.which === 10 || e.which === 13) {
+          // enter pressed
+          $('form').submit();
+        }
+    });
+
+    $(document).ready(function(){
+      (function worker() {
+        var finish = false;
+        $.ajax({
+          url: 'has_update', 
+          success: function(data) {
+            if (data.result == false) {
+              location.reload();
+              finish = true;
+              return;
+            }
+          },
+          complete: function() {
+            // Schedule the next request when the current one's complete
+            if (finish == false) setTimeout(worker, 5000);
+          }
+        });
+      })();
+  });
+  </script>
+{% endblock %}
+
+{% block css_assets_add %}
+<style type="text/css">
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+</style>
+{% endblock %}

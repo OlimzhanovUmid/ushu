@@ -1,0 +1,138 @@
+{% load staticfiles i18n query_transform%}
+<div class="container-fluid">
+  <div class="row text-center" style="margin-top: 2%;">
+    <p style="font-size: 4em;">{{title.upper}}</p>
+  </div>
+  <div class="row rw" style="margin-left: 3%;">
+    {% if participation.participant.club.country.image %}
+    <img src="{{participation.participant.club.country.image.url}}" class="col-md-2 img" alt="UZ" width="120px" height="80px">
+    {%endif%}
+
+    {% if 'group' != participation.tablo.category.name.lower %}
+    <p class="lead col-md-9" style="font-size: 3.5em;">{{participation.participant.name_en}}</p>
+    {%else%}
+    <p class="lead col-md-9" style="font-size: 3.5em;">{{participation.participant.club.name}}</p>
+    {%endif%}
+
+  </div>
+  <div class="row parent" style="margin-left: 3%;">
+    <div class="col-md-2">
+      <p  style="font-size: 38px; margin-bottom:0px;">GROUP A</p>
+      <p  style="color: #FF1B00; font-size: 5em;margin:0;padding:0;line-height:68px;">{{scores.final_a.1|stringformat:".1f"}}</p>
+    </div>
+    <div class="col-md-10">
+      <p class="" style="color: white; font-size: 40px;">
+      {% for error in scores.final_a.0 %}<span class="numberCircle circle32 circleBorder4">{{error.number|stringformat:"02d"}}</span> {% endfor %}
+      </p>
+    </div>
+  </div>
+
+  <div class="row" style="margin-left: 3%;">
+    <div class="col-md-2">
+      <p style="font-size: 38px;margin-bottom:0px;">GROUP B</p>
+      <p style="color: #FF1B00; font-size: 5em;margin:0;padding:0;line-height:68px;">{{scores.final_b|stringformat:".2f"}}</p>
+    </div>
+    <div class="col-md-10">
+    </div>
+  </div>
+
+  {% if show_c %}
+  <div class="row" style="margin-left: 3%;">
+    <div class="col-md-2">
+      <p  style="font-size: 38px; margin-bottom:0px;">GROUP C</p>
+      <p  style="color: #FF1B00; font-size: 5em;margin:0;padding:0;line-height:68px;">{{scores.final_c.1|stringformat:".1f"}}</p>
+    </div>
+    <div class="col-md-10">
+      <p class="" style="color: white; font-size: 40px;">
+      {% for els in scores.final_c.0 %}
+      <span class="numberCircle circle32 circleBorder4 {%if not els.done%}black{%else%}red{%endif%}">{{forloop.counter}}</span>
+      {% endfor %}
+      </p>
+    </div>
+  </div>
+  {% else %}
+  <div class="row" style="margin-left: 3%;">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+  </div>
+  {%endif%}
+  <div class="row" style="margin-left: 3%;">
+  </div>
+  <div class="row" style="margin-left: 3%;margin-top: 10px;">
+      <p class="col-md-2" style="font-size: 4em;">Placing:</p>
+      <p class="col-md-3" style="color: #FF1B00; font-size: 11em;line-height:100px;"><b>{{rank}}</b></p>
+      <p class="col-md-2" style="font-size: 4em;">Score:</p>
+      <p class="col-md-1" style="color: #FF1B00; font-size: 15em;line-height:100px;"><b>{{scores.final|stringformat:".2f"}}</b></p>
+  </div>
+
+</div> <!-- container -->
+
+<style>
+    img {
+        width: 13% !important;
+        height: 80px;
+    }
+    .circle-item {
+        width: 50px;
+        height: 50px;
+        margin: 0;
+        padding: 0;
+        background: red;
+    }
+    .black {
+        background: black;
+    }
+    .red {
+        background: #FF1B00;
+    }
+    .center {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .numberCircle {
+        display: inline-block;
+        border-radius: 50%;
+        {#behavior: url(PIE.htc); /* remove if you don't care about IE8 */#}
+
+        min-width: 36px;
+        min-height: 36px;
+        padding: 8px;
+
+        /*background: #fff;*/
+        color: #fff;
+        text-align: center;
+    }
+
+    .circle32 {
+      font: 32px Arial, sans-serif;
+    }
+
+    .circleBorder5 {
+      border: 5px solid #fff;
+    }
+
+    .circleBorder4 {
+      border: 4px solid #fff;
+    }
+</style>
+
+<script type="text/javascript">
+  function myFunc(){
+    var cw = $('.numberCircle');
+    $.each(cw, function(index, value){
+      var h = $(value).height();
+      var num = Number(console.log(value.innerHTML));
+      //if (value.innerHTML.length < 2) {
+        //value.innerHTML = '0' + value.innerHTML;
+        h = h*1.7;
+        $(value).css({'min-width':h+'px'});
+      //}
+      return;
+    });
+  };
+</script>

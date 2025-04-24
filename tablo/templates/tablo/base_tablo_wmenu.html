@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+{% load staticfiles i18n %}
+
+  {% block navigation %}
+    <nav class="navbar navbar-fixed-top navbar-inverse navbar-heading">
+        <div class="navbar-header navbar-height">
+          <a class="navbar-brand brand" href="{% url "judge_view" %}">{{left_title}}</a>
+          <p class="navbar-text-secondary">{% block nav_title %}Championship{% endblock%}</p>
+          <img class="logo-right" src="{%static "img/logo.png" %}" alt="A1">
+        </div>
+    </nav>
+  {% endblock %}
+
+  {% block content %}
+    <ul class="nav navbar-nav side-nav">
+      <li><a href="{% url "tablo_list" %}">{% trans "Standings" %}</a></li>
+      <li><a href="{% url "paticipant_create" %}">{% trans "Add participant"%}</a></li>
+      {% if current_active %}
+      <li><a href="{% url "current_score" %}">{% trans "Current participant" %}</a></li>
+      {% endif %}
+    </ul>
+  {%endblock%}
+</body>
+</html>
+

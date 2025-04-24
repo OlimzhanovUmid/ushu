@@ -1,0 +1,147 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load staticfiles i18n %}
+
+  {% block content %}
+  {{block.super}}
+    <div class="row">
+      {% if messages %}
+      <div class="text-top from-left">
+        {% for message in messages %}
+          <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          {{message}}
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    <div class="row">
+      <div class="col-md-9">
+
+      </div>
+      <div class="col-md-3 text-top">
+        <a href="{% url "lang_en"%}"><button class="btn btn-link btn-lg">En</button></a>
+        <a href="{% url "lang_ru"%}"><button class="btn btn-link btn-lg">Ru</button></a>
+        <a href="{% url "logout"%}"><button class="btn btn-link btn-lg">{%trans "Log out"%}</button></a>
+      </div>
+    </div>
+
+      <form method="POST" action="?" autocomplete="off">
+        {% csrf_token %}
+        <div class="row">
+          <div class="col-sm-6">
+              <div class="form-group from-left">
+                <label for="exampleInputName1">{%trans "Full name"%}</label>
+                <input autocomplete="off"  type="text" class="form-control" name="fullname" placeholder="{%trans "Full name"%}">
+            </div>
+          </div>
+          <div class="col-sm-2 form-top">
+            <label class="radio-inline">
+              <input autocomplete="off"  type="radio" name="radio_sex" value="0"> {%trans "Man"%}
+            </label>
+          </div>
+          <div class="col-sm-1 form-top">
+            <label class="radio-inline">
+              <input autocomplete="off"  type="radio" name="radio_sex" value="1"> {%trans "Woman"%}
+            </label>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-6">
+              <div class="form-group from-left">
+                <label for="club">{%trans "Club"%}</label>
+                <select id="club" name="club" class="form-control">
+                  <option value="" selected="selected"></option>
+                  {% for club in clubs %}
+                    <option value="{{club.pk}}">{{club}}</option>
+                  {% endfor %}
+                </select>
+              </div>
+          </div>
+
+          <div class="col-sm-1">
+            <div class="form-group form-top-text">
+              <label for="exampleInputName1">{%trans "Age"%}</label>
+              <label class="radio-inline">
+                <input autocomplete="off"  type="radio" name="radio_age" id="inlineRadio2" value="4"> 7-9
+              </label>
+            </div>
+          </label>
+          </div>
+
+          <div class="col-sm-1 form-top">
+            <label class="radio-inline">
+              <input autocomplete="off"  type="radio" name="radio_age" id="inlineRadio2" value="0"> 10-12
+            </label>
+          </div>
+
+          <div class="col-sm-1 form-top">
+            <label class="radio-inline">
+              <input autocomplete="off"  type="radio" name="radio_age" id="inlineRadio2" value="1"> 13-15
+            </label>
+          </div>
+
+          <div class="col-sm-1 form-top">
+            <label class="radio-inline">
+              <input autocomplete="off"  type="radio" name="radio_age" id="inlineRadio2" value="2"> 16-18
+            </label>
+          </div>
+
+          <div class="col-sm-1 form-top">
+            <label class="radio-inline">
+              <input autocomplete="off"  type="radio" name="radio_age" id="inlineRadio2" value="3"> 19+
+            </label>
+          </div>
+        </div>
+
+        <table class="table from-left table-fixed-width ">
+        <div class="container">
+          {% for category in elementcategories %}
+            <tr>
+              <th>{{forloop.counter}}</th>
+              <th>{{category.name}}</th>
+              <th>19 <input autocomplete="off"  type="checkbox" name="{{prefix}}{{category.pk}}" data-filter="3" disabled="true"></th>
+              <th>A <input autocomplete="off"  type="checkbox" name="{{prefix}}{{category.pk}}" data-filter="2" disabled="true"></th>
+              <th>B <input autocomplete="off"  type="checkbox" name="{{prefix}}{{category.pk}}" data-filter="1" disabled="true"></th>
+              {% if category.seven_twelve %}
+                <th>C <input autocomplete="off"  type="checkbox" name="{{prefix}}{{category.pk}}" data-filter="0" disabled="true"></th>
+              {%else%}
+                <th></th>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </div>
+        </table>
+
+        <button type="submit" class="btn btn-white btn-lg from-left">{%trans "Save"%}</button>
+
+      </form>
+
+  {%endblock%}
+
+  {% block js_assets_add %}
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('input[name="radio_age"]').change(function(){
+        var sel = 'input[data-filter]';
+        var val = this.value;
+        if (val == 4) {
+          // 7-9
+          val = 0; // same with 9-12(0)
+        }
+        $(sel).each(function(index, item){
+          var filter_val = item.getAttribute('data-filter');
+          if (filter_val == val) {
+            item.disabled=false;
+          } else {
+            item.disabled=true;
+          }
+        });
+      });
+    });
+  </script>
+  {%endblock%}
+</body>
+</html>
+

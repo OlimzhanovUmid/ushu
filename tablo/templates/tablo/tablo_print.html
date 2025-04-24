@@ -1,0 +1,40 @@
+{% load staticfiles i18n query_transform %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <h1>{{title}}</h1>
+  <hr>
+  <table border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th width="5%">{% trans "Place" %}</th>
+        <th width="15%">{% trans "Country" %}</th>
+        <th width="15%">{% trans "Club " %}</th>
+        <th width="55%">{% trans "Participant" %}</th>
+        <th>{% trans "Score" %}</th>
+      </tr>
+    </thead>
+    {% for p in participations %}
+      <tr>
+        <th>{{forloop.counter}}</th>
+        <th>{{p.participant.club.country.name_en}}</th>
+        <th>{{p.participant.club.name}}</th>
+        {% if 'group' != tablo.category.name.lower %}
+        <th>{{p.participant.name_en}}</th>
+        {%else%}
+        <th>{{p.participant.club.name}}</th>
+        {%endif%}
+        <th>{{p.finalscore|stringformat:".2f"}}</th>
+      </tr>
+    {% endfor %}
+  </table>
+
+
+
+
+</body>
+</html>

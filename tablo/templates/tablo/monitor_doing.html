@@ -1,0 +1,23 @@
+{% load staticfiles i18n query_transform%}
+<div class="container-fluid">
+    <div class="row text-center" style="margin-top: 3%;">
+      <p style="font-size: 65px;">{{title}}</p>
+    </div>
+    <div class="row text-center">
+      {% if participation.participant.club.country.image %}
+      <img src="{{participation.participant.club.country.image.url}}" alt="UZ" width="300px" height="200px">
+      {%endif%}
+    </div>
+    <div class="row text-center">
+      {% if 'group' != participation.tablo.category.name.lower %}
+      <p class="lead" style="font-size: 100px;">{{participation.participant.name_en}}</p>
+      {%else%}
+      <p class="lead" style="font-size: 100px;">{{participation.participant.club.name}}</p>
+      {%endif%}
+    </div>
+    <div class="row text-center">
+      {% if 'group' != participation.tablo.category.name.lower %}
+      <p class="lead" style="font-size: 100px;">{{participation.participant.club.name}}</p>
+      {%endif%}
+    </div>
+</div> <!-- /container -->

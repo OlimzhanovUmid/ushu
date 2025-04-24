@@ -1,0 +1,75 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load staticfiles i18n query_transform%}
+
+{% block title %}{{title}}{%endblock%}
+{% block nav_title %}{{title}}{% endblock%}
+
+  {% block content %}
+
+  <form method="POST" action="{% url "judgea_submit" %}" autocomplete="off">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-9">
+        <p class="lead text-top">{% trans "Click space when encountered mistake!" %}</p>
+        <hr class="col-md-8">
+      </div>
+
+      <div class="col-md-3 col-sm-3">
+        <p class="lead text-top text-right">{% trans "Number of mistakes:" %}<span id="counter">{{score.a_error_count}}</span></p>
+        <hr class="col-md-12">
+      </div>
+    </div>
+
+    <div class="row text-center">
+      <ul class="circle">
+        {% for error in score.aclass.all %}
+        <li class="circle-item designed"><div class="col-sm-12"><input autocomplete="off"  name="error" type="text" maxlength="2" class="form-control input-center" value="{{error.error_code.number}}" /></div></li>
+        {% endfor %}
+        <li id="last-circle-item"></li>
+      </ul>
+    </div>
+
+    <input type="submit" style="position: absolute; left: -9999px"/>
+  </form>
+  {% endblock %}
+
+  {% block js_assets_add %}
+  <script type="text/javascript">
+    $(document).on('keypress', function(e) {
+        var tag = e.target.tagName.toLowerCase();
+        console.log(tag);
+        console.log(e.which);
+        var counter = $('#counter')[0];
+        if(e.which === 32){
+           // user has pressed space
+           $('#last-circle-item').before('<li class="circle-item designed"><div class="col-sm-12"><input autocomplete="off"  name="error" type="text" maxlength="2" class="form-control input-center" /></div></li>');
+           counter.innerHTML = Number(counter.innerHTML) + 1;
+        }
+
+        if (e.which === 10 || e.which === 13) {
+          // enter pressed
+          $('form').submit();
+        }
+    });
+
+    $(document).ready(function(){
+      (function worker() {
+        var finish = false;
+        $.ajax({
+          url: 'has_update', 
+          success: function(data) {
+            if (data.result == false) {
+              location.reload();
+              finish = true;
+              return;
+            }
+          },
+          complete: function() {
+            // Schedule the next request when the current one's complete
+            if (finish == false) setTimeout(worker, 5000);
+          }
+        });
+      })();
+  });
+  </script>
+  {% endblock %}

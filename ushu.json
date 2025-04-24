@@ -1,0 +1,382 @@
+[
+{
+  "fields": {
+    "username": "admin",
+    "category": 0,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": true,
+    "is_staff": true,
+    "last_login": "2015-04-19T07:26:41.553Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$cCGzswSchWr1$xUu75rAhLFXNWHujAlIL/vCIonFJHD18ovj5ill0L9E=",
+    "email": "",
+    "date_joined": "2015-04-17T15:57:07.062Z"
+  },
+  "model": "judges.user",
+  "pk": 1
+},
+{
+  "fields": {
+    "username": "cata1",
+    "category": 0,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:11:47.075Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$ryGPXb8aDlOm$3JGEipRuERdZ6Xnehhy66QPcuRB+NcQqTc/WeqK8N28=",
+    "email": "",
+    "date_joined": "2015-04-17T16:11:47.075Z"
+  },
+  "model": "judges.user",
+  "pk": 2
+},
+{
+  "fields": {
+    "username": "cata2",
+    "category": 0,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:11:57.733Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$V3nidjk8pzBP$ThF9c9nBMaU+qi/TNeCidhE6YvLvfl8RsZqLGVtlwoU=",
+    "email": "",
+    "date_joined": "2015-04-17T16:11:57.733Z"
+  },
+  "model": "judges.user",
+  "pk": 3
+},
+{
+  "fields": {
+    "username": "cata3",
+    "category": 0,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:12:03.865Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$f86OEfNVT84F$zMkW8RBJQecvfLUtThfvsptXzZBKkumBeMYafWOjYOQ=",
+    "email": "",
+    "date_joined": "2015-04-17T16:12:03.865Z"
+  },
+  "model": "judges.user",
+  "pk": 4
+},
+{
+  "fields": {
+    "username": "catb1",
+    "category": 1,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:12:11Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$GTQUfibuaop5$pSI1JuK1GgYJMEl3gok6Yh4vFpzq8/5+s4UiykUKSF8=",
+    "email": "",
+    "date_joined": "2015-04-17T16:12:11Z"
+  },
+  "model": "judges.user",
+  "pk": 5
+},
+{
+  "fields": {
+    "username": "catb2",
+    "category": 1,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:12:29.378Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$XHDNr4sEs3gy$89G7l1OczPazabcI7eIZyxkmPh5kh8XQ7GZKnuVaZa4=",
+    "email": "",
+    "date_joined": "2015-04-17T16:12:29.378Z"
+  },
+  "model": "judges.user",
+  "pk": 6
+},
+{
+  "fields": {
+    "username": "catb3",
+    "category": 1,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:12:36.614Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$UKlnj5UdTTd3$b/tyzfcsPO4zdTM0BaixFQzouIFnHtPuM3+fZWfMeLs=",
+    "email": "",
+    "date_joined": "2015-04-17T16:12:36.614Z"
+  },
+  "model": "judges.user",
+  "pk": 7
+},
+{
+  "fields": {
+    "username": "catb4",
+    "category": 1,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:12:44.023Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$o9BASNrhKjBf$Ls9+T+BGkGzacxf9uWMPsGiZwNBjugUlhDcPU2EXMZI=",
+    "email": "",
+    "date_joined": "2015-04-17T16:12:44.023Z"
+  },
+  "model": "judges.user",
+  "pk": 8
+},
+{
+  "fields": {
+    "username": "catc1",
+    "category": 2,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:12:53.423Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$EPiUbzR939FA$ibi7AH06zfEwn3A7GjW0wK89y05f+2T78ByIyXngqKI=",
+    "email": "",
+    "date_joined": "2015-04-17T16:12:53.423Z"
+  },
+  "model": "judges.user",
+  "pk": 9
+},
+{
+  "fields": {
+    "username": "catc2",
+    "category": 2,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:12:59.449Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$wBoHcDeOs7Hg$z9Oo+4pmgzTP2iXBYwIlgHuoIGc+aEG2prrH3HKUp/M=",
+    "email": "",
+    "date_joined": "2015-04-17T16:12:59.449Z"
+  },
+  "model": "judges.user",
+  "pk": 10
+},
+{
+  "fields": {
+    "username": "catc3",
+    "category": 2,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-04-17T16:13:05.004Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$1hLacszk4IKb$fSXXw61HjBlHYiqXQcZf757jpW6LGERYcJZ8kfp7XLg=",
+    "email": "",
+    "date_joined": "2015-04-17T16:13:05.004Z"
+  },
+  "model": "judges.user",
+  "pk": 11
+},
+{
+  "fields": {
+    "username": "main",
+    "category": 0,
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": true,
+    "last_login": "2015-04-17T16:13:10Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$y4tAuYqrwfd5$lFaojq5ldTwG/Ob2AUpLahAdQ0KmwqI3rb+yGRiEmWM=",
+    "email": "",
+    "date_joined": "2015-04-17T16:13:10Z"
+  },
+  "model": "judges.user",
+  "pk": 12
+},
+{
+  "fields": {
+    "name": "Chanqguan",
+    "seven_twelve": true
+  },
+  "model": "elements.elementcategory",
+  "pk": 1
+},
+{
+  "fields": {
+    "name": "Nanquan",
+    "seven_twelve": false
+  },
+  "model": "elements.elementcategory",
+  "pk": 2
+},
+{
+  "fields": {
+    "name": "Taljiquan",
+    "seven_twelve": false
+  },
+  "model": "elements.elementcategory",
+  "pk": 3
+},
+{
+  "fields": {
+    "name": "Daoshu",
+    "seven_twelve": true
+  },
+  "model": "elements.elementcategory",
+  "pk": 4
+},
+{
+  "fields": {
+    "name": "Jianshu",
+    "seven_twelve": true
+  },
+  "model": "elements.elementcategory",
+  "pk": 5
+},
+{
+  "fields": {
+    "name": "Nandao",
+    "seven_twelve": false
+  },
+  "model": "elements.elementcategory",
+  "pk": 6
+},
+{
+  "fields": {
+    "name": "Taijijan",
+    "seven_twelve": false
+  },
+  "model": "elements.elementcategory",
+  "pk": 7
+},
+{
+  "fields": {
+    "name": "Gunshu",
+    "seven_twelve": true
+  },
+  "model": "elements.elementcategory",
+  "pk": 8
+},
+{
+  "fields": {
+    "name": "Qiangshu",
+    "seven_twelve": true
+  },
+  "model": "elements.elementcategory",
+  "pk": 9
+},
+{
+  "fields": {
+    "name": "Nangun",
+    "seven_twelve": false
+  },
+  "model": "elements.elementcategory",
+  "pk": 10
+},
+{
+  "fields": {
+    "name": "Duilian",
+    "seven_twelve": false
+  },
+  "model": "elements.elementcategory",
+  "pk": 11
+},
+{
+  "fields": {
+    "name": "Group",
+    "seven_twelve": false
+  },
+  "model": "elements.elementcategory",
+  "pk": 12
+},
+{
+  "fields": {
+    "name_ru": "Uzbekistan",
+    "name_ru_short": "uz",
+    "image": "",
+    "name_en_short": "uz",
+    "name_en": "Uzbekistan",
+    "thumbnail": ""
+  },
+  "model": "clubs.country",
+  "pk": 1
+},
+{
+  "fields": {
+    "name_ru": "China",
+    "name_ru_short": "ch",
+    "image": "",
+    "name_en_short": "ch",
+    "name_en": "China",
+    "thumbnail": ""
+  },
+  "model": "clubs.country",
+  "pk": 2
+},
+{
+  "fields": {
+    "country": 1,
+    "name": "Olimpiya"
+  },
+  "model": "clubs.club",
+  "pk": 1
+},
+{
+  "fields": {
+    "country": 1,
+    "name": "Polvon"
+  },
+  "model": "clubs.club",
+  "pk": 2
+},
+{
+  "fields": {
+    "country": 2,
+    "name": "Pikachu"
+  },
+  "model": "clubs.club",
+  "pk": 3
+},
+{
+  "fields": {
+    "country": 2,
+    "name": "GWall"
+  },
+  "model": "clubs.club",
+  "pk": 4
+}
+]

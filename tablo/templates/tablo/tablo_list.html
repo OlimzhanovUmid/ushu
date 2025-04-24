@@ -1,0 +1,52 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load staticfiles i18n query_transform%}
+
+  {% block content %}
+  {{block.super}}
+    <div class="row">
+      <div class="col-md-9">
+
+      </div>
+      <div class="col-md-3 text-top">
+        <a href="{% url "lang_en"%}"><button class="btn btn-link btn-lg">En</button></a>
+        <a href="{% url "lang_ru"%}"><button class="btn btn-link btn-lg">Ru</button></a>
+        <a href="{% url "logout"%}"><button class="btn btn-link btn-lg">{% trans "Log out" %}</button></a>
+      </div>
+    </div>
+
+    <table class="table from-left">
+    <div class="container">
+      {% for category in elementcategories %}
+        <tr>
+          <th>{{forloop.counter}}</th>
+          <th>{{category.name}}</th>
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=3 sex=0 %}" class="btn btn-white">19(M)</a></th>
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=3 sex=1 %}" class="btn btn-white">19(W)</a></th>
+
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=2 sex=0 %}" class="btn btn-white">16-18(M)</a></th>
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=2 sex=1 %}" class="btn btn-white">16-18(W)</a></th>
+
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=1 sex=0 %}" class="btn btn-white">13-15(M)</a></th>
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=1 sex=1 %}" class="btn btn-white">13-15(W)</a></th>
+
+          {% if category.seven_twelve %}
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=0 sex=0 %}" class="btn btn-white">10-12(M)</a></th>
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=0 sex=1 %}" class="btn btn-white">10-12(W)</a></th>
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=4 sex=0 %}" class="btn btn-white">7-9(M)</a></th>
+          <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=4 sex=1 %}" class="btn btn-white">7-9(W)</a></th>
+          {%else%}
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          {%endif%}
+        </tr>
+      {% endfor %}
+    </div>
+    </table>
+
+  {%endblock%}
+
+</body>
+</html>
+

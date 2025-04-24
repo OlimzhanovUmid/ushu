@@ -1,0 +1,211 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load staticfiles i18n query_transform %}
+
+{% block title %}{{title}}{%endblock%}
+{% block nav_title %}{{title}}{% endblock%}
+
+{% block css_assets_add%}
+<style>
+  .btn-link,
+  .col-md-9 h2 {
+    color: white;
+  }
+
+  .marks li {
+    display: inline;
+    font-size: 40px;
+    padding: 10px;
+  }
+
+  .marks #hardcode {
+    display: inline;
+    font-size: 40px;
+    padding: 10px;
+  }
+
+  .marks,p { color: white;}
+
+  .main-mark {
+    color: #f1c40f;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  {{block.super}}
+
+<form method="POST"
+    action="{% if current_p_view %}
+    {% url "current_score" %}
+    {%else%}
+    {% url "participant_score" pk=participation.pk%}
+    {%endif%}" autocomplete="off" >
+{%csrf_token%}
+<input autocomplete="off"  type="hidden" id="bonus_input" value="{% if scores.bonus%}1{%else%}0{%endif%}" name="bonus"/>
+<div class="row">
+    <div class="col-md-9 text-top">
+      {% if is_group %}
+      <h2 style="margin-left: 190px; margin-top: 10px;">{% trans "Results for" %} {{participant.club.name}}</h2>
+      {%else%}
+      <h2 style="margin-left: 190px; margin-top: 10px;">{% trans "Results for" %} {{participant.name_en}}</h2>
+      {%endif%}
+    </div>
+    <div class="col-md-3 text-top">
+      <a href="{% url "lang_en"%}" class="btn btn-link btn-lg">En</a>
+      <a href="{% url "lang_ru"%}" class="btn btn-link btn-lg">Ru</a>
+      <a href="{% url "logout"%}" class="btn btn-link btn-lg">{%trans "Log out"%}</a>
+    </div>
+</div>
+
+
+<div class="row from-left">
+  <div class="col-md-6">
+    {% for score in scores.a %}
+    <div class="row">
+      <ul class="marks">
+        {%if participation.is_saved == False %}
+        <li><a href="{% url "open_judge" idx=forloop.counter0 %}" class="btn btn-link btn-lg">X</a></li>
+        {% endif %}
+        <li class="main-mark">A{{forloop.counter}}</li>
+        {% for s in score %}
+        <li>{{s.error_code.number|stringformat:"02d"}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+
+
+  <div class="col-md-6">
+    <div class="row" style="text-align: center;">
+      <p class="lead">{% trans "Mistakes" %}</p>
+    </div>
+
+    <ul class="marks no-margin">
+      {% for error in scores.final_a.0 %}
+      <li>{{error.number|stringformat:"02d"}}</li>
+      {% endfor %}
+    </ul>
+
+    <div class="row result-top">
+      <p class="lead text-right">{% trans "Total for" %} A: {{scores.final_a.1|stringformat:".1f"}}</p>
+    </div>
+  </div>
+</div>
+
+<hr class="from-left">
+
+<div class="row from-left">
+  <div class="col-md-7">
+    {% for score in scores.b %}
+    <div class="row">
+      <ul class="marks">
+        {%if participation.is_saved == False %}
+        <li><a href="{% url "open_judge" idx=forloop.counter0|add:"3" %}" class="btn btn-link btn-lg">X</a></li>
+        {%endif%}
+        <li class="main-mark">B{{forloop.counter}}</li>
+        <li>{{score|default:""}}</li>
+      </ul>
+    </div>
+    {% if forloop.last %}
+    <div class="row">
+      <div class="checkbox" style="padding-left: 50px;">
+        <label>
+          <input autocomplete="off"  type="checkbox" id="bonus_score" {% if scores.bonus %}checked{%endif%}> Bonus (0.05)
+        </label>
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+
+
+  <div class="col-md-5">
+    <div class="row" style="padding-top: 210px;">
+      <p class="lead text-right">{% trans "Total for" %} B: <span id="score_b">{{scores.final_b|stringformat:".2f"}}</span></p>
+    </div>
+  </div>
+</div>
+
+<hr class="from-left">
+
+
+<div class="row from-left">
+  <div class="col-md-12">
+    {% if show_c %}
+    <!-- show when participant is in (A(2), 19(3)) groups -->
+    {% for s in scores.c %}
+    <div class="row">
+      <ul class="marks">
+        {%if participation.is_saved == False %}
+        <li><a href="{% url "open_judge" idx=forloop.counter0|add:"7" %}" class="btn btn-link btn-lg">X</a></li>
+        {%endif%}
+        <li class="main-mark">C{{forloop.counter}}</li>
+        {% for els in s.1 %}
+        <div id="hardcode"
+          class="{% if s.0 == False%}
+                  label label-default label-blue
+                 {% elif els.done %}
+                  label label-default label-orange
+                 {% else %}
+                  label label-default label-black
+                 {%endif%}"
+          style="margin-top:10px; display: inline-block;{% if forloop.last %}margin-right: 30px;{%endif%}">
+            {{els.element.name}}
+        </div>
+        {% endfor %}
+        {% if forloop.last %}
+        <p class="lead text-right" style="margin-top: 10px;">{% trans "Total for" %} C: {{scores.final_c.1|stringformat:".2f"}}</p>
+        {%endif %}
+      </ul>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <p class="lead text-right" style="margin-top: 10px;">{% trans "Total" %}: <span id="final_score">{{scores.final|stringformat:".2f"}}</span></p>
+
+      <div class="row text-right" style="margin-bottom: 50px;">
+        <a href="{% url "tablo_detail" pk=participation.tablo.category_id %}?{% query_transform request age=participation.tablo.age sex=participation.tablo.sex %}" class="btn btn-white btn-lg">Табло</a>
+        {% if scores.can_be_saved and not scores.saved %}
+        <button type="submit" name="save" class="btn btn-white btn-lg">{% trans "Save" %}</button>
+        {% endif %}
+        {%if participation.is_saved %} 
+        <button type="submit" name="monitor" class="btn btn-white btn-lg">{% trans "Send to monitor"%}</button>
+        {%else%}
+        <button type="submit" name="notavailable" class="btn btn-red btn-lg">Не пришел(ла)</button>
+        {%endif%}
+        <!-- <button type="submit" name="print" class="btn btn-white btn-lg">{%trans "Print results"%}</button> -->
+      </div>
+  </div>
+</div>
+</form>
+
+{% endblock %}
+
+
+{% block js_assets_add %}
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('#bonus_score').change(function() {
+        var bonus = $('#bonus_input');
+        var score_b = $('#score_b');
+        var score_f = $('#final_score');
+        var val_b = Number(score_b.text());
+        var val_f = Number(score_f.text());
+        if (this.checked) {
+          val_b = val_b + 0.05;
+          val_f = val_f + 0.05;
+          bonus.val("1");
+        } else {
+          val_f = val_f - 0.05;
+          val_b = val_b - 0.05;
+          bonus.val("0");
+        }
+        val_b = val_b.toPrecision(3);
+        val_f = val_f.toPrecision(3);
+        score_b.html(val_b);
+        score_f.html(val_f);
+      })
+    });
+  </script>
+{% endblock %}

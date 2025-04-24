@@ -1,0 +1,157 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load staticfiles i18n query_transform %}
+
+
+{% block title %}{{title}}{%endblock%}
+{% block nav_title %}{{title}}{% endblock%}
+
+  {% block content %}
+  {{block.super}}
+    <div class="row text-top">
+      <div class="col-md-2">
+      </div>
+      <div class="col-md-7">
+        <form method="POST" action="{% url "paticipant_jrebi" %}" autocomplete="off">
+          {%csrf_token%}
+          <input autocomplete="off"  type="hidden" name="tablo" value="{{tablo.pk}}">
+          <div class="row" style="margin-bottom: 50px;">
+          {% if not tablo.started %}
+            <span id="jrebi" class="btn btn-white btn-lg">{% trans "Lot" %}</span>
+            <button style="display: none;" type="submit" name="stop" class="btn btn-white btn-lg">{% trans "Stop" %}</button>
+            <button type="submit" name="save" class="btn btn-white btn-lg">Сохранить + Жребий</button>
+          {%endif%}
+            <a href="{% url "tablo_print" pk=tablo.pk %}" class="btn btn-white btn-lg">{% trans "Print" %}</a>
+            <a href="{% url "tablo_monitor" pk=tablo.pk %}" class="btn btn-white btn-lg">{% trans "Monitor" %}</a>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-3">
+        <a href="{% url "lang_en"%}"><button class="btn btn-link btn-lg">En</button></a>
+        <a href="{% url "lang_ru"%}"><button class="btn btn-link btn-lg">Ru</button></a>
+        <a href="{% url "logout"%}"><button class="btn btn-link btn-lg">{% trans "Log out" %}</button></a>
+      </div>
+    </div>
+
+      <div id="progress_bar0" class="from-left progress_bar" style="display: none;"></div>
+      <div id="progress_bar1" class="from-left progress_bar" style="display: none;"></div>
+      <div id="progress_bar2" class="from-left progress_bar" style="display: none;"></div>
+
+      <table class="table from-left" id="tablo_table">
+      <div class="container">
+        <thead>
+          <tr>
+            <th width="5%"></th>
+            <th width="5%">{% trans "Place" %}</th>
+            <th width="5%">{% trans "Country" %}</th>
+            <th width="55%">{% trans "Participant" %}</th>
+            <th>{% trans "State" %}</th>
+            <th>{% trans "Score" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for p in participations %}
+          <tr>
+            <th><a href="{% url "delete_participation" pk=p.pk %}" class="btn-link">X</a></th>
+            <th>{{forloop.counter}}</th>
+            <th>{{p.participant.club.name}}</th>
+
+            {% if 'group' != tablo.category.name.lower %}
+            <th>{{p.participant.name_en}}</th>
+            {%else%}
+            <th>{{p.participant.club.name}}</th>
+            {%endif%}
+
+            {% if not in_process %}
+              {% if p.pk == active_pk %}
+              <th><a class="btn btn-white" href="{% url "participant_activate" %}?{% query_transform request pk=active_pk %}">activate</a></th>
+              {% elif p.state == 0 %}
+              <th></th>
+              {% else %}
+              <th><a class="btn btn-white" href="{% url "participant_score" pk=p.pk %}">{% trans "Score" %}</a></th>
+              {% endif %}
+            {% else %}
+            {% endif %}
+            <th>{{p.finalscore|stringformat:".2f"}}</th>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </div>
+      </table>
+
+  {%endblock%}
+
+  {% block css_assets_add %}
+  <style type="text/css">
+    .progress_bar {
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      font-size: 80px;
+      color: black;
+      margin-left: 140px;
+      position: absolute;
+      top: 50%;
+      width: 100px;
+      text-align: center;
+    }
+
+    #progress_bar0 {
+      left: 30%;
+    }
+    #progress_bar1 {
+      left: 40%;
+    }
+    #progress_bar2 {
+      left: 50%;
+    }
+  </style>
+  {% endblock %}
+
+  {% block js_assets_add %}
+  <script src="{% static "js/spin.min.js" %}"></script>
+  <script type="text/javascript">
+    function animator(output) {
+      var output, started, duration, desired;
+
+      // Constants
+      duration = 5000;
+      desired = '50';
+      started = new Date().getTime();
+      // Animate!
+      animationTimer = setInterval(function() {
+          // If the value is what we want, stop animating
+          // or if the duration has been exceeded, stop animating
+          if (output.text().trim() === desired || new Date().getTime() - started > duration) {
+              // Generate a random string to use for the next animation step
+              output.text('' + Math.floor(Math.random() * 9)
+              );
+          } else {
+              // Generate a random string to use for the next animation step
+              output.text('' + Math.floor(Math.random() * 9)
+              );
+          }
+      }, 100);
+    };
+
+    $(document).ready(function(){
+      $('#jrebi').click(function() {
+        // Initial setup
+        output1 = $('#progress_bar0');
+        output1.css('display', '');
+        output2 = $('#progress_bar1');
+        output2.css('display', '');
+        output3 = $('#progress_bar2');
+        output3.css('display', '');
+
+        animator(output1);
+        animator(output2);
+        animator(output3);
+
+        $('button[name="stop"]').css('display', '');
+        $('#tablo_table').css('display', 'none');
+        $('button[name="save"]').css('display', 'none');
+        $('#jrebi').css('display', 'none');
+      });
+    });
+  </script>
+  {% endblock %}

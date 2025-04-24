@@ -1,0 +1,51 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load staticfiles i18n query_transform%}
+
+  {% block content %}
+  {{block.super}}
+    <div class="row">
+      <div class="col-md-9">
+
+      </div>
+      <div class="col-md-3 text-top">
+        <a href="{% url "lang_en"%}"><button class="btn btn-link btn-lg">En</button></a>
+        <a href="{% url "lang_ru"%}"><button class="btn btn-link btn-lg">Ru</button></a>
+        <a href="{% url "logout"%}"><button class="btn btn-link btn-lg">{%trans "Log out"%}</button></a>
+      </div>
+    </div>
+
+    <form method="POST" action="?" autocomplete="off">
+    {% csrf_token %}
+
+    {% for category in categories %}
+    <div class="row from-left" style="margin-top: 40px;">
+      <input autocomplete="off"  type='hidden' name='counter-{{category.pk}}' value='0'>
+      <label class="col-lg-12" style="padding-top: 10px; border-top: 1px solid white">{{category}}</label>
+      <div class="col-lg-12">
+        <span id="last_item"></span>
+      </div>
+      <span class="btn btn-white" value="{{category.pk}}">{%trans "Add element"%}</span>
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-white from-left" style="margin-top: 30px">{%trans "Save"%}</button>
+
+    </form>
+
+  {%endblock%}
+
+  {% block js_assets_add %}
+  <script type="text/javascript" src="{% static "js/react.min.js" %}"></script>
+  <script type="text/javascript">
+    var items = {
+      {% for k,v in cat_items.items %}
+      {{k}} : {{v|safe}},
+      {% endfor %}
+    };
+  </script>
+  <script type="text/javascript" src="{% static "js/selector.js" %}"></script>
+  {%endblock%}
+
+</body>
+</html>
+

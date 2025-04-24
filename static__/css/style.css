@@ -1,0 +1,318 @@
+
+/*For SignIn Page*/
+body {
+	background: #3498db;
+}
+.form-signin{max-width:330px;padding:15px;margin:0 auto;}
+.form-signin .form-signin-heading,
+.form-signin .checkbox{margin-bottom:10px;}
+.form-signin .checkbox{font-weight:normal;}
+.form-signin .form-control{position:relative;height:auto;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;padding:10px;font-size:16px;}
+.form-signin .form-control:focus{z-index:2;}
+.form-signin input[type="email"]{margin-bottom:-1px;border-bottom-right-radius:0;border-bottom-left-radius:0;}
+.form-signin input[type="password"]{margin-bottom:10px;border-top-left-radius:0;border-top-right-radius:0;}
+
+/*------------------------*/
+
+/*For Navbar*/
+.navbar-text-secondary {
+	position: absolute;
+	top: 20px;
+	left: 250px;
+	font-size: 50px;
+	color: white;
+}
+
+.navbar-heading {
+	background: #05396a;
+	box-shadow: 0 0 10px 1px;
+}
+
+.navbar-height {
+	height: 120px;
+}
+
+.navbar-height:hover {
+	background: #e74c3c;
+}
+
+.brand {
+	padding-top: 30px;
+	font-size: 60px;
+	line-height: 45px;
+	text-align: center;
+	width: 200px;
+	height: 120px;
+	background: #e74c3c;
+	text-shadow: 2px 1px 2px rgba(150, 150, 150, 1);
+}
+
+/*------------------------*/
+
+
+/*Circles*/
+
+.circle {
+    list-style-type: none;
+    margin-bottom: 20px;
+}
+
+.circle li {
+	display: inline-block;
+}
+
+.circle-item {
+	text-align: left;
+	width: 120px;
+	border-radius: 120px;
+	height: 120px;
+	margin: 10px 50px 10px 50px;
+	background: #fff;
+}
+
+.designed {
+	background: white;
+}
+
+/*------------------------*/
+
+.text-top, .link-text-left {
+	margin-top: 140px;
+}
+
+.link-text-left {
+	margin-left: 120px;
+}
+
+.link-left {
+	margin-left: 120px;
+}
+
+.link-text-left-2 {
+	margin-top: 140px;
+	margin-left: 140px;
+}
+
+.text-top-input {
+	margin-top: 110px;
+}
+
+.text-align-left{
+	margin-left: 60px;
+}
+
+.logo-right {
+	width: 120px;
+	height: 120px;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.wrapper {
+	width: 60%;
+}
+
+.from-left {
+	margin-left: 140px;
+}
+
+.judge-left {
+	margin-left: 20.5%;
+}
+
+.judge-top {
+	margin-top: 5%;
+}
+
+table .from-left a {
+	margin-left: 5px;
+}
+
+.result-top {
+	margin-top: 40px;
+}
+
+.no-margin {
+	margin: 0;
+}
+
+/*Inputs*/
+/*Centered and changed border: none; for input for .circle*/
+.input-center {
+	height: 60px;
+	width: 90%;
+	margin: 20px 30px 5px 5px;
+	text-align: center;
+	border:none;
+	box-shadow: none;
+	font-size: 43px;
+}
+
+.text-center> input {
+	color: white;
+}
+
+.input-heading {
+	height: 150px;
+	font-size: 110px;
+}
+
+.input-no-bg {
+	background: #3498db;
+	margin-left: 80px;
+}
+
+.input-no-bg-1 {
+	background: rgb(5,57,106);
+}
+
+.row.input {
+	width: 90%;
+}
+/*------------------------*/
+
+/*Buttons*/
+
+/*Space between buttons*/
+.btn-space {
+	margin-right: 20px;
+}
+.btn-save {
+	margin-left: 50px;
+}
+.btn-white {
+	color: #1375cf;
+	background-color: #fff;
+	border-color: #e3e3e3;
+}
+.btn-visible-link {
+	color: #fff;
+}
+
+/*------------------------*/
+
+.resized {
+	width: 35%;
+}
+
+.main {
+	width: 60%;
+}
+
+
+.yellow {
+	background: yellow;
+}
+
+/*Sidebar Navigation*/
+
+.navbar-nav {
+	margin-top: 70px;
+	height: 100%;
+}
+
+@media(min-width:768px) {
+    .side-nav {
+        position: fixed;
+        top: 51px;
+        left: 225px;
+        width: 200px;
+        margin-left: -225px;
+        border: none;
+        border-radius: 0;
+        overflow-y: auto;
+        background-color: rgb(5,57,106);
+        -webkit-box-shadow: 10px 3px 22px -9px rgba(0,0,0,0.75);
+		-moz-box-shadow: 10px 3px 22px -9px rgba(0,0,0,0.75);
+		box-shadow: 10px 3px 22px -9px rgba(0,0,0,0.75);
+    }
+
+    .side-nav>li>a {
+        width: 200px;
+    }
+
+    .side-nav li a:hover,
+    .side-nav li a:focus {
+        outline: none;
+        background-color: yellow !important;
+    }
+}
+
+.side-nav>li>ul {
+    padding: 0;
+}
+
+.side-nav>li>ul>li>a {
+    display: block;
+    padding: 10px 15px 10px 38px;
+    text-decoration: none;
+    color: #999;
+}
+
+.side-nav>li>ul>li>a:hover {
+    color: #fff;
+}
+
+/*------------------------*/
+
+.enter-data {
+	font-size: 20px;
+	padding-left: 3px;
+	padding-top: 10px;
+	color: white;
+	margin-top: 180px;
+}
+
+.form-center {
+	margin-left: 120px;
+	font-size: 20px;
+}
+
+.form-center a {
+	margin-left: 120px;
+}
+
+input[type=radio] {
+	width: 1em;
+	height: 1em;
+}
+
+/*Forms*/
+.form-top {
+	margin-top: 30px;
+}
+
+.form-top-text {
+	margin-top: 5px;
+}
+
+.form-right {
+	margin-right: 100px;
+}
+
+.table-fixed-width {
+	width: 90%;
+}
+
+.label-black {
+	background: black;
+	color: white;
+}
+
+.label-orange {
+	background: orange;
+	color: white;
+}
+
+.label-blue {
+	background: #3498db;
+	color: white;
+	border: 1px solid white;
+}
+
+.label {
+    border-radius: 0;
+}
+
+/*------------------------*/
