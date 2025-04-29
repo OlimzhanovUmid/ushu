@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url, include
 from django.contrib.auth.views import logout
 from django.core.urlresolvers import reverse_lazy
 from .views import (ParticipantCreateView, TabloListView,TabloDetailView,

@@ -66,7 +66,7 @@ if (jQuery === undefined) {
                 newRepr = html_unescape(newRepr);
                 var name = windowname_to_id(win.name);
                 var elem = $('#' + name);
-                var sortedm2m = elem.siblings('ul.sortedm2m');
+                var sortedm2m = elem.siblings('.sortedm2m-item');
                 if (sortedm2m.length == 0) {
                     // no sortedm2m widget, fall back to django's default
                     // behaviour

@@ -27,7 +27,7 @@ ul.sortedm2m-item {
     text-align: left;
 }
 
-ul.sortedm2m li {
+.sortedm2m-item {
     list-style-type: none;
     text-align: left;
     width: 550px;
@@ -36,7 +36,7 @@ ul.sortedm2m li {
     white-space: pre;
 }
 
-ul.sortedm2m li, ul.sortedm2m label {
+.sortedm2m-item, .sortedm2m-item label {
     cursor: move;
 }
 
@@ -44,7 +44,7 @@ ul.sortedm2m li, ul.sortedm2m label {
 body.change-form .sortedm2m-container {
     float: left;
 }
-.module ul.sortedm2m {
+.module .sortedm2m-item {
     margin: 0;
     padding: 6px 8px;
 }
