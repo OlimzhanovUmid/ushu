@@ -1,6 +1,6 @@
 import json, os
 from django.db import transaction
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import TemplateView, View
 from django.views.generic.detail import SingleObjectMixin
@@ -163,7 +163,7 @@ class PntElementView(LoginRequiredMixin, TemplateView):
                                 categories)
         context['categories'] = list(categories)
 
-        elems = {}        
+        elems = {}
         for cat in context['categories']:
             elems.setdefault(cat.pk, [])
 
@@ -271,7 +271,7 @@ class TabloDetailView(LoginRequiredMixin, TemplateView):
         GET = self.request.GET
         sex = GET.get('sex')
         age = GET.get('age')
-        return Tablo.objects.get(category=pk, sex=sex, age=age)
+        return get_object_or_404(Tablo, category=pk, sex=sex, age=age)
 
     def get_context_data(self, **kwargs):
         self.object = None

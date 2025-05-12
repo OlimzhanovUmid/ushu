@@ -1,5 +1,5 @@
-Django==1.10.8
+Django==1.11.29
 Pillow==9.5.0
-django-sortedm2m==1.4.0
+django-sortedm2m==2.2.0
 psycopg2==2.8.1
 waitress==2.1.2
