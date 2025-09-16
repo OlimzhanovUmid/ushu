@@ -835,6 +835,14 @@
     "pk": 12
   },
   {
+    "model": "elements.elementcategory",
+    "fields": {
+      "name": "Taijishan",
+      "seven_twelve": true
+    },
+    "pk": 13
+  },
+  {
     "model": "elements.element",
     "fields": {
       "name": "1A",

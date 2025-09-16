@@ -325,6 +325,14 @@
 },
 {
   "fields": {
+    "name": "Taijishan",
+    "seven_twelve": true
+  },
+  "model": "elements.elementcategory",
+  "pk": 13
+},
+{
+  "fields": {
     "name_ru": "Uzbekistan",
     "name_ru_short": "uz",
     "image": "",
