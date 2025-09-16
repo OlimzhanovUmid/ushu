@@ -19,13 +19,6 @@ PARTICIPATION_STATES = (
     (PS_FINISHED,   'finished'),
 )
 
-try:
-    from itertools import izip
-    izip = izip
-except:
-    izip = zip
-    
-
 class Tablo(models.Model):
     age = models.IntegerField(choices=AGE_CHOICES)
     sex = models.IntegerField(choices=SEX_CHOICES)
@@ -256,7 +249,7 @@ class Participation(models.Model):
         valids = []
         if not scores:
             return ([], 0)
-        for i in izip(scores[0][1], scores[1][1], scores[2][1]):
+        for i in zip(scores[0][1], scores[1][1], scores[2][1]):
             if i[0].done == i[1].done:
                 valids.append(i[0])
             elif i[0].done == i[2].done:
