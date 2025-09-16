@@ -10,28 +10,23 @@ from participants.models import (Participant, AGE_CHOICES, SEX_CHOICES,
                                  AGE_9_11, AGE_12_14, AGE_7_8)
 
 # Create your models here.
-PS_WAITING  = 0
-PS_DOING    = 1
+PS_WAITING = 0
+PS_DOING = 1
 PS_FINISHED = 2
 PARTICIPATION_STATES = (
-    (PS_WAITING,    'waiting'),
-    (PS_DOING,      'doing'),
-    (PS_FINISHED,   'finished'),
+    (PS_WAITING, 'waiting'),
+    (PS_DOING, 'doing'),
+    (PS_FINISHED, 'finished'),
 )
 
-try:
-    from itertools import izip
-    izip = izip
-except:
-    izip = zip
-    
 
 class Tablo(models.Model):
     age = models.IntegerField(choices=AGE_CHOICES)
     sex = models.IntegerField(choices=SEX_CHOICES)
     category = models.ForeignKey(ElementCategory)
-    started = models.BooleanField(default=False) # True if jrebi already done
-    started = models.BooleanField(default=False) 
+    started = models.BooleanField(default=False)  # True if jrebi already done
+    started = models.BooleanField(default=False)
+
     def __str__(self):
         return self.__unicode__()
 
@@ -40,14 +35,16 @@ class Tablo(models.Model):
                                  AGE_CHOICES[self.age][1],
                                  SEX_CHOICES[self.sex][1])
 
+
 @receiver(models.signals.post_save, sender=ElementCategory)
 def create_tablo(sender, instance, **kwargs):
     for age in AGE_CHOICES:
-        if (age[0] == AGE_9_11 or age[0] == AGE_7_8) and instance.seven_twelve is False:
-            continue
+        # if (age[0] == AGE_9_11 or age[0] == AGE_7_8) and instance.seven_twelve is False:
+        #     continue
         for sex in SEX_CHOICES:
             if not Tablo.objects.filter(age=age[0], sex=sex[0], category=instance).exists():
                 Tablo.objects.create(age=age[0], sex=sex[0], category=instance)
+
 
 @receiver(models.signals.pre_delete, sender=ElementCategory)
 def delete_tablo(sender, instance, **kwargs):
@@ -56,6 +53,7 @@ def delete_tablo(sender, instance, **kwargs):
     '''
     pk = instance.pk
     Tablo.objects.filter(category=pk).delete()
+
 
 class ParticipationManager(models.Manager):
 
@@ -77,17 +75,17 @@ class ParticipationManager(models.Manager):
                 # then no need to create participation,
                 # we can use already created participation as group
                 has_prtn = Participation.objects \
-                                .filter(tablo=tablo,
-                                        participant__club=participant.club,
-                                        group=True) \
-                                .exists()
+                    .filter(tablo=tablo,
+                            participant__club=participant.club,
+                            group=True) \
+                    .exists()
                 if has_prtn:
                     continue
             p = Participation(participant=participant, tablo=tablo,
-                          order=0,
-                          state=PARTICIPATION_STATES[PS_WAITING][0],
-                          finalscore=0,
-                          group=group)
+                              order=0,
+                              state=PARTICIPATION_STATES[PS_WAITING][0],
+                              finalscore=0,
+                              group=group)
             p.save()
             # superuser is admin of system
             judges = Judge.objects.filter(is_superuser=False)
@@ -127,12 +125,12 @@ class ParticipationManager(models.Manager):
 
 class Participation(models.Model):
     participant = models.ForeignKey(Participant, db_index=True)
-    tablo       = models.ForeignKey(Tablo, db_index=True)
-    order       = models.IntegerField(default=0) # order in this Tablo, used for jrebiy
-    state       = models.IntegerField(choices=PARTICIPATION_STATES, default=0, db_index=True)
-    finalscore  = models.FloatField(default=0)
-    bonus       = models.BooleanField(default=False)
-    group       = models.BooleanField(default=False)
+    tablo = models.ForeignKey(Tablo, db_index=True)
+    order = models.IntegerField(default=0)  # order in this Tablo, used for jrebiy
+    state = models.IntegerField(choices=PARTICIPATION_STATES, default=0, db_index=True)
+    finalscore = models.FloatField(default=0)
+    bonus = models.BooleanField(default=False)
+    group = models.BooleanField(default=False)
 
     objects = ParticipationManager()
 
@@ -143,39 +141,39 @@ class Participation(models.Model):
         return '%s (%s) (%s)' % (self.participant.name_en, self.tablo.category.name, self.participant.get_age_display())
 
     def get_scores(self):
-        LETTERS = {JUDGE_A : 'a', JUDGE_B : 'b', JUDGE_C : 'c'}
+        letters = {JUDGE_A: 'a', JUDGE_B: 'b', JUDGE_C: 'c'}
         scores = Score.objects.filter(participation=self) \
-                        .select_related('judge') \
-                        .prefetch_related('aclass', 'cclass') \
-                        .order_by('judge__username')
-        
+            .select_related('judge') \
+            .prefetch_related('aclass', 'cclass') \
+            .order_by('judge__username')
+
         allow_save = True
         if self.state == PS_FINISHED and self.finalscore == 0:
-            items = {LETTERS[JUDGE_A]:[[],[],[]],
-                LETTERS[JUDGE_B]:[0,0,0],
-                LETTERS[JUDGE_C]:[(True,[]),(True,[]),(True,[])],
-                'final_a':([], 0),
-                'final_b':0,
-                'final_c':([], 0),
-                'final':0,
-                'bonus':self.bonus,
-                'can_be_saved':False}
+            items = {letters[JUDGE_A]: [[], [], []],
+                     letters[JUDGE_B]: [0, 0, 0],
+                     letters[JUDGE_C]: [(True, []), (True, []), (True, [])],
+                     'final_a': ([], 0),
+                     'final_b': 0,
+                     'final_c': ([], 0),
+                     'final': 0,
+                     'bonus': self.bonus,
+                     'can_be_saved': False}
             return items
 
-        items = {LETTERS[JUDGE_A]:[],
-                LETTERS[JUDGE_B]:[],
-                LETTERS[JUDGE_C]:[],
-                'final_a':None,
-                'final_b':None,
-                'final_c':None,
-                'final':0,
-                'bonus':None,
-                'can_be_saved':False}
-        
+        items = {letters[JUDGE_A]: [],
+                 letters[JUDGE_B]: [],
+                 letters[JUDGE_C]: [],
+                 'final_a': None,
+                 'final_b': None,
+                 'final_c': None,
+                 'final': 0,
+                 'bonus': None,
+                 'can_be_saved': False}
+
         for score in scores:
             allow_save = allow_save and score.saved
             category = score.judge.category
-            letter = LETTERS[category]
+            letter = letters[category]
             if category == JUDGE_B:
                 items[letter].append(score.get_b_score())
             elif category == JUDGE_A:
@@ -195,7 +193,7 @@ class Participation(models.Model):
             items['final_b'] = items['final_b'] + 5
         items['final_c'] = self.calculateC(items['c'])
 
-        items['final'] = sum( [ items['final_a'][1] * 100, items['final_b'], items['final_c'][1] * 100 ] )
+        items['final'] = sum([items['final_a'][1] * 100, items['final_b'], items['final_c'][1] * 100])
         items['final'] = round(items['final'] / 100.0, 2)
         items['final_b'] = round(items['final_b'] / 100.0, 2)
         items['saved'] = (self.state == PS_FINISHED)
@@ -217,7 +215,7 @@ class Participation(models.Model):
                 has = True
                 errors2.remove(i)
             if i in errors3:
-                has=True
+                has = True
                 errors3.remove(i)
             if has:
                 valids.append(i)
@@ -225,26 +223,26 @@ class Participation(models.Model):
         for j in errors2:
             has = False
             if j in errors3:
-                has=True
+                has = True
                 errors3.remove(j)
                 valids.append(j)
         res = 0
         for error in valids:
             res = res + error.value
-        return (valids, 5.0-res)
+        return valids, 5.0 - res
 
     def calculateB(self, scores):
-        scores = filter(lambda x:x, scores)
+        scores = filter(lambda x: x, scores)
         scores = list(scores)
         if not scores or len(scores) < 1:
             return 0
         biggest = max(scores)
         least = min(scores)
         counter = Counter(scores)
-        counter.subtract( Counter(list(set(scores))) )
-        counter += Counter() # keep only bigger than 0
+        counter.subtract(Counter(list(set(scores))))
+        counter += Counter()  # keep only bigger than 0
         if len(counter) % 2 == 0:
-            return (sum(scores)-biggest-least)/2
+            return (sum(scores) - biggest - least) / 2
         else:
             most_common = counter.most_common(1)[0]
             return most_common[0]
@@ -256,8 +254,8 @@ class Participation(models.Model):
         '''
         valids = []
         if not scores:
-            return ([], 0)
-        for i in izip(scores[0][1], scores[1][1], scores[2][1]):
+            return [], 0
+        for i in zip(scores[0][1], scores[1][1], scores[2][1]):
             if i[0].done == i[1].done:
                 valids.append(i[0])
             elif i[0].done == i[2].done:
@@ -281,10 +279,11 @@ class Participation(models.Model):
 
         score = sum([curr_prz, curr_priem])
         score = min(score, 2.0)
-        return (valids, score)
+        return valids, score
 
     def is_saved(self):
         return PS_FINISHED == self.state
+
 
 class ElementStatus(models.Model):
     element = models.ForeignKey(Element)
@@ -306,6 +305,7 @@ class ElementStatus(models.Model):
     def __unicode__(self):
         return '%s (%s)' % (self.element.name, self.done)
 
+
 class CombinationStatus(models.Model):
     statuses = SortedManyToManyField(ElementStatus)
 
@@ -313,10 +313,12 @@ class CombinationStatus(models.Model):
         return self.__unicode__()
 
     def __unicode__(self):
-        return ' + '.join([ '%s (%s)' % (e.element.name, e.done) for e in self.statuses.all()])
+        return ' + '.join(['%s (%s)' % (e.element.name, e.done) for e in self.statuses.all()])
+
 
 class WrapperErrorCode(models.Model):
     error_code = models.ForeignKey(ErrorCode)
+
 
 class Score(models.Model):
     judge = models.ForeignKey(Judge)
@@ -339,7 +341,7 @@ class Score(models.Model):
 
     def __unicode__(self):
         return 'judge(%s) - p(%s) - t(%s)' % (JUDGE_CATEGORIES[self.judge.category][1],
-                                      self.participation.participant.name_en, self.participation.tablo)
+                                              self.participation.participant.name_en, self.participation.tablo)
 
     def a_error_count(self):
         return self.aclass.all().count()
@@ -353,16 +355,15 @@ class Score(models.Model):
             return False
         return True
 
-
     def get_max_comb_count(self):
         # assuming this is C category judge
-        #return
+        # return
         if not hasattr(self, '_cache_count'):
             counter = 0
             for comb in self.cclass.all():
                 for e in comb.statuses.all():
                     counter += 1
-            self._cache_count = counter 
+            self._cache_count = counter
         return self._cache_count
 
     def get_b_score(self):
@@ -379,12 +380,4 @@ class Score(models.Model):
             score = score - er
         if not score:
             return score
-        return round(score,2)
-
-
-
-
-
-
-
-
+        return round(score, 2)

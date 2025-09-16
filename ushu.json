@@ -238,7 +238,7 @@
 {
   "fields": {
     "name": "Nanquan",
-    "seven_twelve": false
+    "seven_twelve": true
   },
   "model": "elements.elementcategory",
   "pk": 2
@@ -246,7 +246,7 @@
 {
   "fields": {
     "name": "Taljiquan",
-    "seven_twelve": false
+    "seven_twelve": true
   },
   "model": "elements.elementcategory",
   "pk": 3
@@ -270,7 +270,7 @@
 {
   "fields": {
     "name": "Nandao",
-    "seven_twelve": false
+    "seven_twelve": true
   },
   "model": "elements.elementcategory",
   "pk": 6
@@ -278,7 +278,7 @@
 {
   "fields": {
     "name": "Taijijan",
-    "seven_twelve": false
+    "seven_twelve": true
   },
   "model": "elements.elementcategory",
   "pk": 7
@@ -302,7 +302,7 @@
 {
   "fields": {
     "name": "Nangun",
-    "seven_twelve": false
+    "seven_twelve": true
   },
   "model": "elements.elementcategory",
   "pk": 10
@@ -310,7 +310,7 @@
 {
   "fields": {
     "name": "Duilian",
-    "seven_twelve": false
+    "seven_twelve": true
   },
   "model": "elements.elementcategory",
   "pk": 11
@@ -318,7 +318,7 @@
 {
   "fields": {
     "name": "Group",
-    "seven_twelve": false
+    "seven_twelve": true
   },
   "model": "elements.elementcategory",
   "pk": 12
