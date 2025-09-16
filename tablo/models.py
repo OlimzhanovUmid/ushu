@@ -7,7 +7,7 @@ from judges.models import (User as Judge, JUDGE_C, JUDGE_CATEGORIES,
                            JUDGE_A, JUDGE_B)
 from elements.models import Element, ElementCategory, ErrorCode
 from participants.models import (Participant, AGE_CHOICES, SEX_CHOICES,
-                                 AGE_9_11, AGE_12_14, AGE_7_8)
+                                 AGE_9_11, AGE_12_14, AGE_7_8, AGE_18_plus)
 
 # Create your models here.
 PS_WAITING = 0
@@ -187,7 +187,7 @@ class Participation(models.Model):
                     for element in combination.statuses.all():
                         dones.append(element)
                 items[letter].append((score.saved, dones))
-        items['final_a'] = self.calculateA(items['a'])
+        items['final_a'] = self.calculateA(items['a'], age = self.participant.age)
         items['final_b'] = int(self.calculateB(items['b']) * 100)
         if self.bonus:
             items['final_b'] = items['final_b'] + 5
@@ -201,7 +201,7 @@ class Participation(models.Model):
         items['bonus'] = self.bonus
         return items
 
-    def calculateA(self, scores):
+    def calculateA(self, scores, age: int):
         '''
         return tuple(validated_error_codes, score)
         '''
@@ -229,7 +229,10 @@ class Participation(models.Model):
         res = 0
         for error in valids:
             res = res + error.value
-        return valids, 5.0 - res
+        maxscore = 7.0
+        if age == AGE_18_plus:
+            maxscore = 5.0
+        return valids, maxscore - res
 
     def calculateB(self, scores):
         scores = filter(lambda x: x, scores)
