@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+from participants.models import AGE_CHOICES
+
 
 class Migration(migrations.Migration):
 
@@ -14,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='participant',
             name='age',
-            field=models.IntegerField(choices=[(0, '9-12'), (1, '13-15'), (2, '16-18'), (3, '19+'), (4, '7-9')]),
+            field=models.IntegerField(choices=AGE_CHOICES),
             preserve_default=True,
         ),
     ]

@@ -7,7 +7,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ccdee188-1d48-42e3-9bcd-f12b621b3cc5" name="Changes" comment="" />
+    <list default="true" id="ccdee188-1d48-42e3-9bcd-f12b621b3cc5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ushu.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ushu.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/participants/migrations/0003_auto_20150428_1940.py" beforeDir="false" afterPath="$PROJECT_DIR$/participants/migrations/0003_auto_20150428_1940.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/participants/migrations/0004_auto_20150504_0345.py" beforeDir="false" afterPath="$PROJECT_DIR$/participants/migrations/0004_auto_20150504_0345.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/participants/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/participants/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tablo/migrations/0008_auto_20150428_1940.py" beforeDir="false" afterPath="$PROJECT_DIR$/tablo/migrations/0008_auto_20150428_1940.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tablo/migrations/0009_auto_20150504_0345.py" beforeDir="false" afterPath="$PROJECT_DIR$/tablo/migrations/0009_auto_20150504_0345.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tablo/templates/tablo/participant_create.html" beforeDir="false" afterPath="$PROJECT_DIR$/tablo/templates/tablo/participant_create.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tablo/templates/tablo/tablo_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/tablo/templates/tablo/tablo_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ushu/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ushu/settings.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,6 +52,11 @@
     </replaceStrings>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="2718fafd0b06ec46cca003d1182512c07f60e9c1" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
@@ -53,9 +71,9 @@
       <facet id="ushu/invalid/Django" />
     </ignored-facets>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="85" />
     <option name="y" value="25" />
@@ -97,16 +115,21 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python.manage.executor": "Run",
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "com.codeium.enabled": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Python36/Scripts/ushu",
+    "git-widget-placeholder": "test",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "D:/Sources/wushu/ushu",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "preferences.keymap",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -167,8 +190,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-PY-251.23774.444" />
-        <option value="bundled-python-sdk-890ed5b35930-d9c5bdb153f4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.23774.444" />
+        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-PY-252.25557.178" />
+        <option value="bundled-python-sdk-ce6832f46686-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.178" />
       </set>
     </attachedChunks>
   </component>
@@ -185,6 +208,9 @@
       <workItem from="1745437063695" duration="300000" />
       <workItem from="1745466727105" duration="227000" />
       <workItem from="1745487695223" duration="7031000" />
+      <workItem from="1758018515305" duration="556000" />
+      <workItem from="1758019094810" duration="1893000" />
+      <workItem from="1758021223916" duration="1110000" />
     </task>
     <servers />
   </component>

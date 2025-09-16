@@ -21,8 +21,8 @@ from judges.models import User as Judge, JUDGE_A, JUDGE_B, JUDGE_C, JUDGE_CATEGO
 from clubs.models import Club
 from elements.models import ElementCategory, Combination, ErrorCode
 from participants.models import (Participant, SEX_CHOICES,
-                                 AGE_7_12, AGE_13_15,
-                                 AGE_16_18, AGE_19, AGE_7_9)
+                                 AGE_9_11, AGE_12_14,
+                                 AGE_15_17, AGE_18_plus, AGE_7_8)
 from tablo.models import (Participation, Tablo, PS_WAITING,
                           PS_DOING, Score, WrapperErrorCode,
                           ElementStatus, PS_FINISHED)
@@ -32,11 +32,11 @@ from django.conf import settings
 
 # Create your views here.
 MONITOR_FL_COUNT = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/file.count')
-GROUPS = {AGE_19 : '',
-            AGE_16_18:'A',
-            AGE_13_15:'B',
-            AGE_7_12:'C',
-            AGE_7_9:'C',}
+GROUPS = {AGE_18_plus : '',
+          AGE_15_17: 'A',
+          AGE_12_14: 'B',
+          AGE_9_11: 'C',
+          AGE_7_8: 'C', }
 
 def render_to_file(template, context, flname='showme.html'):
     SHOWME = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/')
@@ -125,7 +125,7 @@ class ParticipantCreateView(LoginRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         if self.validate(request, *args, **kwargs):
             ptn = self.save()
-            if int(ptn.age) in (AGE_7_12, AGE_13_15,AGE_7_9):
+            if int(ptn.age) in (AGE_9_11, AGE_12_14, AGE_7_8):
                 return HttpResponseRedirect(reverse_lazy(self.b_and_c))
             else:
                 return HttpResponseRedirect( reverse_lazy(self.not_b_and_c,args=(ptn.pk,)))

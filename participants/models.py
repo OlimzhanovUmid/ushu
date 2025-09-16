@@ -8,17 +8,17 @@ SEX_CHOICES = (
     (1, _('Women')),
 )
 
-AGE_7_12    = 0
-AGE_13_15   = 1
-AGE_16_18   = 2
-AGE_19      = 3
-AGE_7_9     = 4
+AGE_9_11 = 0
+AGE_12_14 = 1
+AGE_15_17 = 2
+AGE_18_plus = 3
+AGE_7_8 = 4
 AGE_CHOICES = (
-    (AGE_7_12,  '9-12'),
-    (AGE_13_15, '13-15'),
-    (AGE_16_18, '16-18'),
-    (AGE_19,    '19+'),
-    (AGE_7_9,  '7-9'),
+    (AGE_9_11, '9-11'),
+    (AGE_12_14, '12-14'),
+    (AGE_15_17, '15-17'),
+    (AGE_18_plus, '18+'),
+    (AGE_7_8, '7-8'),
 )
 
 class Participant(models.Model):

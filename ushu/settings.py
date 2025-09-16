@@ -74,11 +74,11 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ushu',
+        'NAME': 'ushu_back',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': 'localhost', # Set to empty string for localhost.
-        'PORT': '5432', # Set to empty string for default.
+        'PORT': '5433', # Set to empty string for default.
     },
     'OPTIONS' : {
         'timeout':40,

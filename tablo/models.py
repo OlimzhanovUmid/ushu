@@ -7,7 +7,7 @@ from judges.models import (User as Judge, JUDGE_C, JUDGE_CATEGORIES,
                            JUDGE_A, JUDGE_B)
 from elements.models import Element, ElementCategory, ErrorCode
 from participants.models import (Participant, AGE_CHOICES, SEX_CHOICES,
-                                 AGE_7_12,AGE_13_15, AGE_7_9)
+                                 AGE_9_11, AGE_12_14, AGE_7_8)
 
 # Create your models here.
 PS_WAITING  = 0
@@ -43,7 +43,7 @@ class Tablo(models.Model):
 @receiver(models.signals.post_save, sender=ElementCategory)
 def create_tablo(sender, instance, **kwargs):
     for age in AGE_CHOICES:
-        if (age[0] == AGE_7_12 or age[0] == AGE_7_9) and instance.seven_twelve is False:
+        if (age[0] == AGE_9_11 or age[0] == AGE_7_8) and instance.seven_twelve is False:
             continue
         for sex in SEX_CHOICES:
             if not Tablo.objects.filter(age=age[0], sex=sex[0], category=instance).exists():
@@ -92,7 +92,7 @@ class ParticipationManager(models.Manager):
             # superuser is admin of system
             judges = Judge.objects.filter(is_superuser=False)
             for judge in judges:
-                if (age == AGE_7_9 or age == AGE_7_12 or age == AGE_13_15) and judge.category == JUDGE_C:
+                if (age == AGE_7_8 or age == AGE_9_11 or age == AGE_12_14) and judge.category == JUDGE_C:
                     # no C class judges
                     continue
 
