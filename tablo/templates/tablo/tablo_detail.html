@@ -63,7 +63,7 @@
 
             {% if not in_process %}
               {% if p.pk == active_pk %}
-              <th><a class="btn btn-white" href="{% url "participant_activate" %}?{% query_transform request pk=active_pk %}">activate</a></th>
+              <th><a class="btn btn-white" href="{% url "participant_activate" %}?{% query_transform request pk=active_pk %}">{%  trans "Activate"%}</a></th>
               {% elif p.state == 0 %}
               <th></th>
               {% else %}

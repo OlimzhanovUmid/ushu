@@ -240,3 +240,6 @@ msgstr "Состояние"
 #: tablo/templates/tablo/tablo_print.html:17
 msgid "Score"
 msgstr "Очко"
+
+msgid "Activate"
+msgstr "Активировать"
