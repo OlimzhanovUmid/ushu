@@ -1,11 +1,12 @@
 from collections import Counter
+
 from django.db import models, transaction
 from django.dispatch import receiver
 from sortedm2m.fields import SortedManyToManyField
 
+from elements.models import Element, ElementCategory, ErrorCode
 from judges.models import (User as Judge, JUDGE_C, JUDGE_CATEGORIES,
                            JUDGE_A, JUDGE_B)
-from elements.models import Element, ElementCategory, ErrorCode
 from participants.models import (Participant, AGE_CHOICES, SEX_CHOICES,
                                  AGE_9_11, AGE_12_14, AGE_7_8, AGE_18_plus)
 
@@ -187,7 +188,7 @@ class Participation(models.Model):
                     for element in combination.statuses.all():
                         dones.append(element)
                 items[letter].append((score.saved, dones))
-        items['final_a'] = self.calculateA(items['a'], age = self.participant.age)
+        items['final_a'] = self.calculateA(items['a'], age=self.participant.age)
         items['final_b'] = int(self.calculateB(items['b']) * 100)
         if self.bonus:
             items['final_b'] = items['final_b'] + 5

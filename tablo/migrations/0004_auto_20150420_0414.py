@@ -5,7 +5,6 @@ from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('elements', '0001_initial'),
         ('tablo', '0003_auto_20150419_1216'),

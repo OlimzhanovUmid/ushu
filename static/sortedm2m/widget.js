@@ -20,7 +20,7 @@ if (jQuery === undefined) {
                 $('#' + id).val(values.join(','));
             }
             recalculate_value();
-            ul.on('change','input[type=checkbox]',recalculate_value);
+            ul.on('change', 'input[type=checkbox]', recalculate_value);
             ul.sortable({
                 axis: 'y',
                 //containment: 'parent',
@@ -31,7 +31,7 @@ if (jQuery === undefined) {
 
         function iterateUl() {
             $('.sortedm2m').parents('ul').each(function () {
-                prepareUl( $(this) );
+                prepareUl($(this));
             });
         }
 
@@ -40,18 +40,19 @@ if (jQuery === undefined) {
         iterateUl();
 
         $('.sortedm2m-container .selector-filter input').each(function () {
-            $(this).bind('input', function() {
+            $(this).bind('input', function () {
                 var search = $(this).val().toLowerCase();
                 var $el = $(this).closest('.selector-filter');
-                var $container = $el.siblings('ul').each(function() {
+                var $container = $el.siblings('ul').each(function () {
                     // walk over each child list el and do name comparisons
-                    $(this).children().each(function() {
+                    $(this).children().each(function () {
                         var curr = $(this).find('label').text().toLowerCase();
                         if (curr.indexOf(search) === -1) {
                             $(this).css('display', 'none');
                         } else {
                             $(this).css('display', 'inherit');
-                        };
+                        }
+                        ;
                     });
                 });
             });

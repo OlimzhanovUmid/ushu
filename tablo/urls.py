@@ -1,14 +1,15 @@
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url
 from django.contrib.auth.views import logout
 from django.core.urlresolvers import reverse_lazy
-from .views import (ParticipantCreateView, TabloListView,TabloDetailView,
+
+from .views import (ParticipantCreateView, TabloListView, TabloDetailView,
                     ParticipantActivateView, ParticipantScoreView,
                     PntElementView, JudgeView, login,
                     JudgeASubmit, JudgeBSubmit, CurrentParticipantScoreView,
                     JudgeCSubmit, JrebiView, TabloPrintView,
                     MonitorView, ShowmeView, TabloMonitorView,
-                    LanguageViewEn,LanguageViewRu, showme_view,
-                    has_updated,open_judge,delete_participation)
+                    LanguageViewEn, LanguageViewRu, showme_view,
+                    has_updated, open_judge, delete_participation)
 
 urlpatterns = [
     url(r'^tablo/pcreate$', ParticipantCreateView.as_view(), name="paticipant_create"),

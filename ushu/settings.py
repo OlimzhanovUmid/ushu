@@ -10,8 +10,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -25,7 +25,6 @@ DEBUG = True
 # TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -41,11 +40,11 @@ INSTALLED_APPS = (
 
     'core',
 
-    'judges',           # no dependency
-    'clubs',            # no dependency
-    'elements',         # no dependency
-    'participants',     # 'elements', 'clubs'
-    'tablo',            # 'core', 'judges', 'elements', 'participants'
+    'judges',  # no dependency
+    'clubs',  # no dependency
+    'elements',  # no dependency
+    'participants',  # 'elements', 'clubs'
+    'tablo',  # 'core', 'judges', 'elements', 'participants'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -63,7 +62,6 @@ ROOT_URLCONF = 'ushu.urls'
 
 WSGI_APPLICATION = 'ushu.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
@@ -77,11 +75,11 @@ DATABASES = {
         'NAME': 'ushu_back',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost', # Set to empty string for localhost.
-        'PORT': '5433', # Set to empty string for default.
+        'HOST': 'localhost',  # Set to empty string for localhost.
+        'PORT': '5433',  # Set to empty string for default.
     },
-    'OPTIONS' : {
-        'timeout':40,
+    'OPTIONS': {
+        'timeout': 40,
     }
 }
 
@@ -97,7 +95,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -148,8 +145,8 @@ TEMPLATES = [
 # )
 
 CACHES = {
-    'default' : {
-        'BACKEND' : 'django.core.cache.backends.locmem.LocMemCache',
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
 

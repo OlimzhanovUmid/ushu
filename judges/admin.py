@@ -1,15 +1,17 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
+
 from . import forms
 from .models import User
+
 
 # Register your models here.
 class UserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username','password1', 'password2', 'category',),
+            'fields': ('username', 'password1', 'password2', 'category',),
         }),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
     )
@@ -24,5 +26,5 @@ class UserAdmin(UserAdmin):
     filter_horizontal = ('groups', 'user_permissions',)
     add_form = forms.UserCreationFormForAdmin
 
-admin.site.register(User, UserAdmin)
 
+admin.site.register(User, UserAdmin)

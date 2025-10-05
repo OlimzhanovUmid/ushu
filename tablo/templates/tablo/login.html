@@ -21,43 +21,45 @@
 
 </head>
 <body>
-	 <div class="container">
+<div class="container">
 
-	  <div class="row text-center">
-		<img class="logo" src="{% static "img/logo.png" %}" alt="O'zbekiston Ushu Federatsiyasi">
-      </div>
+    <div class="row text-center">
+        <img class="logo" src="{% static "img/logo.png" %}" alt="O'zbekiston Ushu Federatsiyasi">
+    </div>
 
-      <form class="form-signin" method="POST" action="?" autocomplete="off">
+    <form class="form-signin" method="POST" action="?" autocomplete="off">
         {% csrf_token %}
-        <h2 class="form-signin-heading">{%trans "Log in"%}</h2>
+        <h2 class="form-signin-heading">{% trans "Log in" %}</h2>
         {% if form.non_field_errors %}
             <p>
-            {% for error in form.non_field_errors %}
-                <div class="alert alert-danger" role="alert">
-                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                    <span class="sr-only">{%trans "Error:"%}</span>
-                    {{ error }}
-                </div>
-            {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                        <span class="sr-only">{% trans "Error:" %}</span>
+                        {{ error }}
+                    </div>
+                {% endfor %}
             </p>
         {% endif %}
-        <label for="inputEmail" class="sr-only">{%trans "Username"%}</label>
-        <input autocomplete="off"  name="username" required="required" id="inputEmail" class="form-control" placeholder="{%trans "Username"%}" autofocus>
+        <label for="inputEmail" class="sr-only">{% trans "Username" %}</label>
+        <input autocomplete="off" name="username" required="required" id="inputEmail" class="form-control"
+               placeholder="{% trans "Username" %}" autofocus>
 
-        <label for="inputPassword" class="sr-only">{%trans "Password"%}</label>
-        <input autocomplete="off"  name="password" type="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
+        <label for="inputPassword" class="sr-only">{% trans "Password" %}</label>
+        <input autocomplete="off" name="password" type="password" id="inputPassword" class="form-control"
+               placeholder="Пароль" required>
 
-        <button class="btn btn-lg btn-white btn-block" type="submit">{%trans "Log in"%}</button>
-      </form>
+        <button class="btn btn-lg btn-white btn-block" type="submit">{% trans "Log in" %}</button>
+    </form>
 
-    </div> <!-- /container -->
+</div> <!-- /container -->
 
-	<!-- jQuery -->
-    <script src="{% static "js/jquery.js" %}"></script>
+<!-- jQuery -->
+<script src="{% static "js/jquery.js" %}"></script>
 
-	<!-- Bootstrap Core JavaScript -->
-    <script src="{% static "js/bootstrap.min.js" %}"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="{% static "js/bootstrap.min.js" %}"></script>
 
-	<script src="{% static "js/jqBootstrapValidation.js" %}"></script>
+<script src="{% static "js/jqBootstrapValidation.js" %}"></script>
 </body>
 </html>

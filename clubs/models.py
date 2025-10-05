@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 class Country(models.Model):
     name_ru = models.TextField()
@@ -14,6 +15,7 @@ class Country(models.Model):
 
     def __unicode__(self):
         return self.name_en_short
+
 
 class Club(models.Model):
     name = models.TextField()

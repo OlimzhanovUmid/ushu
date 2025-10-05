@@ -10,9 +10,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    {%block meta_add%}{%endblock%}
+    {% block meta_add %}{% endblock %}
 
-    <title>{% block title %}{%endblock%}</title>
+    <title>{% block title %}{% endblock %}</title>
 
     <link rel="short icon" href="img/logo.png">
 
@@ -21,27 +21,27 @@
     <!-- Custom CSS -->
     <link href="{% static "css/style.css" %}" rel="stylesheet">
     <style>
-      .btn-link {
-        color: white;
-      }
+        .btn-link {
+            color: white;
+        }
     </style>
 
-    {% block css_assets_add %}{%endblock%}
+    {% block css_assets_add %}{% endblock %}
 
 </head>
 <body>
-  {% block navigation %}{% endblock %}
-  <div class="container">
-    {% block content %}{%endblock%}
-  </div>
+{% block navigation %}{% endblock %}
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
 
-  <!-- jQuery -->
-  <script src="{% static "js/jquery.js" %}"></script>
-  <!-- Bootstrap Core JavaScript -->
-  <script src="{% static "js/bootstrap.min.js" %}"></script>
-  <script src="{% static "js/jqBootstrapValidation.js" %}"></script>
-  <script src="{% static "js/bootstrap-table" %}"></script>
-  {% block js_assets_add %}{%endblock%}
+<!-- jQuery -->
+<script src="{% static "js/jquery.js" %}"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="{% static "js/bootstrap.min.js" %}"></script>
+<script src="{% static "js/jqBootstrapValidation.js" %}"></script>
+<script src="{% static "js/bootstrap-table" %}"></script>
+{% block js_assets_add %}{% endblock %}
 
 </body>
 </html>

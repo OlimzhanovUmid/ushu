@@ -1,5 +1,6 @@
 from django.db import models
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
+
 from clubs.models import Club
 
 # Create your models here.
@@ -20,6 +21,7 @@ AGE_CHOICES = (
     (AGE_18_plus, '18+'),
     (AGE_7_8, '7-8'),
 )
+
 
 class Participant(models.Model):
     name_ru = models.CharField(max_length=64)

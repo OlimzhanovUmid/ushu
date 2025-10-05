@@ -8,7 +8,9 @@ DIFFICULTY_CHOICES = (
     (2, 'C'),
     (3, 'D'),
 )
-class ElementCategory(models.Model): # Chanqguan, Nanquan, Taljiquan
+
+
+class ElementCategory(models.Model):  # Chanqguan, Nanquan, Taljiquan
     name = models.CharField(max_length=16)
     seven_twelve = models.BooleanField(default=True)
 
@@ -18,13 +20,14 @@ class ElementCategory(models.Model): # Chanqguan, Nanquan, Taljiquan
     def __unicode__(self):
         return self.name
 
+
 class Element(models.Model):
-    name            = models.CharField(max_length=64)
-    difficulty      = models.IntegerField(choices=DIFFICULTY_CHOICES)
-    score           = models.FloatField()
-    categories      = models.ManyToManyField(ElementCategory)
-    prizemlenie     = models.BooleanField(default=False)
-    symbol          = models.CharField(max_length=64,default="")
+    name = models.CharField(max_length=64)
+    difficulty = models.IntegerField(choices=DIFFICULTY_CHOICES)
+    score = models.FloatField()
+    categories = models.ManyToManyField(ElementCategory)
+    prizemlenie = models.BooleanField(default=False)
+    symbol = models.CharField(max_length=64, default="")
 
     def __str__(self):
         return self.__unicode__()
@@ -32,6 +35,7 @@ class Element(models.Model):
     def __unicode__(self):
         cat_names = [cat.name for cat in self.categories.all()]
         return self.name + '(' + ', '.join(cat_names) + ')'
+
 
 class Combination(models.Model):
     elements = SortedManyToManyField(Element)
@@ -43,6 +47,7 @@ class Combination(models.Model):
         names = [el.name for el in self.elements.all()]
         return ' + '.join(names)
 
+
 class ErrorCode(models.Model):
     name = models.CharField(max_length=64)
     number = models.IntegerField(default=0)
@@ -53,10 +58,3 @@ class ErrorCode(models.Model):
 
     def __unicode__(self):
         return '(%s) %s' % (self.number, self.name,)
-
-
-
-
-
-
-

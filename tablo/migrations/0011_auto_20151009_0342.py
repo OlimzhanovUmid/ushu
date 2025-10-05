@@ -4,16 +4,16 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 ALTER_SQL = '''
-    ALTER TABLE tablo_elementstatus ALTER COLUMN done TYPE integer USING (
+            ALTER TABLE tablo_elementstatus ALTER COLUMN done TYPE integer USING (
         CASE done
             when TRUE then 1
             when FALSE then 0
         END
-        );
-    '''
+        ); \
+            '''
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('tablo', '0010_auto_20150509_1230'),
     ]

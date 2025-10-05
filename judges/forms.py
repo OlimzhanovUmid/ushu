@@ -1,6 +1,6 @@
 from django import forms
-from django.contrib.auth import get_user_model
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
+
 from .models import User
 
 
@@ -17,17 +17,17 @@ class UserCreationFormForAdmin(forms.ModelForm):
         'password_mismatch': _("The two password fields didn't match."),
     }
     username = forms.RegexField(label=_("Username"), max_length=30,
-        regex=r'^[\w.@+-]+$',
-        help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                    "@/./+/-/_ only."),
-        error_messages={
-            'invalid': _("This value may contain only letters, numbers and "
-                         "@/./+/-/_ characters.")})
+                                regex=r'^[\w.@+-]+$',
+                                help_text=_("Required. 30 characters or fewer. Letters, digits and "
+                                            "@/./+/-/_ only."),
+                                error_messages={
+                                    'invalid': _("This value may contain only letters, numbers and "
+                                                 "@/./+/-/_ characters.")})
     password1 = forms.CharField(label=_("Password"),
-        widget=forms.PasswordInput)
+                                widget=forms.PasswordInput)
     password2 = forms.CharField(label=_("Password confirmation"),
-        widget=forms.PasswordInput,
-        help_text=_("Enter the same password as above, for verification."))
+                                widget=forms.PasswordInput,
+                                help_text=_("Enter the same password as above, for verification."))
 
     class Meta:
         model = User
@@ -63,4 +63,3 @@ class UserCreationFormForAdmin(forms.ModelForm):
             user.save()
             self.save_m2m()
         return user
-

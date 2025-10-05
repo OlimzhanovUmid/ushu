@@ -7,7 +7,6 @@ from participants.models import AGE_CHOICES
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('participants', '0002_auto_20150420_0414'),
     ]

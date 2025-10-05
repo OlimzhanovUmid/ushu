@@ -7,7 +7,6 @@ from participants.models import AGE_CHOICES
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('tablo', '0007_score_berrors'),
     ]

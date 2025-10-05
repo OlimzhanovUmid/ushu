@@ -1,25 +1,26 @@
-import json, os
-from django.db import transaction
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
-from django.views.generic import TemplateView, View
-from django.views.generic.detail import SingleObjectMixin
-from django.core.urlresolvers import reverse_lazy, reverse
-from django.contrib import messages
+import json
+import os
 
-from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.urlresolvers import reverse_lazy, reverse
+from django.db import transaction
+from django.http import HttpResponseRedirect, HttpResponse
+from django.template import loader, Context
 from django.template.response import TemplateResponse
-from django.contrib.auth import login as auth_login
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.generic import TemplateView, View
 
-from core.views import LoginRequiredMixin
-from judges.models import User as Judge, JUDGE_A, JUDGE_B, JUDGE_C, JUDGE_CATEGORIES
 from clubs.models import Club
+from core.views import LoginRequiredMixin
 from elements.models import ElementCategory, Combination, ErrorCode
+from judges.models import JUDGE_A, JUDGE_B, JUDGE_C
 from participants.models import (Participant, SEX_CHOICES,
                                  AGE_9_11, AGE_12_14,
                                  AGE_15_17, AGE_18_plus, AGE_7_8)
@@ -27,21 +28,20 @@ from tablo.models import (Participation, Tablo, PS_WAITING,
                           PS_DOING, Score, WrapperErrorCode,
                           ElementStatus, PS_FINISHED)
 
-from django.template import loader, Context, Template
-from django.conf import settings
-
 # Create your views here.
 MONITOR_FL_COUNT = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/file.count')
-GROUPS = {AGE_18_plus : '',
+GROUPS = {AGE_18_plus: '',
           AGE_15_17: 'A',
           AGE_12_14: 'B',
           AGE_9_11: 'C',
           AGE_7_8: 'C', }
 
+
 def render_to_file(template, context, flname='showme.html'):
     SHOWME = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/')
     SHOWME = os.path.join(SHOWME, flname)
     open(SHOWME, "w").write(loader.render_to_string(template, context))
+
 
 @sensitive_post_parameters()
 @csrf_protect
@@ -55,7 +55,7 @@ def login(request, template_name='tablo/login.html',
     """
     redirect_to = request.POST.get(redirect_field_name,
                                    request.GET.get(redirect_field_name, ''))
-    request.current_app=current_app
+    request.current_app = current_app
     if request.method == "POST":
         form = authentication_form(request, data=request.POST)
         if form.is_valid():
@@ -90,13 +90,13 @@ class ParticipantCreateView(LoginRequiredMixin, TemplateView):
         POST = request.POST
         self.errors = []
         self.club = POST.get('club', None)
-        self.sex  = POST.get('radio_sex', None)
-        self.age  = POST.get('radio_age', None)
+        self.sex = POST.get('radio_sex', None)
+        self.age = POST.get('radio_age', None)
         self.name = POST.get('fullname', None)
         self.categories = []
-        for k,v in POST.items():
+        for k, v in POST.items():
             if k[:len(self.prefix)] == self.prefix:
-                self.categories.append( int(k[len(self.prefix):]) )
+                self.categories.append(int(k[len(self.prefix):]))
         res = True
         if not self.club:
             self.errors.append('Please choose club')
@@ -116,7 +116,7 @@ class ParticipantCreateView(LoginRequiredMixin, TemplateView):
         return res
 
     def save(self):
-        p = Participant.objects.create(name_en=self.name,sex=self.sex,
+        p = Participant.objects.create(name_en=self.name, sex=self.sex,
                                        age=self.age, club_id=int(self.club))
         categories = ElementCategory.objects.filter(pk__in=self.categories)
         ptn = Participation.objects.assign_participation(p, categories)
@@ -128,7 +128,7 @@ class ParticipantCreateView(LoginRequiredMixin, TemplateView):
             if int(ptn.age) in (AGE_9_11, AGE_12_14, AGE_7_8):
                 return HttpResponseRedirect(reverse_lazy(self.b_and_c))
             else:
-                return HttpResponseRedirect( reverse_lazy(self.not_b_and_c,args=(ptn.pk,)))
+                return HttpResponseRedirect(reverse_lazy(self.not_b_and_c, args=(ptn.pk,)))
         return self.get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -141,6 +141,7 @@ class ParticipantCreateView(LoginRequiredMixin, TemplateView):
         context['prefix'] = self.prefix
         return context
 
+
 class PntElementView(LoginRequiredMixin, TemplateView):
     template_name = 'tablo/pnt_element.html'
     success_url = reverse_lazy('paticipant_create')
@@ -151,7 +152,7 @@ class PntElementView(LoginRequiredMixin, TemplateView):
 
         context = super(PntElementView, self).get_context_data(**kwargs)
         combinations = Combination.objects.all().prefetch_related('elements')
-        combinations = sorted(combinations,key=lambda x:x.__unicode__())
+        combinations = sorted(combinations, key=lambda x: x.__unicode__())
         # context['options'] = json.dumps([
         #                                 {'name':c.__unicode__(), 'pk':c.pk}
         #                                 for c in combinations
@@ -159,11 +160,11 @@ class PntElementView(LoginRequiredMixin, TemplateView):
         ps = Participation.objects.filter(participant=p).select_related('tablo')
         categories = [t.tablo.category for t in ps]
         categories = filter(
-                                lambda x: not ('group' in x.name.lower() or 'duilian' in x.name.lower()),
-                                categories)
+            lambda x: not ('group' in x.name.lower() or 'duilian' in x.name.lower()),
+            categories)
         context['categories'] = list(categories)
 
-        elems = {}        
+        elems = {}
         for cat in context['categories']:
             elems.setdefault(cat.pk, [])
 
@@ -172,9 +173,9 @@ class PntElementView(LoginRequiredMixin, TemplateView):
             for cat in context['categories']:
                 if cat in elem.categories.all():
                     # elems.setdefault(cat.pk, [])
-                    elems[cat.pk].append({'name':cmb.__unicode__(), 'pk':cmb.pk})
+                    elems[cat.pk].append({'name': cmb.__unicode__(), 'pk': cmb.pk})
 
-        for k,v in elems.items():
+        for k, v in elems.items():
             elems[k] = json.dumps(v)
 
         context['cat_items'] = elems
@@ -189,7 +190,7 @@ class PntElementView(LoginRequiredMixin, TemplateView):
         categories = {}
         participations = Participation.objects.filter(participant=p)
 
-        for k,v in POST.items():
+        for k, v in POST.items():
             if k.startswith('cat-'):
                 splitted = k.split('-')
                 category = int(splitted[1])
@@ -197,10 +198,10 @@ class PntElementView(LoginRequiredMixin, TemplateView):
                     categories[category] = []
                 order = int(splitted[2])
                 combination = Combination.objects.get(pk=int(v))
-                categories[category].append( (order, combination) )
+                categories[category].append((order, combination))
 
         for k in categories.keys():
-            categories[k] = sorted(categories[k], key=lambda x:x[0])
+            categories[k] = sorted(categories[k], key=lambda x: x[0])
 
         with transaction.atomic():
             for prt in participations:
@@ -208,12 +209,13 @@ class PntElementView(LoginRequiredMixin, TemplateView):
                 if cat not in categories:
                     continue
                 combinations = categories[cat]
-                scores = Score.objects.filter(judge__category=JUDGE_C,participation=prt)
+                scores = Score.objects.filter(judge__category=JUDGE_C, participation=prt)
                 for score in scores:
                     for c in combinations:
                         score.add_combination(c[1])
 
         return HttpResponseRedirect(self.success_url)
+
 
 class TabloListView(LoginRequiredMixin, TemplateView):
     template_name = 'tablo/tablo_list.html'
@@ -223,22 +225,24 @@ class TabloListView(LoginRequiredMixin, TemplateView):
         context['elementcategories'] = ElementCategory.objects.all().order_by('pk')
         return context
 
+
 def counts(valids):
     prijoks = list(filter(lambda x: x.done and (not x.element.prizemlenie), valids))
-    e4 = len( list(filter(lambda x: x.element.score > 0.3, prijoks) ))
-    e3 = len( list(filter(lambda x: x.element.score > 0.2, prijoks) ))
-    e2 = len( list(filter(lambda x: x.element.score > 0.1, prijoks) ))
-    return (e4,e3,e2)
+    e4 = len(list(filter(lambda x: x.element.score > 0.3, prijoks)))
+    e3 = len(list(filter(lambda x: x.element.score > 0.2, prijoks)))
+    e2 = len(list(filter(lambda x: x.element.score > 0.1, prijoks)))
+    return (e4, e3, e2)
+
 
 def cmp(u1, u2):
     BIG = 100000
     if u1.state != PS_FINISHED or u2.state != PS_FINISHED:
         k1 = u1.finalscore * BIG - u1.order
         k2 = u2.finalscore * BIG - u2.order
-        return int(k1)-int(k2)
+        return int(k1) - int(k2)
 
     if u1.finalscore != u2.finalscore:
-        return int(u1.finalscore*BIG) - int(u2.finalscore*BIG)
+        return int(u1.finalscore * BIG) - int(u2.finalscore * BIG)
 
     # when equal items
     elems1 = u1.get_scores()
@@ -254,13 +258,16 @@ def cmp(u1, u2):
         return e2_1 - e2_2
     return 0
 
+
 import functools
+
+
 def sort(uchastniki):
     try:
         return sorted(uchastniki, key=functools.cmp_to_key(cmp), reverse=True)
     except Exception as e:
         raise e
-        return sorted(uchastniki, cmp=cmp, reverse=True)
+
 
 class TabloDetailView(LoginRequiredMixin, TemplateView):
     template_name = 'tablo/tablo_detail.html'
@@ -313,6 +320,7 @@ class TabloDetailView(LoginRequiredMixin, TemplateView):
         context['count'] = count
         return context
 
+
 class TabloMonitorView(TabloDetailView):
     def get_tablo(self):
         pk = self.kwargs.get('pk', None)
@@ -322,17 +330,18 @@ class TabloMonitorView(TabloDetailView):
         ref = request.META['HTTP_REFERER']
         context = self.get_context_data(**kwargs)
         count = context['count']
-        count = int((count+5)/6.0)
+        count = int((count + 5) / 6.0)
         if not count:
             count = 1
         open(MONITOR_FL_COUNT, "w").write(str(count))
         counter = 0
-        for i in range(0,count):
+        for i in range(0, count):
             tmp = context.copy()
-            tmp['participations'] = context['participations'][ i*6:i*6+6]
-            render_to_file('tablo/monitor_tablo.html', tmp, flname='showme%s.html'%counter)
+            tmp['participations'] = context['participations'][i * 6:i * 6 + 6]
+            render_to_file('tablo/monitor_tablo.html', tmp, flname='showme%s.html' % counter)
             counter = counter + 1
         return HttpResponseRedirect(ref)
+
 
 class TabloPrintView(TabloDetailView):
     template_name = 'tablo/tablo_print.html'
@@ -341,10 +350,12 @@ class TabloPrintView(TabloDetailView):
         pk = self.kwargs.get('pk', None)
         return Tablo.objects.get(pk=pk)
 
+
 class JudgeScoreView(LoginRequiredMixin, TemplateView):
-    JUDGE_TEMPLATES = {JUDGE_A :'a',
-                        JUDGE_B :'b',
-                        JUDGE_C :'c',}
+    JUDGE_TEMPLATES = {JUDGE_A: 'a',
+                       JUDGE_B: 'b',
+                       JUDGE_C: 'c', }
+
     def get_template_names(self):
         judge = self.request.user
         if judge.category not in (JUDGE_A, JUDGE_B, JUDGE_C,):
@@ -354,18 +365,23 @@ class JudgeScoreView(LoginRequiredMixin, TemplateView):
 
 
 from django.core.cache import caches
+
+
 def gl_activate_participant(participation):
     c = caches['default']
     for sc in Score.objects.filter(participation=participation):
-        c.set( str(sc.judge_id), sc.saved, 15)
+        c.set(str(sc.judge_id), sc.saved, 15)
 
-def gl_deactivate_participant(participation,judge):
+
+def gl_deactivate_participant(participation, judge):
     c = caches['default']
     c.set(str(judge.id), False, 15)
 
-def gl_reopen_participant(participation,judge):
+
+def gl_reopen_participant(participation, judge):
     c = caches['default']
-    c.set( str(judge.id), True, 15)
+    c.set(str(judge.id), True, 15)
+
 
 def gl_has_active_participant(judge):
     # c = caches['default']
@@ -376,19 +392,21 @@ def gl_has_active_participant(judge):
     #     else:
     #         c.set( str(judge.id), False, 15 )
 
-    #return c.get(str(judge.id), False)
+    # return c.get(str(judge.id), False)
 
-    return Score.objects.filter(participation__state=PS_DOING,judge=judge,saved=False).exists()
+    return Score.objects.filter(participation__state=PS_DOING, judge=judge, saved=False).exists()
+
 
 def gl_deactivate_all_participant():
     c = caches['default']
     c.clear()
 
+
 class ParticipantActivateView(LoginRequiredMixin, View):
     def get_object(self):
         obj = Participation.objects \
-                .select_related('participant', 'tablo') \
-                .filter(state=PS_DOING)
+            .select_related('participant', 'tablo') \
+            .filter(state=PS_DOING)
         if obj:
             return obj[0]
         else:
@@ -400,10 +418,10 @@ class ParticipantActivateView(LoginRequiredMixin, View):
         group = GROUPS[p.tablo.age]
         sex = SEX_CHOICES[p.tablo.sex][1]
         title = "%s Group %s\'s %s" % (group, sex.translate('en'),
-                                                  p.tablo.category.name)
+                                       p.tablo.category.name)
         c = Context({
-            'title' : title,
-            'participation' : p
+            'title': title,
+            'participation': p
         })
         open(MONITOR_FL_COUNT, "w").write("1")
         render_to_file(template, c, flname="showme0.html")
@@ -421,6 +439,7 @@ class ParticipantActivateView(LoginRequiredMixin, View):
             return HttpResponseRedirect(ref)
         else:
             return HttpResponseRedirect(reverse_lazy('current_score'))
+
 
 class ParticipantScoreView(LoginRequiredMixin, TemplateView):
     template_name = 'tablo/scores.html'
@@ -452,7 +471,7 @@ class ParticipantScoreView(LoginRequiredMixin, TemplateView):
             uchastniki = sort(uchastniki)
             rank = 0
             for u in uchastniki:
-                rank = rank+1
+                rank = rank + 1
                 if u.pk == obj.pk:
                     break
             context['rank'] = rank
@@ -467,7 +486,7 @@ class ParticipantScoreView(LoginRequiredMixin, TemplateView):
 
             with transaction.atomic():
                 if 'notavailable' in request.POST.keys():
-                    scores = {'final':0}
+                    scores = {'final': 0}
                     Score.objects.filter(participation=obj.pk).update(saved=True)
                     gl_deactivate_all_participant()
                 else:
@@ -477,29 +496,33 @@ class ParticipantScoreView(LoginRequiredMixin, TemplateView):
                 obj.save()
                 gl_deactivate_all_participant()
             kwargs['pk'] = obj.pk
-            return HttpResponseRedirect(reverse('participant_score',kwargs={'pk':obj.pk}))
+            return HttpResponseRedirect(reverse('participant_score', kwargs={'pk': obj.pk}))
         elif 'reopen' in request.POST.keys():
             Score.objects.filter(participation=obj.pk).update(saved=False)
             gl_activate_participant(obj)
         elif 'monitor' in request.POST.keys():
-            if Score.objects.filter(participation=obj.pk,saved=False).exists():
+            if Score.objects.filter(participation=obj.pk, saved=False).exists():
                 return HttpResponseRedirect(ref)
-            kwargs.update({'get_rank':True})
+            kwargs.update({'get_rank': True})
             open(MONITOR_FL_COUNT, "w").write("1")
             render_to_file('tablo/monitor_score.html', self.get_context_data(**kwargs), flname="showme0.html")
         return HttpResponseRedirect(ref)
 
+
 class CurrentParticipantScoreView(ParticipantScoreView):
     def get_object(self):
         obj = Participation.objects \
-                .select_related('participant', 'tablo') \
-                .filter(state=PS_DOING)
+            .select_related('participant', 'tablo') \
+            .filter(state=PS_DOING)
         if obj:
             return obj[0]
         else:
             return None
 
+
 import itertools
+
+
 class JudgeView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(JudgeView, self).get_context_data(**kwargs)
@@ -562,7 +585,7 @@ class JudgeASubmit(LoginRequiredMixin, View):
                 for i in v:
                     try:
                         num = int(i)
-                        if (num < 10 or num > 79): # belongs to cat B
+                        if (num < 10 or num > 79):  # belongs to cat B
                             if not num >= 90:
                                 continue
                         e = ErrorCode.objects.get(number=num)
@@ -573,7 +596,7 @@ class JudgeASubmit(LoginRequiredMixin, View):
 
             s.saved = True
             s.save()
-            gl_deactivate_participant(p,request.user)
+            gl_deactivate_participant(p, request.user)
             return HttpResponseRedirect(reverse('judge_view'))
 
 
@@ -603,7 +626,7 @@ class JudgeBSubmit(LoginRequiredMixin, View):
 
             s.saved = True
             s.save()
-            gl_deactivate_participant(p,request.user)
+            gl_deactivate_participant(p, request.user)
             return HttpResponseRedirect(reverse('judge_view'))
 
 
@@ -614,7 +637,7 @@ class JudgeCSubmit(LoginRequiredMixin, View):
         s = Score.objects.filter(participation=p, judge=request.user)[0]
         fill_again = False
         with transaction.atomic():
-            for k,v in POST.items():
+            for k, v in POST.items():
                 try:
                     pk = int(k)
                 except:
@@ -629,7 +652,7 @@ class JudgeCSubmit(LoginRequiredMixin, View):
                 s.saved = True
             s.save()
             if s.saved:
-                gl_deactivate_participant(p,request.user)
+                gl_deactivate_participant(p, request.user)
         return HttpResponseRedirect(reverse('judge_view'))
 
 
@@ -657,13 +680,15 @@ class JrebiView(LoginRequiredMixin, View):
                 for p in participations:
                     p.order = counter
                     p.save()
-                    counter = counter+1
+                    counter = counter + 1
             return HttpResponseRedirect(ref)
 
         return HttpResponseRedirect(ref)
 
+
 class MonitorView(TemplateView):
     template_name = 'tablo/monitor.html'
+
 
 class ShowmeView(TemplateView):
     template_name = 'tablo/showme.html'
@@ -672,20 +697,21 @@ class ShowmeView(TemplateView):
         page = self.request.GET.get('page', 0)
         return 'tablo/showme%s.html' % page
 
+
 def showme_view(request):
     try:
-        counter = open(MONITOR_FL_COUNT,"r").read()
+        counter = open(MONITOR_FL_COUNT, "r").read()
         counter = int(counter)
     except:
         counter = 1
 
     SHOWME = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/')
     res = []
-    for i in range(0,counter):
-        flname = os.path.join(SHOWME, 'showme%s.html'%i)
+    for i in range(0, counter):
+        flname = os.path.join(SHOWME, 'showme%s.html' % i)
         fl = open(flname, "r").read()
-        res.append({'idx':i, 'content':fl})
-    res = sorted(res, key=lambda x:x['idx'])
+        res.append({'idx': i, 'content': fl})
+    res = sorted(res, key=lambda x: x['idx'])
     return HttpResponse(json.dumps(res), content_type='application/json')
 
 
@@ -700,14 +726,16 @@ class CounterView(TemplateView):
             return 'tablo/showme%s.html' % page
 
 
-
 from django.conf import settings
+
+
 class LanguageViewEn(View):
     def get(self, request, *args, **kwargs):
         ref = request.META['HTTP_REFERER']
         resp = HttpResponseRedirect(ref)
         resp.set_cookie(settings.LANGUAGE_COOKIE_NAME, 'en-US')
         return resp
+
 
 class LanguageViewRu(View):
     def get(self, request, *args, **kwargs):
@@ -716,9 +744,11 @@ class LanguageViewRu(View):
         resp.set_cookie(settings.LANGUAGE_COOKIE_NAME, 'ru-RU')
         return resp
 
+
 def has_updated(request):
-    res = {'result':gl_has_active_participant(request.user)}
+    res = {'result': gl_has_active_participant(request.user)}
     return HttpResponse(json.dumps(res), content_type='application/json')
+
 
 def open_judge(request, idx):
     p = Participation.objects.filter(state=PS_DOING)[0]
@@ -729,6 +759,7 @@ def open_judge(request, idx):
         Score.objects.filter(pk=item.pk).update(saved=False)
         gl_reopen_participant(p, item.judge)
     return HttpResponseRedirect(reverse_lazy('current_score'))
+
 
 def delete_participation(request, pk):
     judge = request.user
