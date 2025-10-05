@@ -20,7 +20,7 @@ from django.views.generic import TemplateView, View
 from clubs.models import Club
 from core.views import LoginRequiredMixin
 from elements.models import ElementCategory, Combination, ErrorCode
-from judges.models import JUDGE_A, JUDGE_B, JUDGE_C
+from judges.models import JUDGE_A, JUDGE_B, JUDGE_C, JUDGE_CATEGORIES
 from participants.models import (Participant, SEX_CHOICES,
                                  AGE_9_11, AGE_12_14,
                                  AGE_15_17, AGE_18_plus, AGE_7_8)
@@ -352,16 +352,13 @@ class TabloPrintView(TabloDetailView):
 
 
 class JudgeScoreView(LoginRequiredMixin, TemplateView):
-    JUDGE_TEMPLATES = {JUDGE_A: 'a',
-                       JUDGE_B: 'b',
-                       JUDGE_C: 'c', }
 
     def get_template_names(self):
         judge = self.request.user
         if judge.category not in (JUDGE_A, JUDGE_B, JUDGE_C,):
             return None
         template_name = 'tablo/judge_%s.html'
-        return template_name % JUDGE_TEMPLATES[judge.category]
+        return template_name % JUDGE_CATEGORIES[judge.category]
 
 
 from django.core.cache import caches
