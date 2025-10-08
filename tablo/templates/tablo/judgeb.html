@@ -38,7 +38,7 @@
                 <ul class="circle">
                     {% for e in score.berrors.all %}
                         <li class="circle-item designed">
-                            <div class="col-sm-12"><input autocomplete="off" name="error" type="text" maxlength="2"
+                            <div class="col-sm-12"><input autocomplete="off" name="error" type="text" maxlength="3"
                                                           class="form-control input-center"
                                                           value={{ e.error_code.number }}></div>
                         </li>
@@ -63,7 +63,7 @@
         $(document).on('keypress', function (e) {
             if (e.which === 32) {
                 // user has pressed space
-                $('#last-circle-item').before('<li class="circle-item designed"><div class="col-sm-12"><input autocomplete="off"  name="error" type="text" maxlength="2" class="form-control input-center" /></div></li>');
+                $('#last-circle-item').before('<li class="circle-item designed"><div class="col-sm-12"><input autocomplete="off"  name="error" type="text" maxlength="3" class="form-control input-center" /></div></li>');
             }
             if (e.which === 10 || e.which === 13) {
                 // enter pressed
