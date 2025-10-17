@@ -582,7 +582,7 @@ class JudgeASubmit(LoginRequiredMixin, View):
                 for i in v:
                     try:
                         num = int(i)
-                        if (num < 10 or num > 79):  # belongs to cat B
+                        if num < 1 or num > 79:  # todo belongs to cat B
                             if not num >= 90:
                                 continue
                         e = ErrorCode.objects.get(number=num)
@@ -613,7 +613,7 @@ class JudgeBSubmit(LoginRequiredMixin, View):
                 for i in errors:
                     try:
                         num = int(i)
-                        if not (num < 10 or num > 79):
+                        if not (num < 1 or num > 79): # todo
                             continue
                         e = ErrorCode.objects.get(number=int(i))
                         w = WrapperErrorCode.objects.create(error_code=e)
