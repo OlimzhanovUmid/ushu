@@ -30,7 +30,7 @@ class Participant(models.Model):
     name_en = models.CharField(max_length=64)
     sex = models.IntegerField(choices=SEX_CHOICES)
     age = models.IntegerField(choices=AGE_CHOICES)
-    club = models.ForeignKey(Club)
+    club = models.ForeignKey(Club, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.__unicode__()

@@ -24,7 +24,7 @@ PARTICIPATION_STATES = (
 class Tablo(models.Model):
     age = models.IntegerField(choices=AGE_CHOICES)
     sex = models.IntegerField(choices=SEX_CHOICES)
-    category = models.ForeignKey(ElementCategory)
+    category = models.ForeignKey(ElementCategory, on_delete=models.CASCADE)
     started = models.BooleanField(default=False)  # True if jrebi already done
 
     def __str__(self):
@@ -124,8 +124,8 @@ class ParticipationManager(models.Manager):
 
 
 class Participation(models.Model):
-    participant = models.ForeignKey(Participant, db_index=True)
-    tablo = models.ForeignKey(Tablo, db_index=True)
+    participant = models.ForeignKey(Participant, db_index=True, on_delete=models.CASCADE)
+    tablo = models.ForeignKey(Tablo, db_index=True, on_delete=models.CASCADE)
     order = models.IntegerField(default=0)  # order in this Tablo, used for jrebiy
     state = models.IntegerField(choices=PARTICIPATION_STATES, default=0, db_index=True)
     finalscore = models.FloatField(default=0)
@@ -289,7 +289,7 @@ class Participation(models.Model):
 
 
 class ElementStatus(models.Model):
-    element = models.ForeignKey(Element)
+    element = models.ForeignKey(Element, on_delete=models.CASCADE)
     done = models.IntegerField(default=2)
 
     def get_id(self):
@@ -320,12 +320,12 @@ class CombinationStatus(models.Model):
 
 
 class WrapperErrorCode(models.Model):
-    error_code = models.ForeignKey(ErrorCode)
+    error_code = models.ForeignKey(ErrorCode, on_delete=models.CASCADE)
 
 
 class Score(models.Model):
-    judge = models.ForeignKey(Judge)
-    participation = models.ForeignKey(Participation)
+    judge = models.ForeignKey(Judge, on_delete=models.CASCADE)
+    participation = models.ForeignKey(Participation, on_delete=models.CASCADE)
     aclass = models.ManyToManyField(WrapperErrorCode)
     bclass = models.FloatField(blank=True, null=True)
     berrors = models.ManyToManyField(WrapperErrorCode, related_name='berrors')

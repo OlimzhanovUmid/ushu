@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='club',
             name='country',
-            field=models.ForeignKey(to='clubs.Country'),
+            field=models.ForeignKey(to='clubs.Country', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

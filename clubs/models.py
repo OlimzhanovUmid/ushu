@@ -19,7 +19,7 @@ class Country(models.Model):
 
 class Club(models.Model):
     name = models.TextField()
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.__unicode__()

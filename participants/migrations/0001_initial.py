@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('name_en', models.CharField(max_length=64)),
                 ('sex', models.IntegerField(choices=[(0, 'Man'), (1, 'Woman')])),
                 ('age', models.IntegerField(choices=[(0, b'7-12'), (1, b'13-15'), (2, b'16-18'), (3, b'19+')])),
-                ('club', models.ForeignKey(to='clubs.Club')),
+                ('club', models.ForeignKey(to='clubs.Club', on_delete=models.CASCADE)),
             ],
             options={
             },

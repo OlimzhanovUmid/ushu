@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('done', models.BooleanField(default=False)),
-                ('element', models.ForeignKey(to='elements.Element')),
+                ('element', models.ForeignKey(to='elements.Element', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
                 ('order', models.IntegerField(default=0)),
                 ('state', models.IntegerField(default=0, choices=[(0, b'waiting'), (1, b'doing'), (2, b'finished')])),
                 ('finalscore', models.FloatField()),
-                ('participant', models.ForeignKey(to='participants.Participant')),
+                ('participant', models.ForeignKey(to='participants.Participant', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -46,8 +46,8 @@ class Migration(migrations.Migration):
                 ('saved', models.BooleanField(default=False)),
                 ('aclass', models.ManyToManyField(to='elements.ErrorCode')),
                 ('cclass', sortedm2m.fields.SortedManyToManyField(help_text=None, to='tablo.ElementStatus')),
-                ('judge', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('participation', models.ForeignKey(to='tablo.Participation')),
+                ('judge', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('participation', models.ForeignKey(to='tablo.Participation', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('age', models.IntegerField(choices=[(0, b'7-12'), (1, b'13-15'), (2, b'16-18'), (3, b'19+')])),
                 ('sex', models.IntegerField(choices=[(0, 'Man'), (1, 'Woman')])),
-                ('category', models.ForeignKey(to='elements.ElementCategory')),
+                ('category', models.ForeignKey(to='elements.ElementCategory', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='participation',
             name='tablo',
-            field=models.ForeignKey(to='tablo.Tablo'),
+            field=models.ForeignKey(to='tablo.Tablo', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

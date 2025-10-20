@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='WrapperErrorCode',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('error_code', models.ForeignKey(to='elements.ErrorCode')),
+                ('error_code', models.ForeignKey(to='elements.ErrorCode', on_delete=models.CASCADE)),
             ],
             options={
             },
