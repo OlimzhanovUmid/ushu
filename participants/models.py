@@ -14,12 +14,14 @@ AGE_12_14 = 1
 AGE_15_17 = 2
 AGE_18_plus = 3
 AGE_7_8 = 4
+AGE_11 = 5
 AGE_CHOICES = (
-    (AGE_9_11, '9-11'),
+    (AGE_9_11, '9-10'), # todo will be updated
     (AGE_12_14, '12-14'),
     (AGE_15_17, '15-17'),
     (AGE_18_plus, '18+'),
     (AGE_7_8, '7-8'),
+    (AGE_11, '11')
 )
 
 

@@ -75,12 +75,17 @@
                         <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="4"> 7-8
                     </label>
                 </div>
+            </div>
+
+            <div class="col-sm-1 form-top">
+                <label class="radio-inline">
+                    <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="0"> 9-10
                 </label>
             </div>
 
             <div class="col-sm-1 form-top">
                 <label class="radio-inline">
-                    <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="0"> 9-11
+                    <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="5"> 11
                 </label>
             </div>
 
@@ -115,12 +120,8 @@
                                      data-filter="2" disabled="true"></th>
                         <th>B <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
                                      data-filter="1" disabled="true"></th>
-                        {% if category.seven_twelve %}
-                            <th>C <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
-                                         data-filter="0" disabled="true"></th>
-                        {% else %}
-                            <th></th>
-                        {% endif %}
+                        <th>C <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
+                                     data-filter="0" disabled="true"></th>
                     </tr>
                 {% endfor %}
             </div>
@@ -136,19 +137,15 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('input[name="radio_age"]').change(function () {
-                var sel = 'input[data-filter]';
-                var val = this.value;
-                if (val == 4) {
+                const sel = 'input[data-filter]';
+                let val = this.value;
+                if (val === '4' || val === '5') {  // todo 11 age delete
                     // 7-6
-                    val = 0; // same with 9-12(0)
+                    val = '0'; // same with 9-12(0)
                 }
                 $(sel).each(function (index, item) {
-                    var filter_val = item.getAttribute('data-filter');
-                    if (filter_val == val) {
-                        item.disabled = false;
-                    } else {
-                        item.disabled = true;
-                    }
+                    const filter_val = item.getAttribute('data-filter');
+                    item.disabled = filter_val !== val;
                 });
             });
         });

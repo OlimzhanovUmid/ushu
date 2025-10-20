@@ -8,7 +8,7 @@ from elements.models import Element, ElementCategory, ErrorCode
 from judges.models import (User as Judge, JUDGE_C, JUDGE_CATEGORIES,
                            JUDGE_A, JUDGE_B)
 from participants.models import (Participant, AGE_CHOICES, SEX_CHOICES,
-                                 AGE_9_11, AGE_12_14, AGE_7_8, AGE_18_plus)
+                                 AGE_9_11, AGE_12_14, AGE_7_8, AGE_18_plus, AGE_11)
 
 # Create your models here.
 PS_WAITING = 0
@@ -26,7 +26,6 @@ class Tablo(models.Model):
     sex = models.IntegerField(choices=SEX_CHOICES)
     category = models.ForeignKey(ElementCategory)
     started = models.BooleanField(default=False)  # True if jrebi already done
-    started = models.BooleanField(default=False)
 
     def __str__(self):
         return self.__unicode__()
@@ -91,7 +90,7 @@ class ParticipationManager(models.Manager):
             # superuser is admin of system
             judges = Judge.objects.filter(is_superuser=False)
             for judge in judges:
-                if (age == AGE_7_8 or age == AGE_9_11 or age == AGE_12_14) and judge.category == JUDGE_C:
+                if (age == AGE_11 or age == AGE_7_8 or age == AGE_9_11 or age == AGE_12_14) and judge.category == JUDGE_C:
                     # no C class judges
                     continue
 

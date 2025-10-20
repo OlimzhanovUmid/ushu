@@ -23,7 +23,7 @@ from elements.models import ElementCategory, Combination, ErrorCode
 from judges.models import JUDGE_A, JUDGE_B, JUDGE_C, JUDGE_CATEGORIES
 from participants.models import (Participant, SEX_CHOICES,
                                  AGE_9_11, AGE_12_14,
-                                 AGE_15_17, AGE_18_plus, AGE_7_8)
+                                 AGE_15_17, AGE_18_plus, AGE_7_8, AGE_11, AGE_CHOICES)
 from tablo.models import (Participation, Tablo, PS_WAITING,
                           PS_DOING, Score, WrapperErrorCode,
                           ElementStatus, PS_FINISHED)
@@ -34,7 +34,8 @@ GROUPS = {AGE_18_plus: '',
           AGE_15_17: 'A',
           AGE_12_14: 'B',
           AGE_9_11: 'C',
-          AGE_7_8: 'C', }
+          AGE_7_8: 'C',
+          AGE_11: 'C'}
 
 
 def render_to_file(template, context, flname='showme.html'):
@@ -125,7 +126,7 @@ class ParticipantCreateView(LoginRequiredMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         if self.validate(request, *args, **kwargs):
             ptn = self.save()
-            if int(ptn.age) in (AGE_9_11, AGE_12_14, AGE_7_8):
+            if int(ptn.age) in (AGE_9_11, AGE_11, AGE_12_14, AGE_7_8):
                 return HttpResponseRedirect(reverse_lazy(self.b_and_c))
             else:
                 return HttpResponseRedirect(reverse_lazy(self.not_b_and_c, args=(ptn.pk,)))
@@ -313,8 +314,8 @@ class TabloDetailView(LoginRequiredMixin, TemplateView):
 
         group = GROUPS[tablo.age]
         sex = SEX_CHOICES[tablo.sex][1]
-        context['title'] = "%s Group %s\'s %s" % (group, sex.translate('en'),
-                                                  tablo.category.name)
+        context['title'] = "%s Group %s\'s %s %s y.o." % (group, sex.translate('en'),
+                                                          tablo.category.name, AGE_CHOICES[tablo.age][1])
         context['participations'] = uchastniki
         context['tablo'] = tablo
         context['count'] = count
@@ -414,8 +415,8 @@ class ParticipantActivateView(LoginRequiredMixin, View):
         p = self.get_object()
         group = GROUPS[p.tablo.age]
         sex = SEX_CHOICES[p.tablo.sex][1]
-        title = "%s Group %s\'s %s" % (group, sex.translate('en'),
-                                       p.tablo.category.name)
+        title = "%s Group %s\'s %s %s y.o." % (group, sex.translate('en'),
+                                                          p.tablo.category.name, AGE_CHOICES[p.tablo.age][1])
         c = Context({
             'title': title,
             'participation': p
@@ -533,8 +534,8 @@ class JudgeView(LoginRequiredMixin, TemplateView):
                 context['score'] = s[0]
             group = GROUPS[p.tablo.age]
             sex = SEX_CHOICES[p.tablo.sex][1]
-            context['title'] = "%s Group %s\'s %s" % (group, sex.translate('en'),
-                                                      p.tablo.category.name)
+            context['title'] = "%s Group %s\'s %s %s y.o." % (group, sex.translate('en'),
+                                                          p.tablo.category.name, AGE_CHOICES[p.tablo.age][1])
         iterator = itertools.count()
         context['left_title'] = judge.username
         self.request.iterator = iterator
@@ -613,7 +614,7 @@ class JudgeBSubmit(LoginRequiredMixin, View):
                 for i in errors:
                     try:
                         num = int(i)
-                        if not (num < 1 or num > 79): # todo
+                        if not (num < 1 or num > 79):  # todo
                             continue
                         e = ErrorCode.objects.get(number=int(i))
                         w = WrapperErrorCode.objects.create(error_code=e)
