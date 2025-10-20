@@ -1,16 +1,16 @@
 {% load staticfiles i18n query_transform %}
-<div class="container-fluid" style="margin: 0px 10px;">
+<div class="container-fluid" style="margin: 0 10px;">
     <h1 class="text-center" style="font-size: 2em;">{{ title.upper }}</h1>
     <!-- <p class="lead" style="font-size: 2em;"></p> -->
 
     <table class="table table-responsive" style="">
         <thead>
-        <th style="text-align: center;" class="lead" width="10%">Placing</th>
+        <th style="text-align: center; width: 10%" class="lead">Placing</th>
         {% if is_group == False %}
-            <th style="" class="lead" width="10%">Country</th>
+            <th style="width: 10%" class="lead">Country</th>
         {% endif %}
-        <th class="lead" width="55%">Name</th>
-        <th class="lead" width="10%">Score</th>
+        <th style="width: 55%" class="lead">Name</th>
+        <th style="width: 10%" class="lead">Score</th>
         </thead>
 
         {% for p in participations %}
@@ -19,7 +19,8 @@
                     -{% endif %}</span></td>
                 {% if is_group == False %}
                     <td class="lead clubname">
-                        <img src="{{ p.participant.club.country.image.url }}" style="max-width:100%;">
+                        <img src="{{ p.participant.club.country.image.url }}"
+                             alt="{{ p.participant.club.country.name_ru }}" style="max-width:100%;">
                         <!-- <span class="clubname">
 
                         </span> -->

@@ -44,49 +44,47 @@
     <div id="progress_bar1" class="from-left progress_bar" style="display: none;"></div>
     <div id="progress_bar2" class="from-left progress_bar" style="display: none;"></div>
 
-    <table class="table from-left" id="tablo_table">
-        <div class="container">
-            <thead>
+    <table class="table from-left container" id="tablo_table">
+        <thead>
+        <tr>
+            <th width="5%"></th>
+            <th width="5%">{% trans "Place" %}</th>
+            <th width="5%">{% trans "Country" %}</th>
+            <th width="55%">{% trans "Participant" %}</th>
+            <th>{% trans "State" %}</th>
+            <th>{% trans "Score" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for p in participations %}
             <tr>
-                <th width="5%"></th>
-                <th width="5%">{% trans "Place" %}</th>
-                <th width="5%">{% trans "Country" %}</th>
-                <th width="55%">{% trans "Participant" %}</th>
-                <th>{% trans "State" %}</th>
-                <th>{% trans "Score" %}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for p in participations %}
-                <tr>
-                    <th><a href="{% url "delete_participation" pk=p.pk %}" class="btn-link">X</a></th>
-                    <th>{{ forloop.counter }}</th>
+                <th><a href="{% url "delete_participation" pk=p.pk %}" class="btn-link">X</a></th>
+                <th>{{ forloop.counter }}</th>
+                <th>{{ p.participant.club.name }}</th>
+
+                {% if 'group' != tablo.category.name.lower %}
+                    <th>{{ p.participant.name_en }}</th>
+                {% else %}
                     <th>{{ p.participant.club.name }}</th>
+                {% endif %}
 
-                    {% if 'group' != tablo.category.name.lower %}
-                        <th>{{ p.participant.name_en }}</th>
+                {% if not in_process %}
+                    {% if p.pk == active_pk %}
+                        <th><a class="btn btn-white"
+                               href="{% url "participant_activate" %}?{% query_transform request pk=active_pk %}">{% trans "Activate" %}</a>
+                        </th>
+                    {% elif p.state == 0 %}
+                        <th></th>
                     {% else %}
-                        <th>{{ p.participant.club.name }}</th>
+                        <th><a class="btn btn-white"
+                               href="{% url "participant_score" pk=p.pk %}">{% trans "Score" %}</a></th>
                     {% endif %}
-
-                    {% if not in_process %}
-                        {% if p.pk == active_pk %}
-                            <th><a class="btn btn-white"
-                                   href="{% url "participant_activate" %}?{% query_transform request pk=active_pk %}">{% trans "Activate" %}</a>
-                            </th>
-                        {% elif p.state == 0 %}
-                            <th></th>
-                        {% else %}
-                            <th><a class="btn btn-white"
-                                   href="{% url "participant_score" pk=p.pk %}">{% trans "Score" %}</a></th>
-                        {% endif %}
-                    {% else %}
-                    {% endif %}
-                    <th>{{ p.finalscore|stringformat:".2f" }}</th>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </div>
+                {% else %}
+                {% endif %}
+                <th>{{ p.finalscore|stringformat:".2f" }}</th>
+            </tr>
+        {% endfor %}
+        </tbody>
     </table>
 
 {% endblock %}
@@ -124,7 +122,7 @@
     <script src="{% static "js/spin.min.js" %}"></script>
     <script type="text/javascript">
         function animator(output) {
-            var output, started, duration, desired;
+            let started, duration, desired;
 
             // Constants
             duration = 5000;
@@ -144,16 +142,16 @@
                     );
                 }
             }, 100);
-        };
+        }
 
         $(document).ready(function () {
             $('#jrebi').click(function () {
                 // Initial setup
-                output1 = $('#progress_bar0');
+                let output1 = $('#progress_bar0');
                 output1.css('display', '');
-                output2 = $('#progress_bar1');
+                let output2 = $('#progress_bar1');
                 output2.css('display', '');
-                output3 = $('#progress_bar2');
+                let output3 = $('#progress_bar2');
                 output3.css('display', '');
 
                 animator(output1);

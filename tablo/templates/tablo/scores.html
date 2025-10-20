@@ -199,11 +199,11 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#bonus_score').change(function () {
-                var bonus = $('#bonus_input');
-                var score_b = $('#score_b');
-                var score_f = $('#final_score');
-                var val_b = Number(score_b.text());
-                var val_f = Number(score_f.text());
+                let bonus = $('#bonus_input');
+                let score_b = $('#score_b');
+                let score_f = $('#final_score');
+                let val_b = Number(score_b.text());
+                let val_f = Number(score_f.text());
                 if (this.checked) {
                     val_b = val_b + 0.05;
                     val_f = val_f + 0.05;
