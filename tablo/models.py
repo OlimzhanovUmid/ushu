@@ -262,10 +262,10 @@ class Participation(models.Model):
             elif i[1].done == i[2].done:
                 valids.append(i[1])
 
-        PRIEM_MAX = 1.4
-        PRZ_MAX = 0.6
-        curr_priem = 1.4
-        curr_prz = 0.6
+        priem_max = 1.4
+        prz_max = 0.6
+        curr_priem = priem_max
+        curr_prz = prz_max
         for v in valids:
             element = v.element
             if element.prizemlenie:
@@ -277,7 +277,7 @@ class Participation(models.Model):
         curr_prz = max(0, curr_prz)
 
         score = sum([curr_prz, curr_priem])
-        score = min(score, 2.0)
+        score = min(score, 2)
         return valids, score
 
     def is_saved(self):
@@ -306,7 +306,7 @@ class CombinationStatus(models.Model):
     statuses = SortedManyToManyField(ElementStatus)
 
     def __str__(self):
-        return ' + '.join(['%s (%s)' % (e.element.name, e.done) for e in self.statuses.all()])
+        return ' + '.join([f'{e.element.name} ({e.done})' for e in self.statuses.all()])
 
 
 class WrapperErrorCode(models.Model):

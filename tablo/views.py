@@ -153,7 +153,7 @@ class PntElementView(LoginRequiredMixin, TemplateView):
 
         context = super(PntElementView, self).get_context_data(**kwargs)
         combinations = Combination.objects.all().prefetch_related('elements')
-        combinations = sorted(combinations, key=lambda x: x.__unicode__())
+        combinations = sorted(combinations, key=lambda x: x.__str__())
         # context['options'] = json.dumps([
         #                                 {'name':c.__unicode__(), 'pk':c.pk}
         #                                 for c in combinations
@@ -174,7 +174,7 @@ class PntElementView(LoginRequiredMixin, TemplateView):
             for cat in context['categories']:
                 if cat in elem.categories.all():
                     # elems.setdefault(cat.pk, [])
-                    elems[cat.pk].append({'name': cmb.__unicode__(), 'pk': cmb.pk})
+                    elems[cat.pk].append({'name': cmb.__str__(), 'pk': cmb.pk})
 
         for k, v in elems.items():
             elems[k] = json.dumps(v)
@@ -232,7 +232,7 @@ def counts(valids):
     e4 = len(list(filter(lambda x: x.element.score > 0.3, prijoks)))
     e3 = len(list(filter(lambda x: x.element.score > 0.2, prijoks)))
     e2 = len(list(filter(lambda x: x.element.score > 0.1, prijoks)))
-    return (e4, e3, e2)
+    return e4, e3, e2
 
 
 def cmp(u1, u2):
