@@ -1,6 +1,5 @@
 from django.db import models
 
-
 # Create your models here.
 class Country(models.Model):
     name_ru = models.TextField()
@@ -11,9 +10,6 @@ class Country(models.Model):
     image = models.ImageField(blank=True, upload_to='countries')
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
         return self.name_en_short
 
 
@@ -22,7 +18,4 @@ class Club(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return '%s (%s)' % (self.name, self.country.name_en_short)
+        return f'{self.name} ({self.country.name_en_short})'

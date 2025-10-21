@@ -33,7 +33,4 @@ class Participant(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return '%s --- %s' % (self.name_en, self.club.name)
+        return f'{self.name_en} --- {self.club.name}'

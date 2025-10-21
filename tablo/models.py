@@ -28,12 +28,7 @@ class Tablo(models.Model):
     started = models.BooleanField(default=False)  # True if jrebi already done
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return '%s - %s - %s' % (self.category.name,
-                                 AGE_CHOICES[self.age][1],
-                                 SEX_CHOICES[self.sex][1])
+        return f'{self.category.name} - {AGE_CHOICES[self.age][1]} - {SEX_CHOICES[self.sex][1]}'
 
 
 @receiver(models.signals.post_save, sender=ElementCategory)
@@ -90,7 +85,11 @@ class ParticipationManager(models.Manager):
             # superuser is admin of system
             judges = Judge.objects.filter(is_superuser=False)
             for judge in judges:
-                if (age == AGE_11 or age == AGE_7_8 or age == AGE_9_11 or age == AGE_12_14) and judge.category == JUDGE_C:
+                if (age == AGE_11
+                    or age == AGE_7_8
+                    or age == AGE_9_11
+                    or age == AGE_12_14
+                ) and judge.category == JUDGE_C:
                     # no C class judges
                     continue
 
@@ -135,10 +134,7 @@ class Participation(models.Model):
     objects = ParticipationManager()
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return '%s (%s) (%s)' % (self.participant.name_en, self.tablo.category.name, self.participant.get_age_display())
+        return f'{self.participant.name_en} ({self.tablo.category.name}) ({self.participant.get_age_display()})'
 
     def get_scores(self):
         letters = {JUDGE_A: 'a', JUDGE_B: 'b', JUDGE_C: 'c'}
@@ -303,19 +299,13 @@ class ElementStatus(models.Model):
         return "label-black"
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return '%s (%s)' % (self.element.name, self.done)
+        return f'{self.element.name} ({self.done})'
 
 
 class CombinationStatus(models.Model):
     statuses = SortedManyToManyField(ElementStatus)
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
         return ' + '.join(['%s (%s)' % (e.element.name, e.done) for e in self.statuses.all()])
 
 
@@ -340,11 +330,7 @@ class Score(models.Model):
         self.cclass.add(cs)
 
     def __str__(self):
-        return self.__unicode__()
-
-    def __unicode__(self):
-        return 'judge(%s) - p(%s) - t(%s)' % (JUDGE_CATEGORIES[self.judge.category][1],
-                                              self.participation.participant.name_en, self.participation.tablo)
+        return f'judge({JUDGE_CATEGORIES[self.judge.category][1]}) - p({self.participation.participant.name_en}) - t({self.participation.tablo})'
 
     def a_error_count(self):
         return self.aclass.all().count()
