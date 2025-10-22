@@ -72,7 +72,7 @@
                             {% endif %}
                             <li class="main-mark">A{{ forloop.counter }}</li>
                             {% for s in score %}
-                                <li>{{ s.error_code.number|stringformat:"02d" }}</li>
+                                <li>{{ s.error_code.name }}</li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -87,7 +87,7 @@
 
                 <ul class="marks no-margin">
                     {% for error in scores.final_a.0 %}
-                        <li>{{ error.number|stringformat:"02d" }}</li>
+                        <li>{{ error.name }}</li>
                     {% endfor %}
                 </ul>
 

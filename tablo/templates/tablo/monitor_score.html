@@ -24,7 +24,7 @@
         <div class="col-md-10">
             <p class="" style="color: white; font-size: 40px;">
                 {% for error in scores.final_a.0 %}
-                    <span class="numberCircle circle32 circleBorder4">{{ error.number|stringformat:"02d" }}</span> {% endfor %}
+                    <span class="numberCircle circle32 circleBorder4">{{ error.name }}</span> {% endfor %}
             </p>
         </div>
     </div>
