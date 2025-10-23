@@ -1,5 +1,5 @@
-Django==1.8.19
+Django==1.11.29
 psycopg2==2.7.7
-Pillow==4.0.0
-django-sortedm2m==1.2.2
+Pillow==8.3.2
+django-sortedm2m==2.0.0
 waitress==1.4.4

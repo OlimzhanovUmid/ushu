@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.views import logout
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from .views import (ParticipantCreateView, TabloListView, TabloDetailView,
                     ParticipantActivateView, ParticipantScoreView,

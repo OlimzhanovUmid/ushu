@@ -7,11 +7,11 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.urlresolvers import reverse_lazy, reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template import loader, Context
 from django.template.response import TemplateResponse
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
