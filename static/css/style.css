@@ -1,71 +1,190 @@
-/*For SignIn Page*/
+/* =========================================================================
+   Ushu Federation scoring app — custom theme
+   Layered on top of Bootstrap 3. Colours are centralised as design tokens
+   so the palette stays consistent; geometry of the original layout classes
+   is preserved to avoid breaking existing screens.
+   ========================================================================= */
+
+:root {
+    /* Brand palette (federation navy + red, gold accent) */
+    --c-primary:        #3498db;   /* primary blue (buttons, fields) */
+    --c-primary-dark:   #2c80c4;   /* hover/active blue */
+    --c-navy:           #05396a;   /* dark navy (nav, panels) */
+    --c-navy-dark:      #042a4f;
+    --c-accent:         #e74c3c;   /* red accent */
+    --c-gold:           #f4b400;   /* highlight / hover accent (was yellow) */
+
+    /* Neutrals */
+    --c-white:          #ffffff;
+    --c-ink:            #1f2933;   /* default body text */
+    --c-muted:          #6b7280;
+    --c-border:         #e2e8f0;
+
+    /* Semantic scoring labels (ElementStatus.get_label) */
+    --c-status-ok:      var(--c-primary);  /* untouched / default (2) */
+    --c-status-warn:    #e67e22;           /* partial (1) */
+    --c-status-fail:    #1f2933;           /* failed (0) */
+
+    /* Typography */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Spacing / shape */
+    --radius-sm: 4px;
+    --radius:    8px;
+    --shadow:    0 2px 8px rgba(5, 57, 106, 0.12);
+    --shadow-lg: 0 8px 24px rgba(5, 57, 106, 0.18);
+    --transition: 0.15s ease-in-out;
+}
+
+/* ---- base typography ------------------------------------------------- */
 body {
-    background: #3498db;
+    background: var(--c-primary);
+    font-family: var(--font-sans);
+    color: var(--c-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, .brand {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+/* =========================================================================
+   Sign-in page
+   ========================================================================= */
+.login-page {
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, var(--c-navy) 0%, var(--c-primary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.login-shell {
+    width: 100%;
+    max-width: 400px;
 }
 
 .form-signin {
-    max-width: 330px;
-    padding: 15px;
-    margin: 0 auto;
+    width: 100%;
+    padding: 36px 32px 32px;
+    margin: 0;
+    background: var(--c-white);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
-.form-signin .form-signin-heading,
-.form-signin .checkbox {
-    margin-bottom: 10px;
+.login-brand {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-brand .logo {
+    display: block;
+    max-width: 96px;
+    height: auto;
+    margin: 0 auto 14px;
+}
+
+.login-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--c-navy);
+    margin: 0 0 2px;
+    line-height: 1.25;
+}
+
+.login-subtitle {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin: 0;
+}
+
+.form-signin .form-signin-heading {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--c-muted);
+    text-align: center;
+    margin: 0 0 20px;
 }
 
 .form-signin .checkbox {
+    margin-bottom: 16px;
     font-weight: normal;
 }
 
 .form-signin .form-control {
     position: relative;
     height: auto;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
-    padding: 10px;
+    padding: 13px 14px;
     font-size: 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--c-border);
+}
+
+.form-signin input[type="text"] {
+    margin-bottom: 12px;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 20px;
 }
 
 .form-signin .form-control:focus {
     z-index: 2;
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
 }
 
-.form-signin input[type="email"] {
-    margin-bottom: -1px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
+.btn-login {
+    color: var(--c-white);
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-navy) 100%);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 13px;
+    box-shadow: var(--shadow);
+    transition: filter var(--transition), transform var(--transition);
 }
 
-.form-signin input[type="password"] {
-    margin-bottom: 10px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+.btn-login:hover,
+.btn-login:focus {
+    color: var(--c-white);
+    filter: brightness(1.08);
+    transform: translateY(-1px);
 }
 
-/*------------------------*/
-
-/*For Navbar*/
+/* =========================================================================
+   Navigation bar
+   ========================================================================= */
 .navbar-text-secondary {
     position: absolute;
     top: 20px;
     left: 250px;
     font-size: 50px;
-    color: white;
+    color: var(--c-white);
 }
 
 .navbar-heading {
-    background: #05396a;
-    box-shadow: 0 0 10px 1px;
+    background: var(--c-navy);
+    box-shadow: var(--shadow);
 }
 
 .navbar-height {
     height: 120px;
+    transition: background var(--transition);
 }
 
 .navbar-height:hover {
-    background: #e74c3c;
+    background: var(--c-accent);
 }
 
 .brand {
@@ -75,15 +194,14 @@ body {
     text-align: center;
     width: 200px;
     height: 120px;
-    background: #e74c3c;
-    text-shadow: 2px 1px 2px rgba(150, 150, 150, 1);
+    background: var(--c-accent);
+    color: var(--c-white);
+    text-shadow: 2px 1px 2px rgba(0, 0, 0, 0.25);
 }
 
-/*------------------------*/
-
-
-/*Circles*/
-
+/* =========================================================================
+   Circles (category tiles)
+   ========================================================================= */
 .circle {
     list-style-type: none;
     margin-bottom: 20px;
@@ -98,24 +216,23 @@ body {
     width: 120px;
     border-radius: 120px;
     height: 120px;
-    margin: 10px 50px 10px 50px;
-    background: #fff;
+    margin: 10px 50px;
+    background: var(--c-white);
+    box-shadow: var(--shadow);
 }
 
 .designed {
-    background: white;
+    background: var(--c-white);
 }
 
-/*------------------------*/
-
+/* =========================================================================
+   Layout helpers (positions preserved from the original layout)
+   ========================================================================= */
 .text-top, .link-text-left {
     margin-top: 140px;
 }
 
-.link-text-left {
-    margin-left: 120px;
-}
-
+.link-text-left,
 .link-left {
     margin-left: 120px;
 }
@@ -169,8 +286,9 @@ table .from-left a {
     margin: 0;
 }
 
-/*Inputs*/
-/*Centered and changed border: none; for input for .circle*/
+/* =========================================================================
+   Inputs
+   ========================================================================= */
 .input-center {
     height: 60px;
     width: 90%;
@@ -179,35 +297,46 @@ table .from-left a {
     border: none;
     box-shadow: none;
     font-size: 43px;
+    font-weight: 600;
 }
 
 .text-center > input {
-    color: white;
+    color: var(--c-white);
 }
 
 .input-heading {
     height: 150px;
     font-size: 110px;
+    font-weight: 700;
 }
 
 .input-no-bg {
-    background: #3498db;
+    background: var(--c-primary);
     margin-left: 80px;
 }
 
 .input-no-bg-1 {
-    background: rgb(5, 57, 106);
+    background: var(--c-navy);
 }
 
 .row.input {
     width: 90%;
 }
 
-/*------------------------*/
+input[type=radio] {
+    width: 1em;
+    height: 1em;
+}
 
-/*Buttons*/
+/* =========================================================================
+   Buttons
+   ========================================================================= */
+.btn {
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    transition: background-color var(--transition), box-shadow var(--transition), color var(--transition);
+}
 
-/*Space between buttons*/
 .btn-space {
     margin-right: 20px;
 }
@@ -217,23 +346,44 @@ table .from-left a {
 }
 
 .btn-white {
-    color: #1375cf;
-    background-color: #fff;
-    border-color: #e3e3e3;
+    color: var(--c-primary);
+    background-color: var(--c-white);
+    border-color: var(--c-border);
+}
+
+.btn-white:hover,
+.btn-white:focus {
+    color: var(--c-white);
+    background-color: var(--c-primary);
+    border-color: var(--c-primary);
 }
 
 .btn-red {
-    color: #fff;
-    background-color: #f00;
-    border-color: #e3e3e3;
+    color: var(--c-white);
+    background-color: var(--c-accent);
+    border-color: var(--c-accent);
 }
 
+.btn-red:hover,
+.btn-red:focus {
+    color: var(--c-white);
+    background-color: #c0392b;
+    border-color: #c0392b;
+}
+
+.btn-link,
 .btn-visible-link {
-    color: #fff;
+    color: var(--c-white);
 }
 
-/*------------------------*/
+.btn-link:hover,
+.btn-link:focus {
+    color: var(--c-gold);
+}
 
+/* =========================================================================
+   Sizing helpers
+   ========================================================================= */
 .resized {
     width: 35%;
 }
@@ -242,13 +392,13 @@ table .from-left a {
     width: 60%;
 }
 
-
 .yellow {
-    background: yellow;
+    background: var(--c-gold);
 }
 
-/*Sidebar Navigation*/
-
+/* =========================================================================
+   Sidebar navigation
+   ========================================================================= */
 .navbar-nav {
     margin-top: 70px;
     height: 100%;
@@ -264,20 +414,20 @@ table .from-left a {
         border: none;
         border-radius: 0;
         overflow-y: auto;
-        background-color: rgb(5, 57, 106);
-        -webkit-box-shadow: 10px 3px 22px -9px rgba(0, 0, 0, 0.75);
-        -moz-box-shadow: 10px 3px 22px -9px rgba(0, 0, 0, 0.75);
+        background-color: var(--c-navy);
         box-shadow: 10px 3px 22px -9px rgba(0, 0, 0, 0.75);
     }
 
     .side-nav > li > a {
         width: 200px;
+        transition: background-color var(--transition), color var(--transition);
     }
 
     .side-nav li a:hover,
     .side-nav li a:focus {
         outline: none;
-        background-color: yellow !important;
+        color: var(--c-navy) !important;
+        background-color: var(--c-gold) !important;
     }
 }
 
@@ -289,20 +439,22 @@ table .from-left a {
     display: block;
     padding: 10px 15px 10px 38px;
     text-decoration: none;
-    color: #999;
+    color: var(--c-muted);
+    transition: color var(--transition);
 }
 
 .side-nav > li > ul > li > a:hover {
-    color: #fff;
+    color: var(--c-white);
 }
 
-/*------------------------*/
-
+/* =========================================================================
+   Data-entry / forms
+   ========================================================================= */
 .enter-data {
     font-size: 20px;
     padding-left: 3px;
     padding-top: 10px;
-    color: white;
+    color: var(--c-white);
     margin-top: 180px;
 }
 
@@ -315,12 +467,6 @@ table .from-left a {
     margin-left: 120px;
 }
 
-input[type=radio] {
-    width: 1em;
-    height: 1em;
-}
-
-/*Forms*/
 .form-top {
     margin-top: 30px;
 }
@@ -333,32 +479,48 @@ input[type=radio] {
     margin-right: 100px;
 }
 
+/* =========================================================================
+   Tables
+   ========================================================================= */
 .table-fixed-width {
     width: 90%;
 }
 
+.table > thead > tr > th {
+    border-bottom: 2px solid var(--c-border);
+    font-weight: 600;
+}
+
+.table > tbody > tr > td,
+.table > tbody > tr > th {
+    vertical-align: middle;
+}
+
+/* =========================================================================
+   Scoring labels (semantic; consumed by ElementStatus.get_label)
+   ========================================================================= */
+.label {
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
 .label-black {
-    background: black;
-    color: white;
+    background: var(--c-status-fail);
+    color: var(--c-white);
 }
 
 .label-orange {
-    background: orange;
-    color: white;
+    background: var(--c-status-warn);
+    color: var(--c-white);
 }
 
 .label-blue {
-    background: #3498db;
-    color: white;
-    border: 1px solid white;
+    background: var(--c-status-ok);
+    color: var(--c-white);
+    border: 1px solid var(--c-white);
 }
 
 .label-current {
-    border: 6px solid white;
+    border: 3px solid var(--c-white);
 }
-
-.label {
-    border-radius: 0;
-}
-
-/*------------------------*/
