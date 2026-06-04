@@ -1,9 +1,10 @@
 from django.conf import settings
-from django.conf.urls import include, url, static
+from django.conf.urls.static import static
 from django.contrib import admin
+from django.urls import include, re_path
 
 urlpatterns = [
-                  url(r'^admin/', admin.site.urls),
-                  url(r'^', include('tablo.urls')),
-              ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
-              + static.static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+                  re_path(r'^admin/', admin.site.urls),
+                  re_path(r'^', include('tablo.urls')),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
+              + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

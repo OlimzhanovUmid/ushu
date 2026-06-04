@@ -9,7 +9,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import transaction
 from django.http import HttpResponseRedirect, HttpResponse
-from django.template import loader, Context
+from django.template import loader
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.cache import never_cache
@@ -417,10 +417,10 @@ class ParticipantActivateView(LoginRequiredMixin, View):
         sex = SEX_CHOICES[p.tablo.sex][1]
         title = "%s Group %s\'s %s %s y.o." % (group, sex.translate('en'),
                                                           p.tablo.category.name, AGE_CHOICES[p.tablo.age][1])
-        c = Context({
+        c = {
             'title': title,
             'participation': p
-        })
+        }
         open(MONITOR_FL_COUNT, "w").write("1")
         render_to_file(template, c, flname="showme0.html")
         return None
