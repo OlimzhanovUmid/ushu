@@ -1,4 +1,5 @@
 import json
+import math
 import os
 
 from django.conf import settings
@@ -42,6 +43,17 @@ def render_to_file(template, context, flname='showme.html'):
     SHOWME = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/')
     SHOWME = os.path.join(SHOWME, flname)
     open(SHOWME, "w").write(loader.render_to_string(template, context))
+
+
+def redirect_back(request, fallback='tablo_list'):
+    '''Redirect to the page the request came from.
+
+    Falls back to a named route when the browser sends no Referer header
+    (direct navigation, programmatic clients) instead of raising KeyError
+    on ``request.META['HTTP_REFERER']``.
+    '''
+    target = request.META.get('HTTP_REFERER') or reverse(fallback)
+    return HttpResponseRedirect(target)
 
 
 @sensitive_post_parameters()
@@ -327,21 +339,19 @@ class TabloMonitorView(TabloDetailView):
         pk = self.kwargs.get('pk', None)
         return Tablo.objects.get(pk=pk)
 
+    PARTICIPANTS_PER_SCREEN = 6
+
     def get(self, request, *args, **kwargs):
-        ref = request.META['HTTP_REFERER']
         context = self.get_context_data(**kwargs)
-        count = context['count']
-        count = int((count + 5) / 6.0)
-        if not count:
-            count = 1
-        open(MONITOR_FL_COUNT, "w").write(str(count))
-        counter = 0
-        for i in range(0, count):
-            tmp = context.copy()
-            tmp['participations'] = context['participations'][i * 6:i * 6 + 6]
-            render_to_file('tablo/monitor_tablo.html', tmp, flname='showme%s.html' % counter)
-            counter = counter + 1
-        return HttpResponseRedirect(ref)
+        participations = context['participations']
+        per_screen = self.PARTICIPANTS_PER_SCREEN
+        screen_count = max(1, math.ceil(context['count'] / per_screen))
+        open(MONITOR_FL_COUNT, "w").write(str(screen_count))
+        for screen in range(screen_count):
+            page = context.copy()
+            page['participations'] = participations[screen * per_screen:(screen + 1) * per_screen]
+            render_to_file('tablo/monitor_tablo.html', page, flname='showme%s.html' % screen)
+        return redirect_back(request)
 
 
 class TabloPrintView(TabloDetailView):
@@ -477,7 +487,7 @@ class ParticipantScoreView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         obj = self.get_object()
-        ref = request.META['HTTP_REFERER']
+        ref = request.META.get('HTTP_REFERER') or reverse('tablo_list')
         if 'save' in request.POST.keys() or 'notavailable' in request.POST.keys():
             bonus = int(request.POST.get('bonus', 0))
             obj.bonus = True if bonus == 1 else False
@@ -658,7 +668,7 @@ class JrebiView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         POST = request.POST
         tablo_id = POST.get('tablo', None)
-        ref = request.META['HTTP_REFERER']
+        ref = request.META.get('HTTP_REFERER') or reverse('tablo_list')
         if not tablo_id:
             return HttpResponseRedirect(ref)
 
@@ -724,23 +734,22 @@ class CounterView(TemplateView):
             return 'tablo/showme%s.html' % page
 
 
-from django.conf import settings
+class _SetLanguageView(View):
+    '''Switch the active language, then return to the previous page.'''
+    language_code = None
 
-
-class LanguageViewEn(View):
     def get(self, request, *args, **kwargs):
-        ref = request.META['HTTP_REFERER']
-        resp = HttpResponseRedirect(ref)
-        resp.set_cookie(settings.LANGUAGE_COOKIE_NAME, 'en-US')
-        return resp
+        response = redirect_back(request)
+        response.set_cookie(settings.LANGUAGE_COOKIE_NAME, self.language_code)
+        return response
 
 
-class LanguageViewRu(View):
-    def get(self, request, *args, **kwargs):
-        ref = request.META['HTTP_REFERER']
-        resp = HttpResponseRedirect(ref)
-        resp.set_cookie(settings.LANGUAGE_COOKIE_NAME, 'ru-RU')
-        return resp
+class LanguageViewEn(_SetLanguageView):
+    language_code = 'en-US'
+
+
+class LanguageViewRu(_SetLanguageView):
+    language_code = 'ru-RU'
 
 
 def has_updated(request):
@@ -765,5 +774,4 @@ def delete_participation(request, pk):
         with transaction.atomic():
             Score.objects.filter(participation=pk).delete()
             Participation.objects.filter(pk=pk).delete()
-    ref = request.META['HTTP_REFERER']
-    return HttpResponseRedirect(ref)
+    return redirect_back(request)

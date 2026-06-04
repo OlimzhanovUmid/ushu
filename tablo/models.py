@@ -197,88 +197,110 @@ class Participation(models.Model):
         items['bonus'] = self.bonus
         return items
 
-    def calculateA(self, scores, age: int):
-        '''
-        return tuple(validated_error_codes, score)
-        '''
-        valids = []
-        errors1 = [i.error_code for i in scores[0]]
-        errors2 = [i.error_code for i in scores[1]]
-        errors3 = [i.error_code for i in scores[2]]
-        for i in errors1:
-            has = False
-            if i in errors2:
-                has = True
-                errors2.remove(i)
-            if i in errors3:
-                has = True
-                errors3.remove(i)
-            if has:
-                valids.append(i)
+    # --- scoring rules (maximum scores each judge category awards) ---
+    MAX_A_SCORE = 7.0          # technical (A) maximum, juniors
+    MAX_A_SCORE_ADULT = 5.0    # technical (A) maximum, 18+
+    MAX_MOVEMENT_SCORE = 1.4   # C-pool for "priem" (movements)
+    MAX_LANDING_SCORE = 0.6    # C-pool for "prizemlenie" (landings)
+    MAX_C_SCORE = 2.0          # overall C cap
 
-        for j in errors2:
-            has = False
-            if j in errors3:
-                has = True
-                errors3.remove(j)
-                valids.append(j)
-        res = 0
-        for error in valids:
-            res = res + error.value
-        maxscore = 7.0
-        if age == AGE_18_plus:
-            maxscore = 5.0
-        return valids, maxscore - res
+    def calculateA(self, judge_error_lists, age):
+        '''Aggregate the three A-judges' error lists into a final A-score.
 
-    def calculateB(self, scores):
-        scores = filter(lambda x: x, scores)
-        scores = list(scores)
-        if not scores or len(scores) < 1:
-            return 0
-        biggest = max(scores)
-        least = min(scores)
-        counter = Counter(scores)
-        counter.subtract(Counter(list(set(scores))))
-        counter += Counter()  # keep only bigger than 0
-        if len(counter) % 2 == 0:
-            return (sum(scores) - biggest - least) / 2
-        else:
-            most_common = counter.most_common(1)[0]
-            return most_common[0]
+        An error counts only when at least two of the three judges report
+        it (majority agreement). The agreed errors' values are summed and
+        subtracted from the age-dependent maximum score.
 
-    def calculateC(self, scores):
+        :param judge_error_lists: three lists of objects exposing
+            ``.error_code`` (one per A-judge).
+        :param age: participant age bucket; adults get a lower maximum.
+        :return: tuple ``(agreed_errors, score)``.
         '''
-        input (savedBoolean, scores)
-        return tuple(validate_done_elements, score)
+        errors_by_judge = [
+            [wrapper.error_code for wrapper in error_list]
+            for error_list in judge_error_lists
+        ]
+        agreed_errors = self._errors_agreed_by_majority(errors_by_judge)
+        deduction = sum(error.value for error in agreed_errors)
+        max_score = self.MAX_A_SCORE_ADULT if age == AGE_18_plus else self.MAX_A_SCORE
+        return agreed_errors, max_score - deduction
+
+    @staticmethod
+    def _errors_agreed_by_majority(errors_by_judge):
+        '''Errors reported by at least two of the three A-judges.
+
+        Matched entries are consumed, so repeated errors pair one-to-one.
         '''
-        valids = []
+        first, second, third = errors_by_judge
+        agreed = []
+        for error in first:
+            in_second = error in second
+            in_third = error in third
+            if in_second:
+                second.remove(error)
+            if in_third:
+                third.remove(error)
+            if in_second or in_third:
+                agreed.append(error)
+        # remaining agreement between the second and third judges only
+        for error in second:
+            if error in third:
+                third.remove(error)
+                agreed.append(error)
+        return agreed
+
+    def calculateB(self, raw_scores):
+        '''Aggregate the B-judges' numeric scores.
+
+        Falsy entries (0/None) are dropped. When some value repeats an odd
+        number of extra times the most common repeated value wins;
+        otherwise the highest and lowest are trimmed and the rest averaged.
+        '''
+        scores = [score for score in raw_scores if score]
         if not scores:
+            return 0
+        highest = max(scores)
+        lowest = min(scores)
+        repeated = Counter(scores)
+        repeated.subtract(Counter(set(scores)))
+        repeated += Counter()  # drop values seen only once
+        if len(repeated) % 2 == 0:
+            return (sum(scores) - highest - lowest) / 2
+        return repeated.most_common(1)[0][0]
+
+    def calculateC(self, judge_status_lists):
+        '''Aggregate the three C-judges' per-element done/not-done marks.
+
+        For each element the majority verdict wins. A failed element
+        deducts its score from the matching pool (landing vs movement);
+        the combined pools are capped at :attr:`MAX_C_SCORE`.
+
+        :param judge_status_lists: three ``(saved, statuses)`` tuples whose
+            ``statuses`` expose ``.done`` and ``.element``.
+        :return: tuple ``(agreed_statuses, score)``.
+        '''
+        if not judge_status_lists:
             return [], 0
-        for i in zip(scores[0][1], scores[1][1], scores[2][1]):
-            if i[0].done == i[1].done:
-                valids.append(i[0])
-            elif i[0].done == i[2].done:
-                valids.append(i[0])
-            elif i[1].done == i[2].done:
-                valids.append(i[1])
+        first, second, third = (statuses for _saved, statuses in judge_status_lists)
+        agreed = []
+        for s_first, s_second, s_third in zip(first, second, third):
+            if s_first.done == s_second.done or s_first.done == s_third.done:
+                agreed.append(s_first)
+            elif s_second.done == s_third.done:
+                agreed.append(s_second)
 
-        priem_max = 1.4
-        prz_max = 0.6
-        curr_priem = priem_max
-        curr_prz = prz_max
-        for v in valids:
-            element = v.element
-            if element.prizemlenie:
-                curr_prz = curr_prz - (0 if v.done else element.score)
+        movement_pool = self.MAX_MOVEMENT_SCORE
+        landing_pool = self.MAX_LANDING_SCORE
+        for status in agreed:
+            if status.done:
+                continue  # performed correctly -> no deduction
+            if status.element.prizemlenie:
+                landing_pool -= status.element.score
             else:
-                curr_priem = curr_priem - (0 if v.done else element.score)
+                movement_pool -= status.element.score
 
-        curr_priem = max(0, curr_priem)
-        curr_prz = max(0, curr_prz)
-
-        score = sum([curr_prz, curr_priem])
-        score = min(score, 2)
-        return valids, score
+        score = max(0, landing_pool) + max(0, movement_pool)
+        return agreed, min(score, self.MAX_C_SCORE)
 
     def is_saved(self):
         return PS_FINISHED == self.state
@@ -337,36 +359,35 @@ class Score(models.Model):
 
     def get_c_is_reopen(self):
         try:
-            el = self.cclass.all()[0].statuses.all()[0]
-            if el and el.done == 2:
-                return False
-        except:
+            first_status = self.cclass.all()[0].statuses.all()[0]
+        except IndexError:
             return False
-        return True
+        # done == 2 is the untouched default; anything else means the
+        # judge already scored and the card has been reopened.
+        return not (first_status and first_status.done == 2)
 
     def get_max_comb_count(self):
-        # assuming this is C category judge
-        # return
+        # assumes this is a C-category judge's score card
         if not hasattr(self, '_cache_count'):
-            counter = 0
-            for comb in self.cclass.all():
-                for e in comb.statuses.all():
-                    counter += 1
-            self._cache_count = counter
+            self._cache_count = sum(
+                combination.statuses.count()
+                for combination in self.cclass.all()
+            )
         return self._cache_count
 
+    @staticmethod
+    def _to_float(value):
+        '''Best-effort float conversion; non-numeric values become 0.0.'''
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return 0.0
+
     def get_b_score(self):
+        '''B-judge base score minus the value of each recorded B-error.'''
         score = self.bclass
         for berror in self.berrors.all():
-            try:
-                er = float(berror.error_code.value)
-            except:
-                er = 0
-            try:
-                score = float(score)
-            except:
-                score = 0
-            score = score - er
+            score = self._to_float(score) - self._to_float(berror.error_code.value)
         if not score:
             return score
         return round(score, 2)
