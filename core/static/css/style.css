@@ -1,44 +1,53 @@
 /* =========================================================================
-   Ushu Federation scoring app — custom theme
-   Layered on top of Bootstrap 3. Colours are centralised as design tokens
-   so the palette stays consistent; geometry of the original layout classes
-   is preserved to avoid breaking existing screens.
+   Ushu Federation scoring app — full theme redesign
+   Bootstrap 3 base + a modern shell (fixed topbar + sidebar) driven by
+   layout tokens, so the old pixel-margin hacks become one coherent system.
    ========================================================================= */
 
 :root {
-    /* Brand palette (federation navy + red, gold accent) */
-    --c-primary:        #3498db;   /* primary blue (buttons, fields) */
-    --c-primary-dark:   #2c80c4;   /* hover/active blue */
-    --c-navy:           #05396a;   /* dark navy (nav, panels) */
-    --c-navy-dark:      #042a4f;
-    --c-accent:         #e74c3c;   /* red accent */
-    --c-gold:           #f4b400;   /* highlight / hover accent (was yellow) */
+    /* Brand palette */
+    --c-primary:        #2f6df6;   /* electric blue */
+    --c-primary-dark:   #1e4fd0;
+    --c-navy:           #0b1f3a;   /* deep navy (shell) */
+    --c-navy-2:         #122a4d;
+    --c-accent:         #ef3e4a;   /* red */
+    --c-accent-dark:    #c92f3a;
+    --c-gold:           #f5b53d;   /* highlight / current */
 
     /* Neutrals */
     --c-white:          #ffffff;
-    --c-ink:            #1f2933;   /* default body text */
-    --c-muted:          #6b7280;
-    --c-border:         #e2e8f0;
+    --c-bg:             #eef2f8;   /* app background */
+    --c-surface:        #ffffff;   /* cards / tables */
+    --c-ink:            #1b2430;   /* text */
+    --c-muted:          #6b7787;
+    --c-border:         #e3e8f0;
 
-    /* Semantic scoring labels (ElementStatus.get_label) */
-    --c-status-ok:      var(--c-primary);  /* untouched / default (2) */
-    --c-status-warn:    #e67e22;           /* partial (1) */
-    --c-status-fail:    #1f2933;           /* failed (0) */
+    /* Semantic scoring statuses (ElementStatus.get_label) */
+    --c-status-ok:      #2f6df6;   /* untouched / default (2) */
+    --c-status-warn:    #f59e0b;   /* performed (1) */
+    --c-status-fail:    #1b2430;   /* failed (0) */
 
     /* Typography */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-    /* Spacing / shape */
-    --radius-sm: 4px;
-    --radius:    8px;
-    --shadow:    0 2px 8px rgba(5, 57, 106, 0.12);
-    --shadow-lg: 0 8px 24px rgba(5, 57, 106, 0.18);
-    --transition: 0.15s ease-in-out;
+    /* Layout (single source of truth for shell offsets) */
+    --topbar-h:  72px;
+    --sidebar-w: 232px;
+    --gutter:    32px;
+
+    /* Shape / depth */
+    --radius-sm: 6px;
+    --radius:    10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(11, 31, 58, 0.08);
+    --shadow:    0 4px 16px rgba(11, 31, 58, 0.10);
+    --shadow-lg: 0 18px 50px rgba(11, 31, 58, 0.18);
+    --transition: 0.16s ease;
 }
 
-/* ---- base typography ------------------------------------------------- */
+/* ---- base ------------------------------------------------------------ */
 body {
-    background: var(--c-primary);
+    background: var(--c-bg);
     font-family: var(--font-sans);
     color: var(--c-ink);
     -webkit-font-smoothing: antialiased;
@@ -47,9 +56,14 @@ body {
 
 h1, h2, h3, h4, h5, .brand {
     font-family: var(--font-sans);
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: -0.01em;
 }
+
+a { color: var(--c-primary); }
+a:hover, a:focus { color: var(--c-primary-dark); }
+
+hr { border-top: 1px solid var(--c-border); }
 
 /* =========================================================================
    Sign-in page
@@ -57,35 +71,30 @@ h1, h2, h3, h4, h5, .brand {
 .login-page {
     min-height: 100vh;
     margin: 0;
-    background: linear-gradient(135deg, var(--c-navy) 0%, var(--c-primary) 100%);
+    background: radial-gradient(1200px 600px at 70% -10%, #1c3a6e 0%, transparent 60%),
+                linear-gradient(135deg, var(--c-navy) 0%, var(--c-primary-dark) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
 }
 
-.login-shell {
-    width: 100%;
-    max-width: 400px;
-}
+.login-shell { width: 100%; max-width: 410px; }
 
 .form-signin {
     width: 100%;
-    padding: 36px 32px 32px;
+    padding: 40px 34px 32px;
     margin: 0;
-    background: var(--c-white);
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    background: var(--c-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
 }
 
-.login-brand {
-    text-align: center;
-    margin-bottom: 24px;
-}
+.login-brand { text-align: center; margin-bottom: 26px; }
 
 .login-brand .logo {
     display: block;
-    max-width: 96px;
+    max-width: 92px;
     height: auto;
     margin: 0 auto 14px;
 }
@@ -94,58 +103,49 @@ h1, h2, h3, h4, h5, .brand {
     font-size: 19px;
     font-weight: 700;
     color: var(--c-navy);
-    margin: 0 0 2px;
+    margin: 0 0 4px;
     line-height: 1.25;
 }
 
 .login-subtitle {
-    font-size: 13px;
-    letter-spacing: 0.08em;
+    font-size: 12px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--c-muted);
     margin: 0;
 }
 
 .form-signin .form-signin-heading {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--c-muted);
     text-align: center;
     margin: 0 0 20px;
 }
 
-.form-signin .checkbox {
-    margin-bottom: 16px;
-    font-weight: normal;
-}
+.form-signin .checkbox { margin-bottom: 16px; font-weight: normal; }
 
 .form-signin .form-control {
-    position: relative;
     height: auto;
     box-sizing: border-box;
     padding: 13px 14px;
     font-size: 16px;
     border-radius: var(--radius);
     border: 1px solid var(--c-border);
+    box-shadow: none;
 }
 
-.form-signin input[type="text"] {
-    margin-bottom: 12px;
-}
-
-.form-signin input[type="password"] {
-    margin-bottom: 20px;
-}
+.form-signin input[type="text"]     { margin-bottom: 12px; }
+.form-signin input[type="password"] { margin-bottom: 22px; }
 
 .form-signin .form-control:focus {
-    z-index: 2;
     border-color: var(--c-primary);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+    box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.22);
 }
 
 .btn-login {
     color: var(--c-white);
-    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-navy) 100%);
+    background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-dark) 100%);
     border: none;
     border-radius: var(--radius);
     font-weight: 600;
@@ -155,140 +155,277 @@ h1, h2, h3, h4, h5, .brand {
     transition: filter var(--transition), transform var(--transition);
 }
 
-.btn-login:hover,
-.btn-login:focus {
+.btn-login:hover, .btn-login:focus {
     color: var(--c-white);
-    filter: brightness(1.08);
+    filter: brightness(1.07);
     transform: translateY(-1px);
 }
 
 /* =========================================================================
-   Navigation bar
+   App shell — fixed topbar
    ========================================================================= */
-.navbar-text-secondary {
-    position: absolute;
-    top: 20px;
-    left: 250px;
-    font-size: 50px;
-    color: var(--c-white);
-}
-
 .navbar-heading {
-    background: var(--c-navy);
+    background: linear-gradient(90deg, var(--c-navy) 0%, var(--c-navy-2) 100%);
+    border: none;
     box-shadow: var(--shadow);
+    min-height: var(--topbar-h);
 }
 
 .navbar-height {
-    height: 120px;
-    transition: background var(--transition);
-}
-
-.navbar-height:hover {
-    background: var(--c-accent);
+    height: var(--topbar-h);
+    position: relative;
 }
 
 .brand {
-    padding-top: 30px;
-    font-size: 60px;
-    line-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sidebar-w);
+    height: var(--topbar-h);
+    padding: 0 12px;
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.05;
     text-align: center;
-    width: 200px;
-    height: 120px;
-    background: var(--c-accent);
+    color: var(--c-white) !important;
+    background: linear-gradient(135deg, var(--c-accent) 0%, var(--c-accent-dark) 100%);
+    text-shadow: none;
+    letter-spacing: 0.02em;
+}
+
+.navbar-text-secondary {
+    position: absolute;
+    top: 0;
+    left: calc(var(--sidebar-w) + 28px);
+    height: var(--topbar-h);
+    max-width: calc(100vw - var(--sidebar-w) - 200px);
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
     color: var(--c-white);
-    text-shadow: 2px 1px 2px rgba(0, 0, 0, 0.25);
-}
-
-/* =========================================================================
-   Circles (category tiles)
-   ========================================================================= */
-.circle {
-    list-style-type: none;
-    margin-bottom: 20px;
-}
-
-.circle li {
-    display: inline-block;
-}
-
-.circle-item {
-    text-align: left;
-    width: 120px;
-    border-radius: 120px;
-    height: 120px;
-    margin: 10px 50px;
-    background: var(--c-white);
-    box-shadow: var(--shadow);
-}
-
-.designed {
-    background: var(--c-white);
-}
-
-/* =========================================================================
-   Layout helpers (positions preserved from the original layout)
-   ========================================================================= */
-.text-top, .link-text-left {
-    margin-top: 140px;
-}
-
-.link-text-left,
-.link-left {
-    margin-left: 120px;
-}
-
-.link-text-left-2 {
-    margin-top: 140px;
-    margin-left: 140px;
-}
-
-.text-top-input {
-    margin-top: 110px;
-}
-
-.text-align-left {
-    margin-left: 60px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .logo-right {
-    width: 120px;
-    height: 120px;
+    width: auto;
+    height: calc(var(--topbar-h) - 20px);
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 10px;
+    right: 24px;
 }
 
-.wrapper {
-    width: 60%;
-}
+/* =========================================================================
+   App shell — fixed sidebar
+   ========================================================================= */
+.navbar-nav { margin-top: 0; height: 100%; }
 
-.from-left {
-    margin-left: 140px;
-}
-
-.judge-left {
-    margin-left: 20.5%;
-}
-
-.judge-top {
-    margin-top: 5%;
-}
-
-table .from-left a {
-    margin-left: 5px;
-}
-
-.result-top {
-    margin-top: 40px;
-}
-
-.no-margin {
+.side-nav {
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    width: var(--sidebar-w);
+    height: calc(100vh - var(--topbar-h));
     margin: 0;
+    padding: 16px 0;
+    border: none;
+    border-radius: 0;
+    overflow-y: auto;
+    background: var(--c-navy);
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.28);
+    z-index: 1000;
 }
+
+.side-nav > li,
+.side-nav > li > a {
+    width: 100%;
+    float: none;
+}
+
+.side-nav > li > a {
+    display: block;
+    padding: 14px 22px;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.side-nav > li > a:hover,
+.side-nav > li > a:focus {
+    outline: none;
+    color: var(--c-white);
+    background: rgba(255, 255, 255, 0.06);
+    border-left-color: var(--c-gold);
+}
+
+.side-nav > li > ul { padding: 0; }
+
+.side-nav > li > ul > li > a {
+    display: block;
+    padding: 10px 15px 10px 38px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.6);
+    transition: color var(--transition);
+}
+
+.side-nav > li > ul > li > a:hover { color: var(--c-white); }
+
+/* the judge screens drop arbitrary markup inside .side-nav */
+.side-nav .enter-data,
+.side-nav p { color: rgba(255, 255, 255, 0.92); }
+
+/* =========================================================================
+   Content offsets — derived from the shell tokens (was 140px magic)
+   ========================================================================= */
+.from-left      { margin-left: calc(var(--sidebar-w) + var(--gutter)); }
+.text-top,
+.link-text-left { margin-top: calc(var(--topbar-h) + var(--gutter)); }
+.text-top-input { margin-top: calc(var(--topbar-h) + 14px); }
+.link-text-left,
+.link-left      { margin-left: calc(var(--sidebar-w) + var(--gutter)); }
+.link-text-left-2 {
+    margin-top: calc(var(--topbar-h) + var(--gutter));
+    margin-left: calc(var(--sidebar-w) + var(--gutter) + 20px);
+}
+.text-align-left { margin-left: 60px; }
+.judge-left      { margin-left: calc(var(--sidebar-w) + 4%); }
+.judge-top       { margin-top: calc(var(--topbar-h) + 24px); }
+.result-top      { margin-top: 40px; }
+.no-margin       { margin: 0; }
+
+.form-center      { margin-left: calc(var(--sidebar-w) + var(--gutter)); font-size: 20px; }
+.form-center a    { margin-left: calc(var(--sidebar-w) + var(--gutter)); }
+.form-top         { margin-top: 30px; }
+.form-top-text    { margin-top: 5px; }
+.form-right       { margin-right: 100px; }
+
+.wrapper { width: 60%; }
+.main    { width: 60%; }
+.resized { width: 35%; }
+
+table .from-left a { margin-left: 5px; }
+
+/* =========================================================================
+   Logo / misc
+   ========================================================================= */
+.logo-right { /* set above */ }
+
+.logo { max-width: 180px; height: auto; }
+
+/* =========================================================================
+   Buttons
+   ========================================================================= */
+.btn {
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    transition: background-color var(--transition), color var(--transition),
+                box-shadow var(--transition), transform var(--transition);
+}
+
+.btn:active { transform: translateY(1px); }
+
+.btn-space { margin-right: 14px; }
+.btn-save  { margin-left: 40px; }
+
+.btn-white {
+    color: var(--c-primary);
+    background: var(--c-white);
+    border: 1px solid var(--c-border);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-white:hover, .btn-white:focus {
+    color: var(--c-white);
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+}
+
+.btn-red {
+    color: var(--c-white);
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+}
+
+.btn-red:hover, .btn-red:focus {
+    color: var(--c-white);
+    background: var(--c-accent-dark);
+    border-color: var(--c-accent-dark);
+}
+
+/* Default link-buttons sit on light content -> use brand colour.
+   Inside dark surfaces (topbar, sidebar, stage screens) they turn white. */
+.btn-link, .btn-visible-link { color: var(--c-primary); font-weight: 600; }
+.btn-link:hover, .btn-link:focus { color: var(--c-primary-dark); text-decoration: none; }
+
+.navbar-heading .btn-link,
+.side-nav .btn-link,
+.stage .btn-link,
+.stage .btn-visible-link { color: var(--c-white); }
+
+.navbar-heading .btn-link:hover,
+.side-nav .btn-link:hover,
+.stage .btn-link:hover,
+.stage .btn-link:focus { color: var(--c-gold); }
+
+/* =========================================================================
+   Cards / tables
+   ========================================================================= */
+.table {
+    background: var(--c-surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+}
+
+.table.container { width: auto; }
+
+.table > thead > tr > th {
+    background: #f7f9fc;
+    border-bottom: 2px solid var(--c-border);
+    color: var(--c-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    padding: 14px 16px;
+    vertical-align: middle;
+}
+
+.table > tbody > tr > td,
+.table > tbody > tr > th {
+    padding: 13px 16px;
+    vertical-align: middle;
+    border-top: 1px solid var(--c-border);
+    font-weight: 500;
+}
+
+.table > tbody > tr:hover { background: #f5f8ff; }
+
+.table-fixed-width { width: 90%; }
 
 /* =========================================================================
    Inputs
    ========================================================================= */
+.form-control {
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--c-border);
+    box-shadow: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-control:focus {
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.18);
+}
+
+input[type=radio] { width: 1em; height: 1em; }
+
 .input-center {
     height: 60px;
     width: 90%;
@@ -298,229 +435,118 @@ table .from-left a {
     box-shadow: none;
     font-size: 43px;
     font-weight: 600;
+    background: transparent;
 }
 
-.text-center > input {
-    color: var(--c-white);
-}
-
-.input-heading {
-    height: 150px;
-    font-size: 110px;
-    font-weight: 700;
-}
+.input-heading { height: 150px; font-size: 110px; font-weight: 700; }
 
 .input-no-bg {
     background: var(--c-primary);
-    margin-left: 80px;
-}
-
-.input-no-bg-1 {
-    background: var(--c-navy);
-}
-
-.row.input {
-    width: 90%;
-}
-
-input[type=radio] {
-    width: 1em;
-    height: 1em;
-}
-
-/* =========================================================================
-   Buttons
-   ========================================================================= */
-.btn {
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    transition: background-color var(--transition), box-shadow var(--transition), color var(--transition);
-}
-
-.btn-space {
-    margin-right: 20px;
-}
-
-.btn-save {
-    margin-left: 50px;
-}
-
-.btn-white {
-    color: var(--c-primary);
-    background-color: var(--c-white);
-    border-color: var(--c-border);
-}
-
-.btn-white:hover,
-.btn-white:focus {
     color: var(--c-white);
-    background-color: var(--c-primary);
-    border-color: var(--c-primary);
+    border-radius: var(--radius);
+    margin: 0 auto;
 }
 
-.btn-red {
-    color: var(--c-white);
-    background-color: var(--c-accent);
-    border-color: var(--c-accent);
-}
+.input-no-bg-1 { background: var(--c-navy); }
 
-.btn-red:hover,
-.btn-red:focus {
-    color: var(--c-white);
-    background-color: #c0392b;
-    border-color: #c0392b;
-}
+.row.input { width: 90%; }
 
-.btn-link,
-.btn-visible-link {
-    color: var(--c-white);
-}
-
-.btn-link:hover,
-.btn-link:focus {
-    color: var(--c-gold);
-}
-
-/* =========================================================================
-   Sizing helpers
-   ========================================================================= */
-.resized {
-    width: 35%;
-}
-
-.main {
-    width: 60%;
-}
-
-.yellow {
-    background: var(--c-gold);
-}
-
-/* =========================================================================
-   Sidebar navigation
-   ========================================================================= */
-.navbar-nav {
-    margin-top: 70px;
-    height: 100%;
-}
-
-@media (min-width: 768px) {
-    .side-nav {
-        position: fixed;
-        top: 51px;
-        left: 225px;
-        width: 200px;
-        margin-left: -225px;
-        border: none;
-        border-radius: 0;
-        overflow-y: auto;
-        background-color: var(--c-navy);
-        box-shadow: 10px 3px 22px -9px rgba(0, 0, 0, 0.75);
-    }
-
-    .side-nav > li > a {
-        width: 200px;
-        transition: background-color var(--transition), color var(--transition);
-    }
-
-    .side-nav li a:hover,
-    .side-nav li a:focus {
-        outline: none;
-        color: var(--c-navy) !important;
-        background-color: var(--c-gold) !important;
-    }
-}
-
-.side-nav > li > ul {
-    padding: 0;
-}
-
-.side-nav > li > ul > li > a {
-    display: block;
-    padding: 10px 15px 10px 38px;
-    text-decoration: none;
-    color: var(--c-muted);
-    transition: color var(--transition);
-}
-
-.side-nav > li > ul > li > a:hover {
-    color: var(--c-white);
-}
-
-/* =========================================================================
-   Data-entry / forms
-   ========================================================================= */
 .enter-data {
-    font-size: 20px;
-    padding-left: 3px;
-    padding-top: 10px;
+    font-size: 18px;
+    padding: 24px 22px 0;
     color: var(--c-white);
-    margin-top: 180px;
+    margin: 0;
 }
 
-.form-center {
-    margin-left: 120px;
-    font-size: 20px;
-}
-
-.form-center a {
-    margin-left: 120px;
-}
-
-.form-top {
-    margin-top: 30px;
-}
-
-.form-top-text {
-    margin-top: 5px;
-}
-
-.form-right {
-    margin-right: 100px;
-}
+.text-center > input { color: var(--c-white); }
 
 /* =========================================================================
-   Tables
+   Circles (data-entry tiles for A / B judges)
    ========================================================================= */
-.table-fixed-width {
-    width: 90%;
+.circle { list-style: none; margin-bottom: 20px; padding-left: 0; }
+.circle li { display: inline-block; }
+
+.circle-item {
+    text-align: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 14px 40px;
+    background: var(--c-white);
+    box-shadow: var(--shadow);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.table > thead > tr > th {
-    border-bottom: 2px solid var(--c-border);
-    font-weight: 600;
-}
-
-.table > tbody > tr > td,
-.table > tbody > tr > th {
-    vertical-align: middle;
-}
+.designed { background: var(--c-white); }
+.yellow { background: var(--c-gold); }
 
 /* =========================================================================
-   Scoring labels (semantic; consumed by ElementStatus.get_label)
+   Scoring labels (semantic; ElementStatus.get_label)
    ========================================================================= */
 .label {
     border-radius: var(--radius-sm);
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.02em;
+    padding: 0.35em 0.6em;
 }
 
-.label-black {
-    background: var(--c-status-fail);
+.label-black  { background: var(--c-status-fail); color: var(--c-white); }
+.label-orange { background: var(--c-status-warn); color: var(--c-white); }
+.label-blue   { background: var(--c-status-ok);   color: var(--c-white); border: 1px solid rgba(255,255,255,0.6); }
+.label-current { box-shadow: 0 0 0 3px var(--c-gold); }
+
+/* =========================================================================
+   Score breakdown screen (scores.html) accents
+   ========================================================================= */
+.main-mark { color: var(--c-gold); font-weight: 700; }
+.marks { padding-left: 0; }
+
+/* =========================================================================
+   Stage mode — immersive dark screens for live judging & score breakdown
+   (scores.html, judgea/b/c). White text + colour labels read on dark.
+   ========================================================================= */
+body.stage {
+    background: radial-gradient(1200px 700px at 80% -10%, #14305c 0%, transparent 55%),
+                linear-gradient(160deg, var(--c-navy) 0%, #07142a 100%);
+    min-height: 100vh;
+}
+
+body.stage .container { color: rgba(255, 255, 255, 0.92); }
+
+body.stage h1,
+body.stage h2,
+body.stage h3,
+body.stage p,
+body.stage .lead,
+body.stage label,
+body.stage .marks li,
+body.stage .marks div { color: rgba(255, 255, 255, 0.92); }
+
+body.stage .main-mark { color: var(--c-gold); }
+
+body.stage hr { border-top-color: rgba(255, 255, 255, 0.16); }
+
+/* score number tiles on the breakdown screen */
+body.stage .marks li { font-weight: 500; }
+
+/* =========================================================================
+   Public monitor / projector screen
+   ========================================================================= */
+body.monitor-screen {
     color: var(--c-white);
+    background: radial-gradient(1400px 800px at 50% -20%, #16356a 0%, transparent 60%),
+                linear-gradient(160deg, var(--c-navy) 0%, #060f22 100%);
+    min-height: 100vh;
 }
 
-.label-orange {
-    background: var(--c-status-warn);
+body.monitor-screen h1 { font-weight: 800; letter-spacing: 0.01em; }
+body.monitor-screen .table { background: transparent; box-shadow: none; }
+body.monitor-screen .table > thead > tr > th,
+body.monitor-screen .table > tbody > tr > td {
+    background: transparent;
     color: var(--c-white);
+    border-color: rgba(255, 255, 255, 0.12);
 }
-
-.label-blue {
-    background: var(--c-status-ok);
-    color: var(--c-white);
-    border: 1px solid var(--c-white);
-}
-
-.label-current {
-    border: 3px solid var(--c-white);
-}
+body.monitor-screen .table > tbody > tr:hover { background: rgba(255, 255, 255, 0.04); }
