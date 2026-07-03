@@ -13,7 +13,8 @@
 
 ## Runbook
 
-- Create or activate a local virtual environment before running Django commands.
+- Use Python 3.14 for local work on the current dependency set.
+- Create or recreate a local virtual environment before running Django commands.
 - Install dependencies from `requirements.txt`.
 - Common commands:
   - `python manage.py runserver`
@@ -21,6 +22,7 @@
   - `python manage.py migrate`
   - `python manage.py test`
 - Historical batch files (`start.bat`, `migrate.bat`) assume an old machine-specific `C:\Python36` layout. Do not treat them as the current source of truth.
+- Do not rely on any old checked-in virtualenv remnants; rebuild the environment from the declared Python runtime and `requirements.txt`.
 
 ## Project Shape
 
