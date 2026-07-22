@@ -1,23 +1,24 @@
 {% load static i18n query_transform %}
-<div class="container-fluid">
-    <div class="row text-center" style="margin-top: 3%;">
-        <p style="font-size: 65px;">{{ title }}</p>
-    </div>
-    <div class="row text-center">
-        {% if participation.participant.club.country.image %}
-            <img src="{{ participation.participant.club.country.image.url }}" alt="UZ" width="300px" height="200px">
-        {% endif %}
-    </div>
-    <div class="row text-center">
+<div class="screen-monitor_doing">
+    <div class="md-stage">
+        <div class="md-now">NOW PERFORMING</div>
+        <p class="md-title">{{ title.upper }}</p>
+
+        <div class="md-flag">
+            {% if participation.participant.club.country.image %}
+                <img class="md-flag-img"
+                     src="{{ participation.participant.club.country.image.url }}"
+                     alt="{{ participation.participant.club.country.name_ru }}">
+            {% else %}
+                <div class="md-flag-empty" aria-hidden="true"></div>
+            {% endif %}
+        </div>
+
         {% if 'group' != participation.tablo.category.name.lower %}
-            <p class="lead" style="font-size: 100px;">{{ participation.participant.name_en }}</p>
+            <h1 class="md-name">{{ participation.participant.name_en }}</h1>
+            <p class="md-club">{{ participation.participant.club.name }}</p>
         {% else %}
-            <p class="lead" style="font-size: 100px;">{{ participation.participant.club.name }}</p>
+            <h1 class="md-name">{{ participation.participant.club.name }}</h1>
         {% endif %}
     </div>
-    <div class="row text-center">
-        {% if 'group' != participation.tablo.category.name.lower %}
-            <p class="lead" style="font-size: 100px;">{{ participation.participant.club.name }}</p>
-        {% endif %}
-    </div>
-</div> <!-- /container -->
+</div>

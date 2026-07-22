@@ -1,72 +1,73 @@
 {% load static i18n query_transform %}
-<div class="container-fluid" style="margin: 0 10px;">
-    <h1 class="text-center" style="font-size: 2em;">{{ title.upper }}</h1>
-    <!-- <p class="lead" style="font-size: 2em;"></p> -->
+<div class="screen-monitor_tablo">
+    <h1 class="mt-title">{{ title.upper }}</h1>
 
-    <table class="table table-responsive" style="">
+    <table class="table mt-table">
+        <colgroup>
+            <col class="mt-col-rank">
+            {% if is_group == False %}
+                <col class="mt-col-flag">
+            {% endif %}
+            <col class="mt-col-name">
+            <col class="mt-col-score">
+        </colgroup>
         <thead>
-        <th style="text-align: center; width: 10%" class="lead">Placing</th>
-        {% if is_group == False %}
-            <th style="width: 10%" class="lead">Country</th>
-        {% endif %}
-        <th style="width: 55%" class="lead">Name</th>
-        <th style="width: 10%" class="lead">Score</th>
-        </thead>
-
-        {% for p in participations %}
             <tr>
-                <td class="lead" style="text-align: center;"><span style="">{% if p.rank %}{{ p.rank }}{% else %}
-                    -{% endif %}</span></td>
+                <th class="mt-th mt-th-rank">Place</th>
                 {% if is_group == False %}
-                    <td class="lead clubname">
-                        {% if p.participant.club.country.image %}
-                            <img src="{{ p.participant.club.country.image.url }}"
-                                 alt="{{ p.participant.club.country.name_ru }}" style="max-width:100%;">
-                        {% endif %}
-                    </td>
+                    <th class="mt-th">Country</th>
                 {% endif %}
-                <td class="lead">
-                    {% if not is_group %}
-                        {{ p.participant.name_en }}
+                <th class="mt-th">Name</th>
+                <th class="mt-th mt-th-score">Score</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for p in participations %}
+            <tr class="mt-row{% if p.pk == active_pk %} is-current{% endif %}">
+                <td class="mt-rank">
+                    {% if p.pk == active_pk %}
+                        <span class="mt-now">NOW</span>
+                    {% elif p.rank %}
+                        {{ p.rank }}
                     {% else %}
-                        {{ p.participant.club.name }}
+                        <span class="mt-dash">&ndash;</span>
                     {% endif %}
                 </td>
 
-                <td class="lead"><span style="color: red;">{{ p.finalscore|stringformat:".2f" }}</span></td>
+                {% if is_group == False %}
+                    <td class="mt-flag-cell">
+                        {% if p.participant.club.country.image %}
+                            <img class="mt-flag" src="{{ p.participant.club.country.image.url }}"
+                                 alt="{{ p.participant.club.country.name_ru }}">
+                        {% else %}
+                            <span class="mt-flag mt-flag-ph" role="img"
+                                  aria-label="{{ p.participant.club.country.name_ru|default:'No country' }}">
+                                <svg viewBox="0 0 24 24" width="100%" height="100%" aria-hidden="true"
+                                     fill="none" stroke="currentColor" stroke-width="1.6"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="9"></circle>
+                                    <path d="M3 12h18"></path>
+                                    <path d="M12 3c2.5 2.4 3.9 5.6 3.9 9s-1.4 6.6-3.9 9c-2.5-2.4-3.9-5.6-3.9-9S9.5 5.4 12 3z"></path>
+                                </svg>
+                            </span>
+                        {% endif %}
+                    </td>
+                {% endif %}
+
+                <td class="mt-name-cell">
+                    {% if not is_group %}
+                        <span class="mt-name">{{ p.participant.name_en }}</span>
+                        {% if p.participant.club.name %}
+                            <span class="mt-club">{{ p.participant.club.name }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="mt-name">{{ p.participant.club.name }}</span>
+                    {% endif %}
+                </td>
+
+                <td class="mt-score">{{ p.finalscore|stringformat:".2f" }}</td>
             </tr>
         {% endfor %}
+        </tbody>
     </table>
-</div> <!-- /container -->
-
-<style>
-    span.clubname {
-        color: orange;
-    }
-
-    .circle-item {
-        width: 50px;
-        height: 50px;
-        margin: 0;
-        padding: 0;
-        background: red;
-    }
-
-    .black {
-        background: black;
-    }
-
-    .center {
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    td.lead {
-        font-size: 4em;
-    }
-
-    th.lead {
-        font-size: 2em;
-    }
-
-</style>
+</div>

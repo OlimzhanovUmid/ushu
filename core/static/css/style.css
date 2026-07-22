@@ -1616,3 +1616,618 @@ body.stage .label-black {
 /* Screen: scores.html — no screen-scoped CSS was supplied for this screen
    (the source block carried only a placeholder, not a rule set), so nothing
    is emitted here; add real declarations when the scores.html block lands. */
+
+/* ===== Projector / monitor — screen-scoped ===== */
+/* =========================================================================
+   PUBLIC MONITOR / PROJECTOR ("Federation Standard") — screen-scoped.
+   body.monitor-screen supplies the deep-navy gradient + transparent luminous
+   table (foundation). These rules add the idle crest, the standings polish,
+   the country-flag safe placeholders, and the Gold-Means-Now current performer
+   across the four injected fragments (monitor / _doing / _score / _tablo).
+   Everything reads at hall distance (>=7:1 white-on-navy; gold ~7.8:1). No
+   competing motion — anti-broadcast-clutter. All color values are tokens or
+   token-derived luminous/navy overlays (rgba white for glow, rgba(6,15,34)=
+   --c-navy-deep for shadow); the only literal hex lives inside data-URI SVGs,
+   where var() cannot reach.
+   ========================================================================= */
+
+/* ---- Shell: full-viewport ceremonial frame ------------------------------ */
+.screen-monitor #replacable {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--gutter);
+    box-sizing: border-box;
+}
+
+/* =========================================================================
+   Idle / branding screen — crest, display headline, red identity rule.
+   No gold here: nothing is "current" on the idle screen.
+   ========================================================================= */
+.screen-monitor .mon-idle {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.screen-monitor .mon-idle__frame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-md);
+    max-width: 24ch;
+    animation: mon-idle-in 0.5s ease both;
+}
+.screen-monitor .mon-idle__crest {
+    width: clamp(160px, 20vw, 300px);
+    height: auto;
+    filter: drop-shadow(0 8px 28px rgba(6, 15, 34, 0.55));
+}
+.screen-monitor .mon-idle__title {
+    margin: 0;
+    color: var(--c-white);
+    font-family: var(--font-sans);
+    font-weight: var(--fw-display);
+    font-size: var(--fs-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--ls-display);
+    text-wrap: balance;
+    text-shadow: 0 2px 24px rgba(6, 15, 34, 0.45);
+}
+/* Red = identity, used sparingly (echoes the topbar brand block). */
+.screen-monitor .mon-idle__rule {
+    width: 128px;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--c-accent) 0%, var(--c-accent-dark) 100%);
+}
+.screen-monitor .mon-idle__subtitle {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-family: var(--font-sans);
+    font-weight: var(--fw-title);
+    font-size: clamp(1.25rem, 3vw, 2.4rem);
+    line-height: var(--lh-title);
+    letter-spacing: var(--ls-title);
+    text-wrap: balance;
+}
+@keyframes mon-idle-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================================
+   Standings (monitor_tablo.html, injected) — luminous transparent table.
+   Fragment carries its own em-based <style>; these higher-specificity,
+   token-based rules take the hall-legible register.
+   ========================================================================= */
+.screen-monitor .container-fluid > h1 {
+    color: var(--c-white);
+    font-family: var(--font-sans);
+    font-weight: var(--fw-display);
+    letter-spacing: var(--ls-headline);
+    text-align: center;
+    margin: 0 0 var(--space-md);
+    padding-bottom: var(--space-sm);
+    /* short centered red identity rule under the section title */
+    background-image: linear-gradient(90deg, var(--c-accent), var(--c-accent-dark));
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 120px 4px;
+}
+.screen-monitor .table > thead > tr > th {
+    color: rgba(255, 255, 255, 0.72);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+    padding: var(--space-sm) var(--space-md);
+    vertical-align: bottom;
+}
+.screen-monitor .table > tbody > tr > td,
+.screen-monitor table > tr > td {
+    color: var(--c-white);
+    font-weight: var(--fw-body);
+    padding: var(--space-sm) var(--space-md);
+    vertical-align: middle;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+/* Placing stays calm white; the final score is the competition-red value. */
+.screen-monitor table tr > td:last-child span {
+    color: var(--c-accent) !important;
+    font-weight: var(--fw-display);
+}
+
+/* ---- Country flag: framed chip + SAFE PLACEHOLDER when missing ---------- */
+/* The cell paints a dashed placeholder chip as its centered background; a
+   present <img> is opaque and sized to cover it, so only one of the two ever
+   reads. A broken/transparent flag file falls back to the img's own navy fill
+   (never a broken-image icon). Old-browser safe: data-URI SVG background +
+   plain sizing, no :has()/:empty dependence. (The %23ffffff literals below are
+   URL-encoded SVG stroke colors — var() cannot reach inside a data URI.) */
+.screen-monitor td.clubname {
+    text-align: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='96'%20height='64'%3E%3Crect%20x='1'%20y='1'%20width='94'%20height='62'%20rx='6'%20fill='none'%20stroke='%23ffffff'%20stroke-opacity='0.16'%20stroke-width='2'%20stroke-dasharray='6%206'/%3E%3Cline%20x1='34'%20y1='32'%20x2='62'%20y2='32'%20stroke='%23ffffff'%20stroke-opacity='0.30'%20stroke-width='3'%20stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.screen-monitor td.clubname img {
+    display: inline-block;
+    width: 96px;
+    height: 64px;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 2px 12px rgba(6, 15, 34, 0.55);
+    background: var(--c-navy-2);   /* placeholder fill for a missing/broken flag file */
+    color: transparent;            /* suppress broken-image alt text */
+    font-size: 0;
+    vertical-align: middle;
+}
+
+/* =========================================================================
+   Current performer (monitor_doing.html, injected) — the GOLD moment.
+   Rows: 1 title, 2 flag, 3 identity (athlete OR group name), 4 club.
+   Gold marks ONLY the current identity (row 3) — Gold-Means-Now.
+   ========================================================================= */
+.screen-monitor .container-fluid > .row.text-center:nth-child(3) p.lead {
+    color: var(--c-gold);
+    font-weight: var(--fw-display);
+    letter-spacing: var(--ls-display);
+    text-shadow: 0 2px 28px rgba(6, 15, 34, 0.5);
+}
+.screen-monitor .container-fluid > .row.text-center:nth-child(4) p.lead {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: var(--fw-title);
+}
+.screen-monitor .container-fluid > .row.text-center > p:not(.lead) {
+    color: rgba(255, 255, 255, 0.72);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+}
+/* Frame the current performer's flag to match the standings chip. */
+.screen-monitor .container-fluid > .row.text-center img {
+    border-radius: var(--radius);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 6px 24px rgba(6, 15, 34, 0.55);
+    background: var(--c-navy-2);
+}
+
+/* =========================================================================
+   monitor_doing.html — Current performer ("who is up now"), full-screen.
+   The whole screen IS the live athlete, so gold marks it (Gold-Means-Now).
+   ========================================================================= */
+.screen-monitor_doing {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(24px, 5vh, 72px) var(--gutter);
+    text-align: center;
+}
+.md-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(16px, 3vh, 40px);
+    width: 100%;
+    max-width: 1400px;
+    animation: md-rise 0.45s ease both;
+}
+/* Gold "current" marker — the ONE sanctioned gold on this screen (label-current:
+   gold fill, navy text). It is the only gold element, so its meaning is singular. */
+.md-now {
+    font-weight: var(--fw-label);
+    font-size: clamp(1rem, 2.2vw, 1.75rem);
+    line-height: var(--lh-label);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--c-navy);              /* ink-on-gold, high contrast */
+    background: var(--c-gold);
+    padding: 0.5em 1.1em;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--ring-gold);
+}
+/* Category context — high-contrast white, quiet weight (well beyond 7:1 on navy) */
+.md-title {
+    margin: 0;
+    font-weight: var(--fw-title);
+    font-size: clamp(1.4rem, 3.4vw, 2.75rem);
+    line-height: var(--lh-title);
+    letter-spacing: var(--ls-headline);
+    color: var(--c-white);
+    opacity: 0.82;
+    max-width: 24ch;
+}
+/* Flag — responsive, native aspect ratio preserved (no forced 300x200 box) */
+.md-flag {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: clamp(96px, 18vh, 220px);
+}
+.md-flag-img,
+.md-flag-empty {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    border-radius: var(--radius-sm);
+}
+.md-flag-img {
+    object-fit: contain;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+/* Safe placeholder when a country flag is missing — keeps the layout stable
+   instead of collapsing to an empty row. */
+.md-flag-empty {
+    aspect-ratio: 3 / 2;
+    background: repeating-linear-gradient(135deg,
+        rgba(255, 255, 255, 0.06) 0,
+        rgba(255, 255, 255, 0.06) 14px,
+        transparent 14px, transparent 28px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+/* Athlete / club name — the hero. Display token (fw/ls/lh) with a larger clamp
+   than --fs-display since this is the single most important mark on the
+   projector and must read across a hall. */
+.md-name {
+    margin: 0;
+    font-weight: var(--fw-display);
+    font-size: clamp(3.5rem, 11vw, 8.5rem);
+    line-height: var(--lh-display);
+    letter-spacing: var(--ls-display);
+    color: var(--c-white);
+    max-width: 20ch;
+}
+/* Club subline (individual only) — clearly secondary, still hall-legible */
+.md-club {
+    margin: 0;
+    font-weight: var(--fw-headline);
+    font-size: clamp(1.75rem, 4.5vw, 3.75rem);
+    line-height: var(--lh-headline);
+    letter-spacing: var(--ls-headline);
+    color: var(--c-white);
+    opacity: 0.88;
+}
+@keyframes md-rise {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* =========================================================================
+   monitor_score.html — Live score readout on the public projector.
+   The just-landed score, legible across the hall the moment it appears.
+   Gold-Means-Now: gold marks ONLY the current athlete's name; the result
+   number is the high-contrast white hero.
+   ========================================================================= */
+.screen-monitor_score {
+    box-sizing: border-box;
+    min-height: 100vh;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: clamp(24px, 4vh, 56px) clamp(20px, 4vw, 64px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(20px, 4vh, 48px);
+    text-align: center;
+}
+/* --- Competition context (age group / sex / category) --- */
+.screen-monitor_score .ms-eyebrow {
+    margin: 0;
+    font-size: clamp(1.1rem, 2.6vw, 2rem);
+    font-weight: var(--fw-label);
+    line-height: var(--lh-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);   /* >=7:1 on the navy gradient */
+}
+/* --- Athlete identity: flag + current-performer name --- */
+.screen-monitor_score .ms-athlete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 2.5vw, 32px);
+}
+/* Flag holds a fixed 3:2 slot so rows stay aligned with or without an image */
+.screen-monitor_score .ms-flag {
+    flex: 0 0 auto;
+    width: clamp(88px, 9vw, 132px);
+    height: clamp(59px, 6vw, 88px);
+    object-fit: contain;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.06);
+}
+/* Safe placeholder — same slot, never collapses the layout when no flag */
+.screen-monitor_score .ms-flag--empty {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    line-height: 1;
+}
+/* Gold-Means-Now: the ONE gold element — this is the current athlete */
+.screen-monitor_score .ms-name {
+    margin: 0;
+    min-width: 0;
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    font-weight: var(--fw-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--ls-display);
+    color: var(--c-gold);               /* gold on navy ~7.8:1 — hall legible */
+}
+/* --- Component breakdown (A / B / C) --- */
+.screen-monitor_score .ms-breakdown {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(16px, 3vw, 40px);
+}
+.screen-monitor_score .ms-comp {
+    flex: 0 1 auto;
+    min-width: clamp(150px, 18vw, 230px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: clamp(12px, 1.6vh, 20px) clamp(16px, 2vw, 28px);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.screen-monitor_score .ms-comp-label {
+    font-size: clamp(0.85rem, 1.5vw, 1.15rem);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+}
+.screen-monitor_score .ms-comp-value {
+    font-size: clamp(2rem, 5vw, 3.75rem);
+    font-weight: var(--fw-display);
+    line-height: 1.05;
+    letter-spacing: var(--ls-display);
+    color: var(--c-white);              /* white on navy ~15:1 */
+}
+.screen-monitor_score .ms-comp-detail {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+/* A-judge deduction codes — neutral outlined chips */
+.screen-monitor_score .ms-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: var(--c-white);
+    font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+    font-weight: var(--fw-headline);
+    line-height: 1;
+}
+/* C-judge element markers — shared status vocabulary (One-Family) */
+.screen-monitor_score .ms-el {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 10px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    font-size: clamp(1rem, 1.6vw, 1.35rem);
+    font-weight: var(--fw-headline);
+    line-height: 1;
+}
+/* performed (done truthy): amber, ink text (AA on the warn amber) */
+.screen-monitor_score .ms-el--done {
+    background: var(--c-status-warn);
+    color: var(--c-ink);
+}
+/* failed (done == 0): ink fill + hairline edge so it never dissolves on navy */
+.screen-monitor_score .ms-el--fail {
+    background: var(--c-status-fail);
+    color: var(--c-white);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+/* --- Result: placing + hero score --- */
+.screen-monitor_score .ms-result {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: clamp(24px, 6vw, 96px);
+}
+.screen-monitor_score .ms-result-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+}
+.screen-monitor_score .ms-result-label {
+    font-size: clamp(0.9rem, 1.8vw, 1.35rem);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+}
+.screen-monitor_score .ms-result-value {
+    font-weight: var(--fw-display);
+    line-height: 1;
+    letter-spacing: var(--ls-display);
+    color: var(--c-white);
+}
+.screen-monitor_score .ms-result-rank {
+    font-size: clamp(3rem, 9vw, 7rem);
+}
+/* The hero — the just-landed score, sized to read from the back of the hall */
+.screen-monitor_score .ms-result-score {
+    font-size: clamp(4rem, 13vw, 10.5rem);
+}
+
+/* =========================================================================
+   monitor_tablo.html — Public projector standings, per-tablo.
+   Rendered as a fragment inside body.monitor-screen. Hall-distance legible
+   (>=7:1 on navy) and Gold-Means-Now (gold ONLY on the current performer's
+   row). No motion — anti-broadcast-clutter.
+   ========================================================================= */
+.screen-monitor_tablo {
+    padding: var(--space-md) var(--gutter);
+    max-width: 100%;
+}
+/* Projector headline — display scale, calm white (title is not "current"). */
+.screen-monitor_tablo .mt-title {
+    margin: var(--space-sm) 0 var(--gutter);
+    text-align: center;
+    color: var(--c-white);
+    font-weight: var(--fw-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--ls-display);
+    /* smaller floor than --fs-display so the long title never overflows a
+       4:3 beamer, but still climbs into display territory on a wide hall. */
+    font-size: clamp(1.75rem, 4.6vw, 3.5rem);
+    text-wrap: balance;
+}
+/* table-layout:fixed + no table-responsive => columns respect the colgroup,
+   long names wrap instead of forcing a horizontal scrollbar off-screen. */
+.screen-monitor_tablo .mt-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin: 0;
+}
+/* Only rank/flag/score are fixed; Name absorbs the remainder so BOTH the
+   individual (rank+flag+name+score) and group (rank+name+score) layouts
+   total 100% at any aspect ratio. */
+.screen-monitor_tablo .mt-col-rank  { width: 14%; }
+.screen-monitor_tablo .mt-col-flag  { width: 13%; }
+.screen-monitor_tablo .mt-col-score { width: 20%; }
+/* Column headers — Label scale, scaled up for distance, muted-on-dark
+   (0.72 white keeps the header labels >=7:1 on the navy gradient). */
+.screen-monitor_tablo .mt-th {
+    padding: 0 var(--space-sm) var(--space-sm);
+    text-align: left;
+    text-transform: uppercase;
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    line-height: var(--lh-label);
+    font-size: clamp(0.8rem, 1.3vw, 1.1rem);
+    color: rgba(255, 255, 255, 0.72);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+}
+.screen-monitor_tablo .mt-th-rank  { text-align: center; }
+.screen-monitor_tablo .mt-th-score { text-align: right; }
+/* Rows — generous vertical rhythm; hairline separators on dark. */
+.screen-monitor_tablo .mt-row > td {
+    padding: var(--space-sm);
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+/* --- Place ------------------------------------------------------------- */
+.screen-monitor_tablo .mt-rank {
+    text-align: center;
+    color: var(--c-white);
+    font-weight: var(--fw-display);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(1.6rem, 3.6vw, 3rem);
+}
+.screen-monitor_tablo .mt-dash { color: rgba(255, 255, 255, 0.45); }
+/* --- Country flag ------------------------------------------------------ */
+.screen-monitor_tablo .mt-flag-cell { text-align: center; }
+.screen-monitor_tablo .mt-flag {
+    display: inline-block;
+    width: clamp(48px, 8vw, 92px);
+    aspect-ratio: 3 / 2;         /* fixed box => uniform row height */
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+/* Safe placeholder when the flag image is missing — a globe glyph in a box
+   the exact size of a real flag, so the row never breaks or shifts. */
+.screen-monitor_tablo .mt-flag-ph {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+.screen-monitor_tablo .mt-flag-ph svg { display: block; }
+/* --- Name / club ------------------------------------------------------- */
+.screen-monitor_tablo .mt-name-cell { min-width: 0; }
+.screen-monitor_tablo .mt-name {
+    display: block;
+    color: var(--c-white);
+    font-weight: var(--fw-headline);
+    line-height: 1.1;
+    font-size: clamp(1.4rem, 3.1vw, 2.6rem);
+    overflow-wrap: anywhere;
+}
+.screen-monitor_tablo .mt-club {
+    display: block;
+    margin-top: 0.15em;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: var(--fw-body);
+    line-height: 1.2;
+    font-size: clamp(0.95rem, 1.6vw, 1.5rem);
+    overflow-wrap: anywhere;
+}
+/* --- Score (biggest, tabular; white/heavy — NOT the old bare red) ------- */
+.screen-monitor_tablo .mt-score {
+    text-align: right;
+    color: var(--c-white);
+    font-weight: var(--fw-display);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(2rem, 5vw, 4.25rem);
+    letter-spacing: -0.01em;
+}
+/* =========================================================================
+   Gold-Means-Now — the ONE gold on this screen marks the current performer.
+   Faint gold wash + gold name + gold "NOW" chip. No colored edge stripe
+   (that treatment is reserved to the sidebar), no motion.
+   ========================================================================= */
+.screen-monitor_tablo .mt-row.is-current > td {
+    background: rgba(245, 181, 61, 0.10);
+    border-bottom-color: rgba(245, 181, 61, 0.28);
+}
+.screen-monitor_tablo .mt-row.is-current .mt-name { color: var(--c-gold); }
+/* label-current: gold fill, navy ink (DESIGN.md label-current component). */
+.screen-monitor_tablo .mt-now {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--c-gold);
+    color: var(--c-navy);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    line-height: 1;
+    font-size: clamp(0.85rem, 1.5vw, 1.25rem);
+    box-shadow: var(--ring-gold);
+}
+
+/* =========================================================================
+   Motion is decorative only — one quiet entrance per screen. Deduped into a
+   single reduced-motion query (the foundation already neutralizes animation
+   globally; this makes the intent explicit for these screens).
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+    .screen-monitor .mon-idle__frame,
+    .md-stage { animation: none; }
+}
