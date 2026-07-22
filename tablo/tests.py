@@ -106,9 +106,9 @@ class CalculateBTest(TestCase):
         self.assertEqual(p().calculateB([0, 0, 0]), 0)
 
     def test_three_distinct_no_majority(self):
-        # all distinct -> no value repeats -> (sum - max - min) / 2
-        # = middle / 2.  Locks current behaviour (8.0 / 2 = 4.0).
-        self.assertEqual(p().calculateB([7.0, 9.0, 8.0]), 4.0)
+        # No repeated value -> trimmed mean (sum - max - min) / (n - 2).
+        # For 3 distinct scores that is the middle score (8.0).
+        self.assertEqual(p().calculateB([7.0, 9.0, 8.0]), 8.0)
 
     def test_two_equal_returns_repeated_value(self):
         self.assertEqual(p().calculateB([8.0, 8.0, 9.0]), 8.0)
