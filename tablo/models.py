@@ -27,6 +27,13 @@ class Tablo(models.Model):
     category = models.ForeignKey(ElementCategory, on_delete=models.CASCADE)
     started = models.BooleanField(default=False)  # True if jrebi already done
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['age', 'sex', 'category'],
+                name='uniq_tablo_age_sex_category'),
+        ]
+
     def __str__(self):
         return f'{self.category.name} - {AGE_CHOICES[self.age][1]} - {SEX_CHOICES[self.sex][1]}'
 
@@ -34,20 +41,13 @@ class Tablo(models.Model):
 @receiver(models.signals.post_save, sender=ElementCategory)
 def create_tablo(sender, instance, **kwargs):
     for age in AGE_CHOICES:
-        # if (age[0] == AGE_9_11 or age[0] == AGE_7_8) and instance.seven_twelve is False:
-        #     continue
         for sex in SEX_CHOICES:
             if not Tablo.objects.filter(age=age[0], sex=sex[0], category=instance).exists():
                 Tablo.objects.create(age=age[0], sex=sex[0], category=instance)
 
 
-@receiver(models.signals.pre_delete, sender=ElementCategory)
-def delete_tablo(sender, instance, **kwargs):
-    '''
-    not 100% correct API since deletion of category should be rare
-    '''
-    pk = instance.pk
-    Tablo.objects.filter(category=pk).delete()
+# Deleting an ElementCategory removes its Tablos via the category FK's
+# on_delete=CASCADE; no explicit pre_delete signal needed.
 
 
 class ParticipationManager(models.Manager):
@@ -82,8 +82,8 @@ class ParticipationManager(models.Manager):
                               finalscore=0,
                               group=group)
             p.save()
-            # superuser is admin of system
-            judges = Judge.objects.filter(is_superuser=False)
+            # superuser is admin of system; deactivated judges get no card
+            judges = Judge.objects.filter(is_superuser=False, is_active=True)
             for judge in judges:
                 if (age == AGE_11
                     or age == AGE_7_8
@@ -133,14 +133,30 @@ class Participation(models.Model):
 
     objects = ParticipationManager()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['participant', 'tablo'],
+                name='uniq_participation_participant_tablo'),
+            # at most one participant on the carpet at a time
+            models.UniqueConstraint(
+                fields=['state'], condition=models.Q(state=PS_DOING),
+                name='uniq_one_doing_participation'),
+        ]
+
     def __str__(self):
         return f'{self.participant.name_en} ({self.tablo.category.name}) ({self.participant.get_age_display()})'
 
     def get_scores(self):
+        # memoize per instance: the ranking tie-break sort calls this O(n log n)
+        # times over the same participations within one request.
+        if hasattr(self, '_scores_cache'):
+            return self._scores_cache
         letters = {JUDGE_A: 'a', JUDGE_B: 'b', JUDGE_C: 'c'}
         scores = Score.objects.filter(participation=self) \
             .select_related('judge') \
-            .prefetch_related('aclass', 'cclass') \
+            .prefetch_related('aclass__error_code', 'berrors__error_code',
+                              'cclass__statuses__element') \
             .order_by('judge__username')
 
         allow_save = True
@@ -154,6 +170,7 @@ class Participation(models.Model):
                      'final': 0,
                      'bonus': self.bonus,
                      'can_be_saved': False}
+            self._scores_cache = items
             return items
 
         items = {letters[JUDGE_A]: [],
@@ -184,7 +201,7 @@ class Participation(models.Model):
                         dones.append(element)
                 items[letter].append((score.saved, dones))
         items['final_a'] = self.calculateA(items['a'], age=self.participant.age)
-        items['final_b'] = int(self.calculateB(items['b']) * 100)
+        items['final_b'] = round(self.calculateB(items['b']) * 100)
         if self.bonus:
             items['final_b'] = items['final_b'] + 5
         items['final_c'] = self.calculateC(items['c'])
@@ -195,6 +212,7 @@ class Participation(models.Model):
         items['saved'] = (self.state == PS_FINISHED)
         items['can_be_saved'] = allow_save
         items['bonus'] = self.bonus
+        self._scores_cache = items
         return items
 
     # --- scoring rules (maximum scores each judge category awards) ---
@@ -250,23 +268,29 @@ class Participation(models.Model):
         return agreed
 
     def calculateB(self, raw_scores):
-        '''Aggregate the B-judges' numeric scores.
+        '''Aggregate the B-judges' numeric scores (panel-size independent).
 
-        Falsy entries (0/None) are dropped. When some value repeats an odd
-        number of extra times the most common repeated value wins;
-        otherwise the highest and lowest are trimmed and the rest averaged.
+        Only judges who did not submit (``None``) are dropped; a real 0.00
+        counts. If any value was awarded by at least two judges, that value
+        wins (ties broken by the higher value). Otherwise the highest and
+        lowest are trimmed and the remaining scores averaged. For the
+        standard four-judge panel with distinct scores this is identical to
+        the historical ``(sum - max - min) / 2``.
         '''
-        scores = [score for score in raw_scores if score]
+        scores = [score for score in raw_scores if score is not None]
         if not scores:
             return 0
-        highest = max(scores)
-        lowest = min(scores)
-        repeated = Counter(scores)
-        repeated.subtract(Counter(set(scores)))
-        repeated += Counter()  # drop values seen only once
-        if len(repeated) % 2 == 0:
-            return (sum(scores) - highest - lowest) / 2
-        return repeated.most_common(1)[0][0]
+        counts = Counter(scores)
+        repeated = {value: n for value, n in counts.items() if n >= 2}
+        if repeated:
+            top = max(repeated.values())
+            return max(value for value, n in repeated.items() if n == top)
+        n = len(scores)
+        if n == 1:
+            return scores[0]
+        if n == 2:
+            return sum(scores) / 2
+        return (sum(scores) - max(scores) - min(scores)) / (n - 2)
 
     def calculateC(self, judge_status_lists):
         '''Aggregate the three C-judges' per-element done/not-done marks.
@@ -281,23 +305,27 @@ class Participation(models.Model):
         '''
         if not judge_status_lists:
             return [], 0
-        first, second, third = (statuses for _saved, statuses in judge_status_lists)
-        agreed = []
-        for s_first, s_second, s_third in zip(first, second, third):
-            if s_first.done == s_second.done or s_first.done == s_third.done:
-                agreed.append(s_first)
-            elif s_second.done == s_third.done:
-                agreed.append(s_second)
+        statuses_per_judge = [statuses for _saved, statuses in judge_status_lists]
 
         movement_pool = self.MAX_MOVEMENT_SCORE
         landing_pool = self.MAX_LANDING_SCORE
-        for status in agreed:
-            if status.done:
-                continue  # performed correctly -> no deduction
-            if status.element.prizemlenie:
-                landing_pool -= status.element.score
-            else:
-                movement_pool -= status.element.score
+        agreed = []
+        # done is tri-state: 1 performed, 0 failed, 2 untouched (abstention).
+        # An element is decided only when at least two judges actually marked
+        # it the same way; an untouched mark never counts as performed.
+        for marks in zip(*statuses_per_judge):
+            performed = [s for s in marks if s.done == 1]
+            failed = [s for s in marks if s.done == 0]
+            if len(performed) >= 2:
+                agreed.append(performed[0])  # decided performed, no deduction
+            elif len(failed) >= 2:
+                loser = failed[0]
+                agreed.append(loser)
+                if loser.element.prizemlenie:
+                    landing_pool -= loser.element.score
+                else:
+                    movement_pool -= loser.element.score
+            # otherwise no majority -> excluded (benefit of the doubt)
 
         score = max(0, landing_pool) + max(0, movement_pool)
         return agreed, min(score, self.MAX_C_SCORE)
@@ -307,7 +335,7 @@ class Participation(models.Model):
 
 
 class ElementStatus(models.Model):
-    element = models.ForeignKey(Element, on_delete=models.CASCADE)
+    element = models.ForeignKey(Element, on_delete=models.PROTECT)
     done = models.IntegerField(default=2)
 
     def get_id(self):
@@ -332,17 +360,24 @@ class CombinationStatus(models.Model):
 
 
 class WrapperErrorCode(models.Model):
-    error_code = models.ForeignKey(ErrorCode, on_delete=models.CASCADE)
+    error_code = models.ForeignKey(ErrorCode, on_delete=models.PROTECT)
 
 
 class Score(models.Model):
-    judge = models.ForeignKey(Judge, on_delete=models.CASCADE)
+    judge = models.ForeignKey(Judge, on_delete=models.PROTECT)
     participation = models.ForeignKey(Participation, on_delete=models.CASCADE)
     aclass = models.ManyToManyField(WrapperErrorCode)
     bclass = models.FloatField(blank=True, null=True)
     berrors = models.ManyToManyField(WrapperErrorCode, related_name='berrors')
     cclass = SortedManyToManyField(CombinationStatus)
     saved = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['judge', 'participation'],
+                name='uniq_score_judge_participation'),
+        ]
 
     def add_combination(self, combination):
         cs = CombinationStatus.objects.create()
@@ -384,10 +419,16 @@ class Score(models.Model):
             return 0.0
 
     def get_b_score(self):
-        '''B-judge base score minus the value of each recorded B-error.'''
-        score = self.bclass
-        for berror in self.berrors.all():
-            score = self._to_float(score) - self._to_float(berror.error_code.value)
-        if not score:
-            return score
-        return round(score, 2)
+        '''B-judge base score minus the value of each recorded B-error.
+
+        Returns ``None`` only when the judge entered nothing at all (no base
+        score and no errors); a legitimate 0.00 is a real vote and is kept.
+        Deductions never drive the score below 0.
+        '''
+        berrors = list(self.berrors.all())
+        if self.bclass is None and not berrors:
+            return None
+        score = self._to_float(self.bclass)
+        for berror in berrors:
+            score -= self._to_float(berror.error_code.value)
+        return round(max(0.0, score), 2)
