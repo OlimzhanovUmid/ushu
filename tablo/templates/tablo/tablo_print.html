@@ -3,36 +3,41 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <link href="{% static "css/style.css" %}?v=3" rel="stylesheet">
 </head>
-<body>
-<h1>{{ title }}</h1>
-<hr>
-<table style="border-collapse:collapse; border: 1px solid;">
-    <thead>
-    <tr>
-        <th style="padding: 0; width: 5%">{% trans "Place" %}</th>
-        <th style="padding: 0; width: 15%">{% trans "Country" %}</th>
-        <th style="padding: 0; width: 15%">{% trans "Club " %}</th>
-        <th style="padding: 0; width: 55%">{% trans "Participant" %}</th>
-        <th>{% trans "Score" %}</th>
-    </tr>
-    </thead>
-    {% for p in participations %}
+<body class="screen-tablo_print">
+<div class="tp-sheet">
+    <h1 class="tp-title">{{ title }}</h1>
+
+    <table class="tp-table">
+        <thead>
         <tr>
-            <th>{{ forloop.counter }}</th>
-            <th>{{ p.participant.club.country.name_en }}</th>
-            <th>{{ p.participant.club.name }}</th>
-            {% if 'group' != tablo.category.name.lower %}
-                <th>{{ p.participant.name_en }}</th>
-            {% else %}
-                <th>{{ p.participant.club.name }}</th>
-            {% endif %}
-            <th>{{ p.finalscore|stringformat:".2f" }}</th>
+            <th class="tp-col-place">{% trans "Place" %}</th>
+            <th class="tp-col-country">{% trans "Country" %}</th>
+            <th class="tp-col-club">{% trans "Club " %}</th>
+            <th class="tp-col-name">{% trans "Participant" %}</th>
+            <th class="tp-col-score">{% trans "Score" %}</th>
         </tr>
-    {% endfor %}
-</table>
-
-
+        </thead>
+        <tbody>
+        {% for p in participations %}
+            <tr>
+                <td class="tp-col-place">{{ forloop.counter }}</td>
+                <td class="tp-col-country">{{ p.participant.club.country.name_en }}</td>
+                <td class="tp-col-club">{{ p.participant.club.name }}</td>
+                {% if 'group' != tablo.category.name.lower %}
+                    <td class="tp-col-name">{{ p.participant.name_en }}</td>
+                {% else %}
+                    <td class="tp-col-name">{{ p.participant.club.name }}</td>
+                {% endif %}
+                <td class="tp-col-score">{{ p.finalscore|stringformat:".2f" }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

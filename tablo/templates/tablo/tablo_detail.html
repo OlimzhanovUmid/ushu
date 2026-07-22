@@ -4,6 +4,7 @@
 
 {% block title %}{{ title }}{% endblock %}
 {% block nav_title %}{{ title }}{% endblock %}
+{% block body_class %}screen-tablo_detail{% endblock %}
 
 {% block content %}
     {{ block.super }}
@@ -14,12 +15,12 @@
             <form method="POST" action="{% url "paticipant_jrebi" %}" autocomplete="off">
                 {% csrf_token %}
                 <input autocomplete="off" type="hidden" name="tablo" value="{{ tablo.pk }}">
-                <div class="row" style="margin-bottom: 50px;">
+                <div class="row td-toolbar">
                     {% if not tablo.started %}
                         <span id="jrebi" class="btn btn-white btn-lg">{% trans "Lot" %}</span>
                         <button style="display: none;" type="submit" name="stop"
                                 class="btn btn-white btn-lg">{% trans "Stop" %}</button>
-                        <button type="submit" name="save" class="btn btn-white btn-lg">Сохранить + Жребий</button>
+                        <button type="submit" name="save" class="btn btn-primary btn-lg">{% trans "Save + Lot" %}</button>
                     {% endif %}
                     <a href="{% url "tablo_print" pk=tablo.pk %}" class="btn btn-white btn-lg">{% trans "Print" %}</a>
                     <a href="{% url "tablo_monitor" pk=tablo.pk %}"
@@ -47,87 +48,60 @@
     <table class="table from-left container" id="tablo_table">
         <thead>
         <tr>
-            <th width="5%"></th>
+            <th width="5%" class="col-remove"><span class="sr-only">{% trans "Remove" %}</span></th>
             <th width="5%">{% trans "Place" %}</th>
             <th width="5%">{% trans "Country" %}</th>
             <th width="55%">{% trans "Participant" %}</th>
-            <th>{% trans "State" %}</th>
+            <th>{% trans "Action" %}</th>
             <th>{% trans "Score" %}</th>
         </tr>
         </thead>
         <tbody>
         {% for p in participations %}
             <tr>
-                <th>
+                <td class="col-remove">
                     <form method="POST" action="{% url "delete_participation" pk=p.pk %}"
                           onsubmit="return confirm('{% trans "Delete this participation?" %}');"
                           style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn-link">X</button>
+                        <button type="submit" class="btn btn-red btn-del"
+                                aria-label="{% trans "Delete this participation?" %}"
+                                title="{% trans "Delete this participation?" %}">&times;</button>
                     </form>
-                </th>
-                <th>{% if p.rank %}{{ p.rank }}{% else %}-{% endif %}</th>
-                <th>{{ p.participant.club.name }}</th>
+                </td>
+                <td>{% if p.rank %}{{ p.rank }}{% else %}-{% endif %}</td>
+                <td>{{ p.participant.club.country.name_en }}</td>
 
                 {% if 'group' != tablo.category.name.lower %}
-                    <th>{{ p.participant.name_en }}</th>
+                    <td>{{ p.participant.name_en }}</td>
                 {% else %}
-                    <th>{{ p.participant.club.name }}</th>
+                    <td>{{ p.participant.club.name }}</td>
                 {% endif %}
 
                 {% if not in_process %}
                     {% if p.pk == active_pk %}
-                        <th>
+                        <td>
                             <form method="POST" action="{% url "participant_activate" %}"
                                   style="display:inline;">
                                 {% csrf_token %}
                                 <input type="hidden" name="pk" value="{{ active_pk }}">
                                 <button type="submit" class="btn btn-white">{% trans "Activate" %}</button>
                             </form>
-                        </th>
+                        </td>
                     {% elif p.state == 0 %}
-                        <th></th>
+                        <td></td>
                     {% else %}
-                        <th><a class="btn btn-white"
-                               href="{% url "participant_score" pk=p.pk %}">{% trans "Score" %}</a></th>
+                        <td><a class="btn btn-white"
+                               href="{% url "participant_score" pk=p.pk %}">{% trans "Score" %}</a></td>
                     {% endif %}
                 {% else %}
                 {% endif %}
-                <th>{{ p.finalscore|stringformat:".2f" }}</th>
+                <td>{{ p.finalscore|stringformat:".2f" }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-{% endblock %}
-
-{% block css_assets_add %}
-    <style type="text/css">
-        .progress_bar {
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            font-size: 80px;
-            color: black;
-            margin-left: 140px;
-            position: absolute;
-            top: 50%;
-            width: 100px;
-            text-align: center;
-        }
-
-        #progress_bar0 {
-            left: 30%;
-        }
-
-        #progress_bar1 {
-            left: 40%;
-        }
-
-        #progress_bar2 {
-            left: 50%;
-        }
-    </style>
 {% endblock %}
 
 {% block js_assets_add %}

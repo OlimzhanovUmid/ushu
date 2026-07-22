@@ -3,63 +3,87 @@
 
 {% block content %}
     {{ block.super }}
-    <div class="row">
-        <div class="col-md-9">
 
+    <div class="screen-tablo_list">
+
+        <div class="tl-toolbar">
+            <h1 class="tl-title">{% trans "Standings" %}</h1>
+            <div class="tl-actions">
+                <a href="{% url "lang_en" %}"><button class="btn btn-link">En</button></a>
+                <a href="{% url "lang_ru" %}"><button class="btn btn-link">Ru</button></a>
+                <a href="{% url "logout" %}"><button class="btn btn-link">{% trans "Log out" %}</button></a>
+            </div>
         </div>
-        <div class="col-md-3 text-top">
-            <a href="{% url "lang_en" %}">
-                <button class="btn btn-link btn-lg">En</button>
-            </a>
-            <a href="{% url "lang_ru" %}">
-                <button class="btn btn-link btn-lg">Ru</button>
-            </a>
-            <a href="{% url "logout" %}">
-                <button class="btn btn-link btn-lg">{% trans "Log out" %}</button>
-            </a>
+
+        <p class="tl-hint">{% trans "Pick an age group and sex to open its tablo." %}</p>
+
+        <div class="tl-table-scroll">
+            <table class="table tl-grid">
+                <thead>
+                    <tr>
+                        <th class="tl-col-num" rowspan="2">#</th>
+                        <th class="tl-col-cat" rowspan="2">{% trans "Category" %}</th>
+                        <th class="tl-age" colspan="2">18+</th>
+                        <th class="tl-age" colspan="2">15&ndash;17</th>
+                        <th class="tl-age" colspan="2">12&ndash;14</th>
+                        <th class="tl-age" colspan="2">11</th>
+                        <th class="tl-age" colspan="2">9&ndash;10</th>
+                        <th class="tl-age" colspan="2">7&ndash;8</th>
+                    </tr>
+                    <tr class="tl-sexrow">
+                        <th class="tl-sex">{% trans "M" %}</th><th class="tl-sex">{% trans "W" %}</th>
+                        <th class="tl-sex">{% trans "M" %}</th><th class="tl-sex">{% trans "W" %}</th>
+                        <th class="tl-sex">{% trans "M" %}</th><th class="tl-sex">{% trans "W" %}</th>
+                        <th class="tl-sex">{% trans "M" %}</th><th class="tl-sex">{% trans "W" %}</th>
+                        <th class="tl-sex">{% trans "M" %}</th><th class="tl-sex">{% trans "W" %}</th>
+                        <th class="tl-sex">{% trans "M" %}</th><th class="tl-sex">{% trans "W" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in elementcategories %}
+                        <tr>
+                            <td class="tl-col-num">{{ forloop.counter }}</td>
+                            <th class="tl-col-cat" scope="row">{{ category.name }}</th>
+
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=3 sex=0 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=3 sex=1 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=2 sex=0 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=2 sex=1 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=1 sex=0 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=1 sex=1 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=5 sex=0 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=5 sex=1 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=0 sex=0 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=0 sex=1 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=4 sex=0 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+                            <td class="tl-cell"><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=4 sex=1 %}"
+                                   class="btn btn-white tl-open">{% trans "Open" %}</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td class="tl-empty" colspan="14">{% trans "No categories yet." %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
+
     </div>
 
-    <table class="table from-left container">
-        {% for category in elementcategories %}
-            <tr>
-                <th>{{ forloop.counter }}</th>
-                <th>{{ category.name }}</th>
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=3 sex=0 %}"
-                       class="btn btn-white">18+(M)</a></th>
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=3 sex=1 %}"
-                       class="btn btn-white">18+(W)</a></th>
-
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=2 sex=0 %}"
-                       class="btn btn-white">15-17(M)</a></th>
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=2 sex=1 %}"
-                       class="btn btn-white">15-17(W)</a></th>
-
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=1 sex=0 %}"
-                       class="btn btn-white">12-14(M)</a></th>
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=1 sex=1 %}"
-                       class="btn btn-white">12-14(W)</a></th>
-
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=5 sex=0 %}"
-                       class="btn btn-white">11(M)</a></th>
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=5 sex=1 %}"
-                       class="btn btn-white">11(W)</a></th>
-
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=0 sex=0 %}"
-                       class="btn btn-white">9-10(M)</a></th>
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=0 sex=1 %}"
-                       class="btn btn-white">9-10(W)</a></th>
-
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=4 sex=0 %}"
-                       class="btn btn-white">7-8(M)</a></th>
-                <th><a href="{% url "tablo_detail" pk=category.pk %}?{% query_transform request age=4 sex=1 %}"
-                       class="btn btn-white">7-8(W)</a></th>
-            </tr>
-        {% endfor %}
-    </table>
-
 {% endblock %}
-
-</body>
-</html>
-

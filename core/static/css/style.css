@@ -2231,3 +2231,390 @@ body.stage .label-black {
     .screen-monitor .mon-idle__frame,
     .md-stage { animation: none; }
 }
+
+/* ===== Admin / setup — screen-scoped ===== */
+
+/* ------------------------------------------------------------------
+   Screen: tablo_list — standings / tablo grid
+   (tablo/templates/tablo/tablo_list.html)
+   Scoped under .screen-tablo_list. Tokens only; no new colors.
+   ------------------------------------------------------------------ */
+.screen-tablo_list {
+    margin-top: calc(var(--topbar-h) + var(--gutter));
+    margin-left: calc(var(--sidebar-w) + var(--gutter));
+    margin-right: var(--gutter);
+}
+
+/* Toolbar: screen title + language / logout cluster */
+.screen-tablo_list .tl-toolbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-sm);
+}
+
+.screen-tablo_list .tl-title {
+    margin: 0;
+    color: var(--c-ink);
+    font-weight: var(--fw-headline);
+    font-size: var(--fs-headline);
+    line-height: var(--lh-headline);
+    letter-spacing: var(--ls-headline);
+}
+
+.screen-tablo_list .tl-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.screen-tablo_list .tl-hint {
+    margin: 0 0 var(--space-md);
+    color: var(--c-muted);
+    font-size: var(--fs-body);
+}
+
+/* Wide 14-column grid scrolls inside itself; the page body never scrolls sideways */
+.screen-tablo_list .tl-table-scroll {
+    overflow-x: auto;
+    border-radius: var(--radius);
+}
+
+.screen-tablo_list .tl-grid {
+    width: 100%;
+    min-width: 920px;
+    margin-bottom: var(--space-md);
+}
+
+/* Header tiers — age group (row 1) centered over its M/W pair (row 2) */
+.screen-tablo_list .tl-grid > thead > tr > th.tl-age,
+.screen-tablo_list .tl-grid > thead > tr > th.tl-sex {
+    text-align: center;
+}
+
+.screen-tablo_list .tl-grid > thead > tr.tl-sexrow > th.tl-sex {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+/* Column identity / sizing */
+.screen-tablo_list .tl-col-num {
+    width: 48px;
+    text-align: center;
+    color: var(--c-muted);
+    font-weight: var(--fw-label);
+}
+
+.screen-tablo_list .tl-grid > tbody > tr > th.tl-col-cat {
+    color: var(--c-ink);
+    font-weight: var(--fw-title);
+    white-space: nowrap;
+}
+
+.screen-tablo_list .tl-cell {
+    text-align: center;
+    padding: 8px 8px;
+}
+
+/* Hairline dividers group each age bracket's M/W pair (1px = allowed) */
+.screen-tablo_list .tl-grid > thead > tr > th.tl-age,
+.screen-tablo_list .tl-grid > thead > tr.tl-sexrow > th.tl-sex:nth-child(odd),
+.screen-tablo_list .tl-grid > tbody > tr > td.tl-cell:nth-child(odd) {
+    border-left: 1px solid var(--c-border);
+}
+
+/* Uniform tap targets — the header carries identity, so the button is a plain action */
+.screen-tablo_list .tl-open {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    text-align: center;
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+}
+
+.screen-tablo_list .tl-empty {
+    text-align: center;
+    color: var(--c-muted);
+    padding: var(--space-md);
+}
+
+@media (max-width: 900px) {
+    .screen-tablo_list {
+        margin-left: var(--gutter);
+    }
+}
+
+/* ------------------------------------------------------------------
+   Screen: tablo_detail — admin single-bracket grid
+   (tablo/templates/tablo/tablo_detail.html)
+   ------------------------------------------------------------------ */
+
+/* Toolbar: token-based spacing replacing the old inline margin/whitespace */
+.screen-tablo_detail .td-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: 40px;
+}
+
+/* Delete-participation: competition-red, compact, and set apart from
+   routine white row actions. Red is reserved for the consequential act. */
+.screen-tablo_detail .col-remove {
+    width: 5%;
+    text-align: center;
+}
+
+.screen-tablo_detail .btn-del {
+    padding: 4px 11px;
+    font-size: 20px;
+    line-height: 1;
+    font-weight: var(--fw-headline);
+}
+
+/* Draw-animation digit overlays (moved out of the inline <style> block).
+   Token-aligned: surface white, ink text, navy-tinted lift, lg radius. */
+.screen-tablo_detail .progress_bar {
+    position: absolute;
+    top: 50%;
+    width: 100px;
+    margin-left: 140px;
+    padding: 20px;
+    text-align: center;
+    font-size: 80px;
+    color: var(--c-ink);
+    background: var(--c-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.screen-tablo_detail #progress_bar0 { left: 30%; }
+.screen-tablo_detail #progress_bar1 { left: 40%; }
+.screen-tablo_detail #progress_bar2 { left: 50%; }
+
+/* ------------------------------------------------------------------
+   Screen: tablo_print — printable results protocol
+   (tablo/templates/tablo/tablo_print.html)
+   The @media print block intentionally drops the shell chrome and uses
+   pure ink (#000/#fff) for economical, high-contrast printing — keep intact.
+   ------------------------------------------------------------------ */
+.screen-tablo_print { background: var(--c-bg); color: var(--c-ink); margin: 0; padding: var(--gutter); }
+.screen-tablo_print .tp-sheet { max-width: 900px; margin: 0 auto; background: var(--c-surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: var(--gutter); }
+.screen-tablo_print .tp-title { margin: 0 0 var(--space-md); padding-bottom: var(--space-sm); border-bottom: 2px solid var(--c-border); color: var(--c-navy); font-size: var(--fs-headline); font-weight: var(--fw-headline); line-height: var(--lh-headline); letter-spacing: var(--ls-headline); }
+.screen-tablo_print .tp-table { width: 100%; border-collapse: collapse; background: var(--c-surface); color: var(--c-ink); table-layout: fixed; }
+.screen-tablo_print .tp-table > thead > tr > th { background: var(--c-surface-alt); border-bottom: 2px solid var(--c-border); color: var(--c-muted); font-weight: var(--fw-label); font-size: var(--fs-label); line-height: var(--lh-label); letter-spacing: var(--ls-label); text-transform: uppercase; text-align: left; padding: 12px 14px; vertical-align: middle; }
+.screen-tablo_print .tp-table > tbody > tr > td { padding: 11px 14px; border-top: 1px solid var(--c-border); color: var(--c-ink); font-weight: var(--fw-body); font-size: var(--fs-body); line-height: var(--lh-body); vertical-align: middle; }
+.screen-tablo_print .tp-col-place { width: 8%; text-align: center; }
+.screen-tablo_print .tp-col-country { width: 16%; }
+.screen-tablo_print .tp-col-club { width: 20%; }
+.screen-tablo_print .tp-col-name { width: 44%; }
+.screen-tablo_print .tp-col-score { width: 12%; text-align: right; font-variant-numeric: tabular-nums; }
+.screen-tablo_print .tp-table > tbody > tr > td.tp-col-place { font-weight: var(--fw-title); font-variant-numeric: tabular-nums; color: var(--c-navy); }
+.screen-tablo_print .tp-table > tbody > tr > td.tp-col-score { font-weight: var(--fw-title); }
+.screen-tablo_print .tp-table > tbody > tr:nth-child(even) { background: var(--c-surface-alt); }
+@media print {
+  @page { margin: 14mm; }
+  .screen-tablo_print { background: #fff; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .screen-tablo_print .tp-sheet { max-width: none; margin: 0; padding: 0; border-radius: 0; box-shadow: none; }
+  .screen-tablo_print .tp-title { color: #000; font-size: 16pt; margin-bottom: 8pt; padding-bottom: 6pt; border-bottom: 1.5pt solid #000; }
+  .screen-tablo_print .tp-table { font-size: 10pt; }
+  .screen-tablo_print .tp-table > thead > tr > th { background: transparent; color: #000; border-bottom: 1.5pt solid #000; padding: 4pt 6pt; font-size: 8pt; }
+  .screen-tablo_print .tp-table > tbody > tr > td { color: #000; border-top: 0.5pt solid #555; padding: 3.5pt 6pt; font-size: 10pt; }
+  .screen-tablo_print .tp-table > tbody > tr > td.tp-col-place, .screen-tablo_print .tp-table > tbody > tr > td.tp-col-score { color: #000; }
+  .screen-tablo_print .tp-table > tbody > tr:nth-child(even) { background: transparent; }
+  .screen-tablo_print .tp-table > thead { display: table-header-group; }
+  .screen-tablo_print .tp-table > tbody > tr { page-break-inside: avoid; break-inside: avoid; }
+}
+
+/* ------------------------------------------------------------------
+   Screen: participant_create — athlete registration
+   (tablo/templates/tablo/participant_create.html)
+   ------------------------------------------------------------------ */
+.screen-participant_create {
+    max-width: 1040px;
+    padding-right: var(--gutter);
+    padding-bottom: var(--space-md);
+}
+
+/* Header: title + language / logout actions */
+.screen-participant_create .pc-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-md);
+}
+.screen-participant_create .pc-title {
+    margin: 0;
+    color: var(--c-ink);
+    font-size: var(--fs-headline);
+    font-weight: var(--fw-headline);
+    line-height: var(--lh-headline);
+    letter-spacing: var(--ls-headline);
+}
+.screen-participant_create .pc-actions {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+}
+
+/* Card body + vertical field rhythm */
+.screen-participant_create .panel-body { padding: var(--space-md); }
+.screen-participant_create .pc-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+.screen-participant_create .pc-row2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--space-md);
+}
+@media (max-width: 720px) {
+    .screen-participant_create .pc-row2 { grid-template-columns: 1fr; }
+}
+
+/* Field + fieldset resets */
+.screen-participant_create .pc-field { min-width: 0; margin: 0; }
+.screen-participant_create fieldset.pc-field {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-inline-size: auto;
+}
+
+/* Labels — Label scale, muted, uppercase (One-Family) */
+.screen-participant_create .pc-label {
+    display: block;
+    width: auto;
+    margin: 0 0 6px;
+    padding: 0;
+    border: 0;
+    color: var(--c-muted);
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    line-height: var(--lh-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+}
+
+.screen-participant_create .form-control { width: 100%; }
+
+/* Radio groups rendered as tactile chips */
+.screen-participant_create .pc-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.screen-participant_create .pc-choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 10px 14px;
+    min-height: 44px;
+    color: var(--c-ink);
+    font-weight: var(--fw-body);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition);
+}
+.screen-participant_create .pc-choice:hover { border-color: var(--c-primary); }
+.screen-participant_create .pc-choice input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--c-primary);
+}
+/* Selected chip reads as chosen (progressive; harmless where :has unsupported) */
+.screen-participant_create .pc-choice:has(input:checked) {
+    border-color: var(--c-primary);
+    background: var(--c-row-hover);
+}
+/* Token-blue focus ring on the chip when its control is focused */
+.screen-participant_create .pc-choice:focus-within {
+    border-color: var(--c-primary);
+    box-shadow: var(--focus-ring);
+}
+
+/* Consistent token focus ring for every radio / checkbox (One-Family) */
+.screen-participant_create input[type="radio"]:focus-visible,
+.screen-participant_create input[type="checkbox"]:focus-visible {
+    outline: none;
+    border-radius: 3px;
+    box-shadow: var(--focus-ring);
+}
+
+/* Category grid */
+.screen-participant_create .pc-cat-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+.screen-participant_create .pc-hint {
+    color: var(--c-muted);
+    font-size: 13px;
+    font-weight: var(--fw-body);
+}
+.screen-participant_create .pc-table-wrap { overflow-x: auto; }
+.screen-participant_create .pc-cat-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+.screen-participant_create .pc-col-num,
+.screen-participant_create .pc-col-check { width: 56px; text-align: center; }
+.screen-participant_create .pc-cat-table thead th.pc-col-num,
+.screen-participant_create .pc-cat-table thead th.pc-col-check { text-align: center; }
+.screen-participant_create .pc-col-name {
+    text-align: left;
+    color: var(--c-ink);
+    font-weight: var(--fw-body);
+}
+.screen-participant_create .pc-cat-table input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--c-primary);
+}
+.screen-participant_create .pc-cat-table input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+/* Inline field-level error — competition red, never a top banner */
+.screen-participant_create .pc-error {
+    margin: 6px 0 0;
+    color: var(--c-accent-dark);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: var(--lh-body);
+}
+.screen-participant_create .pc-error::before {
+    content: "!";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 6px;
+    text-align: center;
+    line-height: 15px;
+    color: var(--c-surface);
+    background: var(--c-accent);
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 11px;
+    vertical-align: baseline;
+}
+
+.screen-participant_create .pc-submit { margin-top: var(--space-md); }

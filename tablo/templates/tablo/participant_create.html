@@ -3,134 +3,166 @@
 
 {% block content %}
     {{ block.super }}
-    <div class="row">
-        {% if messages %}
-            <div class="text-top from-left">
-                {% for message in messages %}
-                    <div class="alert alert-danger alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                        {{ message }}
+    <div class="screen-participant_create text-top from-left">
+
+        <header class="pc-header">
+            <h1 class="pc-title">{% trans "Add participant" %}</h1>
+            <div class="pc-actions">
+                <a href="{% url "lang_en" %}">
+                    <button class="btn btn-link btn-lg">En</button>
+                </a>
+                <a href="{% url "lang_ru" %}">
+                    <button class="btn btn-link btn-lg">Ru</button>
+                </a>
+                <a href="{% url "logout" %}">
+                    <button class="btn btn-link btn-lg">{% trans "Log out" %}</button>
+                </a>
+            </div>
+        </header>
+
+        <form method="POST" action="?" autocomplete="off" class="pc-form">
+            {% csrf_token %}
+
+            {# Fallback: any message not bound to a field below (e.g. one that
+               leaked from another view) is shown here so nothing is swallowed. #}
+            {% for message in messages %}{% if "name" not in message.message and "sex" not in message.message and "age" not in message.message and "club" not in message.message and "categor" not in message.message %}
+                <p class="pc-error pc-error--general" role="alert">{{ message }}</p>
+            {% endif %}{% endfor %}
+
+            <div class="panel pc-panel">
+                <div class="panel-body">
+                    <div class="pc-form-fields">
+
+                        <!-- Full name -->
+                        <div class="pc-field pc-field--name">
+                            <label class="pc-label" for="id_fullname">{% trans "Full name" %}</label>
+                            <input id="id_fullname" autocomplete="off" type="text" class="form-control" name="fullname"
+                                   placeholder="{% trans "Full name" %}">
+                            {% for message in messages %}{% if "name" in message.message %}
+                                <p class="pc-error" role="alert">{{ message }}</p>
+                            {% endif %}{% endfor %}
+                        </div>
+
+                        <div class="pc-row2">
+                            <!-- Sex -->
+                            <fieldset class="pc-field pc-field--sex">
+                                <legend class="pc-label">{% trans "Sex" %}</legend>
+                                <div class="pc-choices">
+                                    <label class="pc-choice">
+                                        <input autocomplete="off" type="radio" name="radio_sex" value="0">
+                                        <span>{% trans "Man" %}</span>
+                                    </label>
+                                    <label class="pc-choice">
+                                        <input autocomplete="off" type="radio" name="radio_sex" value="1">
+                                        <span>{% trans "Woman" %}</span>
+                                    </label>
+                                </div>
+                                {% for message in messages %}{% if "sex" in message.message %}
+                                    <p class="pc-error" role="alert">{{ message }}</p>
+                                {% endif %}{% endfor %}
+                            </fieldset>
+
+                            <!-- Age -->
+                            <fieldset class="pc-field pc-field--age">
+                                <legend class="pc-label">{% trans "Age" %}</legend>
+                                <div class="pc-choices pc-choices--age">
+                                    <label class="pc-choice">
+                                        <input autocomplete="off" type="radio" name="radio_age" value="4"> <span>7-8</span>
+                                    </label>
+                                    <label class="pc-choice">
+                                        <input autocomplete="off" type="radio" name="radio_age" value="0"> <span>9-10</span>
+                                    </label>
+                                    <label class="pc-choice">
+                                        <input autocomplete="off" type="radio" name="radio_age" value="5"> <span>11</span>
+                                    </label>
+                                    <label class="pc-choice">
+                                        <input autocomplete="off" type="radio" name="radio_age" value="1"> <span>12-14</span>
+                                    </label>
+                                    <label class="pc-choice">
+                                        <input autocomplete="off" type="radio" name="radio_age" value="2"> <span>15-17</span>
+                                    </label>
+                                    <label class="pc-choice">
+                                        <input autocomplete="off" type="radio" name="radio_age" value="3"> <span>18+</span>
+                                    </label>
+                                </div>
+                                {% for message in messages %}{% if "age" in message.message %}
+                                    <p class="pc-error" role="alert">{{ message }}</p>
+                                {% endif %}{% endfor %}
+                            </fieldset>
+                        </div>
+
+                        <!-- Club -->
+                        <div class="pc-field pc-field--club">
+                            <label class="pc-label" for="club">{% trans "Club" %}</label>
+                            <select id="club" name="club" class="form-control">
+                                <option value="" selected="selected"></option>
+                                {% for club in clubs %}
+                                    <option value="{{ club.pk }}">{{ club }}</option>
+                                {% endfor %}
+                            </select>
+                            {% for message in messages %}{% if "club" in message.message %}
+                                <p class="pc-error" role="alert">{{ message }}</p>
+                            {% endif %}{% endfor %}
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="pc-field pc-field--categories">
+                            <div class="pc-cat-head">
+                                <span class="pc-label">{% trans "Categories" %}</span>
+                                <span class="pc-hint">{% trans "Choose an age first to enable categories" %}</span>
+                            </div>
+                            <div class="pc-table-wrap">
+                                <table class="table table-fixed-width pc-cat-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="pc-col-num">#</th>
+                                            <th class="pc-col-name">{% trans "Category" %}</th>
+                                            <th class="pc-col-check">18+</th>
+                                            <th class="pc-col-check">A</th>
+                                            <th class="pc-col-check">B</th>
+                                            <th class="pc-col-check">C</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for category in elementcategories %}
+                                            <tr>
+                                                <td class="pc-col-num">{{ forloop.counter }}</td>
+                                                <th scope="row" class="pc-col-name">{{ category.name }}</th>
+                                                <td class="pc-col-check">
+                                                    <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
+                                                           data-filter="3" disabled="true" aria-label="{{ category.name }} 18+">
+                                                </td>
+                                                <td class="pc-col-check">
+                                                    <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
+                                                           data-filter="2" disabled="true" aria-label="{{ category.name }} A">
+                                                </td>
+                                                <td class="pc-col-check">
+                                                    <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
+                                                           data-filter="1" disabled="true" aria-label="{{ category.name }} B">
+                                                </td>
+                                                <td class="pc-col-check">
+                                                    <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
+                                                           data-filter="0" disabled="true" aria-label="{{ category.name }} C">
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% for message in messages %}{% if "categor" in message.message %}
+                                <p class="pc-error" role="alert">{{ message }}</p>
+                            {% endif %}{% endfor %}
+                        </div>
+
                     </div>
-                {% endfor %}
+
+                    <div class="pc-submit">
+                        <button type="submit" class="btn btn-primary btn-lg">{% trans "Save" %}</button>
+                    </div>
+                </div>
             </div>
-        {% endif %}
+        </form>
     </div>
-    <div class="row">
-        <div class="col-md-9">
-
-        </div>
-        <div class="col-md-3 text-top">
-            <a href="{% url "lang_en" %}">
-                <button class="btn btn-link btn-lg">En</button>
-            </a>
-            <a href="{% url "lang_ru" %}">
-                <button class="btn btn-link btn-lg">Ru</button>
-            </a>
-            <a href="{% url "logout" %}">
-                <button class="btn btn-link btn-lg">{% trans "Log out" %}</button>
-            </a>
-        </div>
-    </div>
-
-    <form method="POST" action="?" autocomplete="off">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group from-left">
-                    <label for="exampleInputName1">{% trans "Full name" %}</label>
-                    <input autocomplete="off" type="text" class="form-control" name="fullname"
-                           placeholder="{% trans "Full name" %}">
-                </div>
-            </div>
-            <div class="col-sm-2 form-top">
-                <label class="radio-inline">
-                    <input autocomplete="off" type="radio" name="radio_sex" value="0"> {% trans "Man" %}
-                </label>
-            </div>
-            <div class="col-sm-1 form-top">
-                <label class="radio-inline">
-                    <input autocomplete="off" type="radio" name="radio_sex" value="1"> {% trans "Woman" %}
-                </label>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="form-group from-left">
-                    <label for="club">{% trans "Club" %}</label>
-                    <select id="club" name="club" class="form-control">
-                        <option value="" selected="selected"></option>
-                        {% for club in clubs %}
-                            <option value="{{ club.pk }}">{{ club }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-
-            <div class="col-sm-1">
-                <div class="form-group form-top-text">
-                    <label for="exampleInputName1">{% trans "Age" %}</label>
-                    <label class="radio-inline">
-                        <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="4"> 7-8
-                    </label>
-                </div>
-            </div>
-
-            <div class="col-sm-1 form-top">
-                <label class="radio-inline">
-                    <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="0"> 9-10
-                </label>
-            </div>
-
-            <div class="col-sm-1 form-top">
-                <label class="radio-inline">
-                    <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="5"> 11
-                </label>
-            </div>
-
-            <div class="col-sm-1 form-top">
-                <label class="radio-inline">
-                    <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="1"> 12-14
-                </label>
-            </div>
-
-            <div class="col-sm-1 form-top">
-                <label class="radio-inline">
-                    <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="2"> 15-17
-                </label>
-            </div>
-
-            <div class="col-sm-1 form-top">
-                <label class="radio-inline">
-                    <input autocomplete="off" type="radio" name="radio_age" id="inlineRadio2" value="3"> 18+
-                </label>
-            </div>
-        </div>
-
-        <table class="table from-left table-fixed-width ">
-            <div class="container">
-                {% for category in elementcategories %}
-                    <tr>
-                        <th>{{ forloop.counter }}</th>
-                        <th>{{ category.name }}</th>
-                        <th>18+ <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
-                                       data-filter="3" disabled="true"></th>
-                        <th>A <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
-                                     data-filter="2" disabled="true"></th>
-                        <th>B <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
-                                     data-filter="1" disabled="true"></th>
-                        <th>C <input autocomplete="off" type="checkbox" name="{{ prefix }}{{ category.pk }}"
-                                     data-filter="0" disabled="true"></th>
-                    </tr>
-                {% endfor %}
-            </div>
-        </table>
-
-        <button type="submit" class="btn btn-white btn-lg from-left">{% trans "Save" %}</button>
-
-    </form>
-
 {% endblock %}
 
 {% block js_assets_add %}
@@ -151,6 +183,3 @@
         });
     </script>
 {% endblock %}
-</body>
-</html>
-
