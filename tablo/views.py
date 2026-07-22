@@ -1,25 +1,30 @@
 import json
 import math
-import os
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import login as auth_login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.shortcuts import get_current_site
-from django.db import transaction
-from django.http import HttpResponseRedirect, HttpResponse
+from django.db import IntegrityError, transaction
+from django.http import (HttpResponseRedirect, HttpResponse,
+                         HttpResponseForbidden, JsonResponse,
+                         StreamingHttpResponse)
 from django.template import loader
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView, View
 
 from clubs.models import Club
-from core.views import LoginRequiredMixin
+from core.views import LoginRequiredMixin, StaffRequiredMixin, staff_required
 from elements.models import ElementCategory, Combination, ErrorCode
 from judges.models import JUDGE_A, JUDGE_B, JUDGE_C, JUDGE_CATEGORIES
 from participants.models import (Participant, SEX_CHOICES,
@@ -28,9 +33,9 @@ from participants.models import (Participant, SEX_CHOICES,
 from tablo.models import (Participation, Tablo, PS_WAITING,
                           PS_DOING, Score, WrapperErrorCode,
                           ElementStatus, PS_FINISHED)
+from tablo.monitor_state import monitor_state
 
 # Create your views here.
-MONITOR_FL_COUNT = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/file.count')
 GROUPS = {AGE_18_plus: '',
           AGE_15_17: 'A',
           AGE_12_14: 'B',
@@ -39,10 +44,14 @@ GROUPS = {AGE_18_plus: '',
           AGE_11: 'C'}
 
 
-def render_to_file(template, context, flname='showme.html'):
-    SHOWME = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/')
-    SHOWME = os.path.join(SHOWME, flname)
-    open(SHOWME, "w").write(loader.render_to_string(template, context))
+def publish_monitor_pages(template, contexts):
+    """Render every page fully, then publish atomically.
+
+    If any page fails to render (e.g. a missing flag), nothing is published and
+    the previous snapshot stays on the projector — no torn/half updates.
+    """
+    pages = [loader.render_to_string(template, ctx) for ctx in contexts]
+    monitor_state.publish(pages)
 
 
 def redirect_back(request, fallback='tablo_list'):
@@ -54,6 +63,19 @@ def redirect_back(request, fallback='tablo_list'):
     '''
     target = request.META.get('HTTP_REFERER') or reverse(fallback)
     return HttpResponseRedirect(target)
+
+
+def get_current_participation():
+    '''The single participant currently on the carpet (state DOING), or None.
+
+    Replaces the fragile ``filter(state=PS_DOING)[0]`` used across the views,
+    which raised IndexError whenever the main judge finalized while a judge's
+    form was still open.
+    '''
+    return (Participation.objects
+            .select_related('participant', 'tablo', 'tablo__category')
+            .filter(state=PS_DOING)
+            .first())
 
 
 @sensitive_post_parameters()
@@ -75,8 +97,10 @@ def login(request, template_name='tablo/login.html',
             user = form.get_user()
             # Okay, security check complete. Log the user in.
             auth_login(request, user)
-            redirect_to = reverse('judge_view') if not redirect_to else redirect_to
-            return HttpResponseRedirect(redirect_to)
+            safe = redirect_to and url_has_allowed_host_and_scheme(
+                redirect_to, allowed_hosts={request.get_host()},
+                require_https=request.is_secure())
+            return HttpResponseRedirect(redirect_to if safe else reverse('judge_view'))
     else:
         form = authentication_form(request)
 
@@ -240,7 +264,9 @@ class TabloListView(LoginRequiredMixin, TemplateView):
 
 
 def counts(valids):
-    prijoks = list(filter(lambda x: x.done and (not x.element.prizemlenie), valids))
+    # done is tri-state; only a decided-performed movement (done == 1) counts
+    # toward the high-value-element tie-break (untouched/failed must not).
+    prijoks = list(filter(lambda x: x.done == 1 and (not x.element.prizemlenie), valids))
     e4 = len(list(filter(lambda x: x.element.score > 0.3, prijoks)))
     e3 = len(list(filter(lambda x: x.element.score > 0.2, prijoks)))
     e2 = len(list(filter(lambda x: x.element.score > 0.1, prijoks)))
@@ -303,13 +329,15 @@ class TabloDetailView(LoginRequiredMixin, TemplateView):
         if tablo.started:
             uchastniki = uchastniki.order_by('-finalscore', '-order')
             uchastniki = sort(uchastniki)
+            # rank only finished participants; unfinished/no-shows get no place
+            # (and must not consume a place number)
             i = 1
             for u in uchastniki:
                 if u.state == PS_FINISHED:
                     u.rank = i
+                    i = i + 1
                 else:
                     u.rank = None
-                i = i + 1
             count = len(uchastniki)
         else:
             uchastniki = uchastniki.order_by('-order')
@@ -318,6 +346,7 @@ class TabloDetailView(LoginRequiredMixin, TemplateView):
         context['is_group'] = ('group' == tablo.category.name.lower())
 
         in_process = Participation.objects.filter(state=PS_DOING).exists()
+        context['in_process'] = in_process
         if not in_process:
             for u in uchastniki:
                 if u.state == PS_WAITING:
@@ -326,15 +355,16 @@ class TabloDetailView(LoginRequiredMixin, TemplateView):
 
         group = GROUPS[tablo.age]
         sex = SEX_CHOICES[tablo.sex][1]
-        context['title'] = "%s Group %s\'s %s %s y.o." % (group, sex.translate('en'),
-                                                          tablo.category.name, AGE_CHOICES[tablo.age][1])
+        context['title'] = "%s Group %s's %s %s y.o." % (group, sex,
+                                                         tablo.category.name,
+                                                         AGE_CHOICES[tablo.age][1])
         context['participations'] = uchastniki
         context['tablo'] = tablo
         context['count'] = count
         return context
 
 
-class TabloMonitorView(TabloDetailView):
+class TabloMonitorView(StaffRequiredMixin, TabloDetailView):
     def get_tablo(self):
         pk = self.kwargs.get('pk', None)
         return Tablo.objects.get(pk=pk)
@@ -346,11 +376,12 @@ class TabloMonitorView(TabloDetailView):
         participations = context['participations']
         per_screen = self.PARTICIPANTS_PER_SCREEN
         screen_count = max(1, math.ceil(context['count'] / per_screen))
-        open(MONITOR_FL_COUNT, "w").write(str(screen_count))
+        contexts = []
         for screen in range(screen_count):
             page = context.copy()
             page['participations'] = participations[screen * per_screen:(screen + 1) * per_screen]
-            render_to_file('tablo/monitor_tablo.html', page, flname='showme%s.html' % screen)
+            contexts.append(page)
+        publish_monitor_pages('tablo/monitor_tablo.html', contexts)
         return redirect_back(request)
 
 
@@ -362,91 +393,51 @@ class TabloPrintView(TabloDetailView):
         return Tablo.objects.get(pk=pk)
 
 
-class JudgeScoreView(LoginRequiredMixin, TemplateView):
+def judge_has_pending_score(judge):
+    '''True if this judge still has an unsaved score for the active participant.
 
-    def get_template_names(self):
-        judge = self.request.user
-        if judge.category not in (JUDGE_A, JUDGE_B, JUDGE_C,):
-            return None
-        template_name = 'tablo/judge_%s.html'
-        return template_name % JUDGE_CATEGORIES[judge.category]
-
-
-from django.core.cache import caches
+    The judge screens poll ``has_update`` to reload when this flips. (Replaces
+    the vestigial ``gl_*`` locmem-cache helpers, which nothing read.)
+    '''
+    return Score.objects.filter(
+        participation__state=PS_DOING, judge=judge, saved=False).exists()
 
 
-def gl_activate_participant(participation):
-    c = caches['default']
-    for sc in Score.objects.filter(participation=participation):
-        c.set(str(sc.judge_id), sc.saved, 15)
-
-
-def gl_deactivate_participant(participation, judge):
-    c = caches['default']
-    c.set(str(judge.id), False, 15)
-
-
-def gl_reopen_participant(participation, judge):
-    c = caches['default']
-    c.set(str(judge.id), True, 15)
-
-
-def gl_has_active_participant(judge):
-    # c = caches['default']
-    # if c.get(str(judge.id), True):
-    #     doing = Score.objects.filter(participation__state=PS_DOING,judge=judge,saved=False)
-    #     if doing.exists():
-    #         c.set( str(judge.id), True, 15 )
-    #     else:
-    #         c.set( str(judge.id), False, 15 )
-
-    # return c.get(str(judge.id), False)
-
-    return Score.objects.filter(participation__state=PS_DOING, judge=judge, saved=False).exists()
-
-
-def gl_deactivate_all_participant():
-    c = caches['default']
-    c.clear()
-
-
-class ParticipantActivateView(LoginRequiredMixin, View):
+class ParticipantActivateView(StaffRequiredMixin, View):
     def get_object(self):
-        obj = Participation.objects \
-            .select_related('participant', 'tablo') \
-            .filter(state=PS_DOING)
-        if obj:
-            return obj[0]
-        else:
-            return None
+        return get_current_participation()
 
     def render_monitor(self):
-        template = 'tablo/monitor_doing.html'
         p = self.get_object()
         group = GROUPS[p.tablo.age]
         sex = SEX_CHOICES[p.tablo.sex][1]
-        title = "%s Group %s\'s %s %s y.o." % (group, sex.translate('en'),
-                                                          p.tablo.category.name, AGE_CHOICES[p.tablo.age][1])
-        c = {
-            'title': title,
-            'participation': p
-        }
-        open(MONITOR_FL_COUNT, "w").write("1")
-        render_to_file(template, c, flname="showme0.html")
-        return None
+        title = "%s Group %s's %s %s y.o." % (group, sex,
+                                              p.tablo.category.name,
+                                              AGE_CHOICES[p.tablo.age][1])
+        publish_monitor_pages('tablo/monitor_doing.html',
+                              [{'title': title, 'participation': p}])
 
-    def get(self, request, *args, **kwargs):
-        ref = request.META.get('HTTP_REFERER', None)
-        pk = request.GET.get('pk')
-        p = Participation.objects.get(pk=pk)
-        p.state = PS_DOING
-        p.save()
-        gl_activate_participant(p)
-        self.render_monitor()
-        if ref:
-            return HttpResponseRedirect(ref)
-        else:
-            return HttpResponseRedirect(reverse_lazy('current_score'))
+    def post(self, request, *args, **kwargs):
+        pk = request.POST.get('pk')
+        # exactly one participant may be DOING; app-level check plus (once the
+        # migration lands) the partial unique index on state=DOING as backstop.
+        if Participation.objects.filter(state=PS_DOING).exists():
+            messages.error(request, _('Another participant is already performing.'))
+            return redirect_back(request)
+        try:
+            with transaction.atomic():
+                updated = Participation.objects.filter(
+                    pk=pk, state=PS_WAITING).update(state=PS_DOING)
+        except IntegrityError:
+            messages.error(request, _('Another participant is already performing.'))
+            return redirect_back(request)
+        if not updated:
+            messages.error(request, _('Cannot activate: the participant is not waiting.'))
+            return redirect_back(request)
+        p = self.get_object()
+        if p is not None:
+            self.render_monitor()
+        return redirect_back(request, fallback='current_score')
 
 
 class ParticipantScoreView(LoginRequiredMixin, TemplateView):
@@ -454,18 +445,19 @@ class ParticipantScoreView(LoginRequiredMixin, TemplateView):
 
     def get_object(self):
         pk = self.kwargs.get('pk', None)
-        obj = Participation.objects.select_related('participant', 'tablo').get(pk=pk)
-        return obj
+        return (Participation.objects
+                .select_related('participant', 'tablo', 'tablo__category')
+                .filter(pk=pk).first())
 
     def get_context_data(self, **kwargs):
         obj = self.get_object()
         if not obj:
-            return {}
+            return super(ParticipantScoreView, self).get_context_data(**kwargs)
         context = super(ParticipantScoreView, self).get_context_data(**kwargs)
         group = GROUPS[obj.participant.age]
         sex = SEX_CHOICES[obj.participant.sex][1]
-        context['title'] = "%s Group %s\'s %s" % (group, sex.translate('en'),
-                                                  obj.tablo.category.name)
+        context['title'] = "%s Group %s's %s" % (group, sex,
+                                                 obj.tablo.category.name)
         context['participant'] = obj.participant
         context['participation'] = obj
         context['is_group'] = obj.group
@@ -486,49 +478,38 @@ class ParticipantScoreView(LoginRequiredMixin, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            return HttpResponseForbidden('Staff only')
         obj = self.get_object()
+        if obj is None:
+            messages.info(request, _('The participant was already finalized.'))
+            return redirect_back(request)
         ref = request.META.get('HTTP_REFERER') or reverse('tablo_list')
-        if 'save' in request.POST.keys() or 'notavailable' in request.POST.keys():
-            bonus = int(request.POST.get('bonus', 0))
-            obj.bonus = True if bonus == 1 else False
-
+        if 'save' in request.POST or 'notavailable' in request.POST:
+            obj.bonus = request.POST.get('bonus') == '1'
             with transaction.atomic():
-                if 'notavailable' in request.POST.keys():
-                    scores = {'final': 0}
+                if 'notavailable' in request.POST:
                     Score.objects.filter(participation=obj.pk).update(saved=True)
-                    gl_deactivate_all_participant()
+                    obj.finalscore = 0
                 else:
-                    scores = obj.get_scores()
-                obj.finalscore = scores['final']
+                    obj.finalscore = obj.get_scores()['final']
                 obj.state = PS_FINISHED
                 obj.save()
-                gl_deactivate_all_participant()
-            kwargs['pk'] = obj.pk
             return HttpResponseRedirect(reverse('participant_score', kwargs={'pk': obj.pk}))
-        elif 'reopen' in request.POST.keys():
+        elif 'reopen' in request.POST:
             Score.objects.filter(participation=obj.pk).update(saved=False)
-            gl_activate_participant(obj)
-        elif 'monitor' in request.POST.keys():
+        elif 'monitor' in request.POST:
             if Score.objects.filter(participation=obj.pk, saved=False).exists():
                 return HttpResponseRedirect(ref)
-            kwargs.update({'get_rank': True})
-            open(MONITOR_FL_COUNT, "w").write("1")
-            render_to_file('tablo/monitor_score.html', self.get_context_data(**kwargs), flname="showme0.html")
+            kwargs.update({'get_rank': True, 'pk': obj.pk})
+            publish_monitor_pages('tablo/monitor_score.html',
+                                  [self.get_context_data(**kwargs)])
         return HttpResponseRedirect(ref)
 
 
 class CurrentParticipantScoreView(ParticipantScoreView):
     def get_object(self):
-        obj = Participation.objects \
-            .select_related('participant', 'tablo') \
-            .filter(state=PS_DOING)
-        if obj:
-            return obj[0]
-        else:
-            return None
-
-
-import itertools
+        return get_current_participation()
 
 
 class JudgeView(LoginRequiredMixin, TemplateView):
@@ -536,32 +517,28 @@ class JudgeView(LoginRequiredMixin, TemplateView):
         context = super(JudgeView, self).get_context_data(**kwargs)
         judge = self.request.user
 
-        doing = Participation.objects.filter(state=PS_DOING)
-        if doing:
-            p = doing[0]
-            s = Score.objects.filter(judge=self.request.user, participation=p)
-            if s:
-                context['score'] = s[0]
+        p = get_current_participation()
+        if p is not None:
+            s = Score.objects.filter(judge=self.request.user, participation=p).first()
+            if s is not None:
+                context['score'] = s
             group = GROUPS[p.tablo.age]
             sex = SEX_CHOICES[p.tablo.sex][1]
-            context['title'] = "%s Group %s\'s %s %s y.o." % (group, sex.translate('en'),
-                                                          p.tablo.category.name, AGE_CHOICES[p.tablo.age][1])
-        iterator = itertools.count()
+            context['title'] = "%s Group %s's %s %s y.o." % (group, sex,
+                                                             p.tablo.category.name,
+                                                             AGE_CHOICES[p.tablo.age][1])
         context['left_title'] = judge.username
-        self.request.iterator = iterator
         return context
 
     def get_template_names(self, **kwargs):
-        doing = Participation.objects.filter(state=PS_DOING)
-        in_process = doing.exists()
-        if not in_process:
+        p = get_current_participation()
+        if p is None:
             return 'tablo/judge_empty.html'
 
-        p = doing[0]
-        s = Score.objects.filter(judge=self.request.user, participation=p)
+        s = Score.objects.filter(judge=self.request.user, participation=p).first()
         # sometimes judge C will enter but there will be no
         # C items, just show empty
-        if not s or s[0].saved:
+        if s is None or s.saved:
             return 'tablo/judge_empty.html'
 
         judge = self.request.user
@@ -580,91 +557,133 @@ class JudgeView(LoginRequiredMixin, TemplateView):
         return super(JudgeView, self).get(request, *args, **kwargs)
 
 
+def _judge_score_or_redirect(request):
+    '''Resolve (participation, own score) for a judge submit, or a redirect.
+
+    Returns (participation, score, None) on success, or (None, None, response)
+    when there is no active participant / no score card for this judge — so the
+    submit views never 500 on the finalize-while-open race.
+    '''
+    p = get_current_participation()
+    if p is None:
+        messages.info(request, _('The participant was already finalized.'))
+        return None, None, HttpResponseRedirect(reverse('judge_view'))
+    s = Score.objects.filter(participation=p, judge=request.user).first()
+    if s is None:
+        return None, None, HttpResponseRedirect(reverse('judge_view'))
+    return p, s, None
+
+
 class JudgeASubmit(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
-        POST = request.POST
-        p = Participation.objects.filter(state=PS_DOING)[0]
-        s = Score.objects.filter(participation=p, judge=request.user)[0]
-        v = POST.getlist('error', [])
+        p, s, redirect = _judge_score_or_redirect(request)
+        if redirect is not None:
+            return redirect
+        invalid = []
         with transaction.atomic():
             s.aclass.all().delete()
-            if v:
-                for i in v:
-                    try:
-                        num = int(i)
-                        if num < 1 or num > 79:  # todo belongs to cat B
-                            if not num >= 90:
-                                continue
-                        e = ErrorCode.objects.get(number=num)
-                        w = WrapperErrorCode.objects.create(error_code=e)
-                        s.aclass.add(w)
-                    except Exception as e:
-                        pass
-
+            for raw in request.POST.getlist('error', []):
+                try:
+                    num = int(raw)
+                except (TypeError, ValueError):
+                    invalid.append(raw)
+                    continue
+                # A-technical errors are numbered 1-79 or shared 90+
+                if not ((1 <= num <= 79) or num >= 90):
+                    invalid.append(raw)
+                    continue
+                try:
+                    ec = ErrorCode.objects.get(number=num)
+                except ErrorCode.DoesNotExist:
+                    invalid.append(raw)
+                    continue
+                s.aclass.add(WrapperErrorCode.objects.create(error_code=ec))
             s.saved = True
             s.save()
-            gl_deactivate_participant(p, request.user)
-            return HttpResponseRedirect(reverse('judge_view'))
+        if invalid:
+            messages.warning(request, _('Ignored invalid error codes: %s')
+                             % ', '.join(str(x) for x in invalid))
+        return HttpResponseRedirect(reverse('judge_view'))
 
 
 class JudgeBSubmit(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        POST = request.POST
-        p = Participation.objects.filter(state=PS_DOING)[0]
-        s = Score.objects.filter(participation=p, judge=request.user)[0]
-        v = POST.get('score', None)
-        errors = POST.getlist('error', [])
-
+        p, s, redirect = _judge_score_or_redirect(request)
+        if redirect is not None:
+            return redirect
+        raw_score = request.POST.get('score')
+        if raw_score not in (None, ''):
+            try:
+                s.bclass = float(raw_score)
+            except (TypeError, ValueError):
+                messages.error(request, _('Invalid score value.'))
+                return HttpResponseRedirect(reverse('judge_view'))
+        invalid = []
         with transaction.atomic():
             s.berrors.all().delete()
-            if v:
-                s.bclass = float(v)
-            if errors:
-                for i in errors:
-                    try:
-                        num = int(i)
-                        if not (num < 1 or num > 79):  # todo
-                            continue
-                        e = ErrorCode.objects.get(number=int(i))
-                        w = WrapperErrorCode.objects.create(error_code=e)
-                        s.berrors.add(w)
-                    except Exception as e:
-                        pass
-
+            for raw in request.POST.getlist('error', []):
+                try:
+                    num = int(raw)
+                except (TypeError, ValueError):
+                    invalid.append(raw)
+                    continue
+                if 1 <= num <= 79:  # A-technical range, not valid for B
+                    invalid.append(raw)
+                    continue
+                try:
+                    ec = ErrorCode.objects.get(number=num)
+                except ErrorCode.DoesNotExist:
+                    invalid.append(raw)
+                    continue
+                s.berrors.add(WrapperErrorCode.objects.create(error_code=ec))
             s.saved = True
             s.save()
-            gl_deactivate_participant(p, request.user)
-            return HttpResponseRedirect(reverse('judge_view'))
+        if invalid:
+            messages.warning(request, _('Ignored invalid error codes: %s')
+                             % ', '.join(str(x) for x in invalid))
+        return HttpResponseRedirect(reverse('judge_view'))
 
 
 class JudgeCSubmit(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        POST = request.POST
-        p = Participation.objects.filter(state=PS_DOING)[0]
-        s = Score.objects.filter(participation=p, judge=request.user)[0]
-        fill_again = False
+        p, s, redirect = _judge_score_or_redirect(request)
+        if redirect is not None:
+            return redirect
+        # IDOR guard: only element statuses reachable from THIS judge's own
+        # score card may be updated; posted pks are matched against them.
+        owned = {es.pk: es
+                 for cs in s.cclass.all()
+                 for es in cs.statuses.all()}
         with transaction.atomic():
-            for k, v in POST.items():
+            for key, value in request.POST.items():
                 try:
-                    pk = int(k)
-                except:
+                    pk = int(key)
+                except (TypeError, ValueError):
                     continue
-                el = ElementStatus.objects.get(pk=pk)
-                el.done = int(v)
-                fill_again |= (el.done == 2)
-                el.save()
-            if fill_again:
+                es = owned.get(pk)
+                if es is None:
+                    continue  # not this judge's element -> ignore
+                try:
+                    done = int(value)
+                except (TypeError, ValueError):
+                    continue
+                if done not in (0, 1, 2):
+                    continue
+                es.done = done
+                es.save()
+            # completeness gate: every element must be marked before saving.
+            if any(es.done == 2 for es in owned.values()):
                 s.saved = False
-            else:
-                s.saved = True
+                s.save()
+                messages.error(request, _('Mark every element before submitting.'))
+                return HttpResponseRedirect(reverse('judge_view'))
+            s.saved = True
             s.save()
-            if s.saved:
-                gl_deactivate_participant(p, request.user)
         return HttpResponseRedirect(reverse('judge_view'))
 
 
-class JrebiView(LoginRequiredMixin, View):
+class JrebiView(StaffRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         POST = request.POST
         tablo_id = POST.get('tablo', None)
@@ -697,41 +716,37 @@ class JrebiView(LoginRequiredMixin, View):
 class MonitorView(TemplateView):
     template_name = 'tablo/monitor.html'
 
-
-class ShowmeView(TemplateView):
-    template_name = 'tablo/showme.html'
-
-    def get_template_names(self):
-        page = self.request.GET.get('page', 0)
-        return 'tablo/showme%s.html' % page
+    def get_context_data(self, **kwargs):
+        context = super(MonitorView, self).get_context_data(**kwargs)
+        context['event_title'] = settings.EVENT_TITLE
+        context['event_subtitle'] = settings.EVENT_SUBTITLE
+        return context
 
 
-def showme_view(request):
-    try:
-        counter = open(MONITOR_FL_COUNT, "r").read()
-        counter = int(counter)
-    except:
-        counter = 1
+def monitor_stream(request):
+    """Server-Sent Events stream of monitor snapshots.
 
-    SHOWME = os.path.join(settings.BASE_DIR, 'tablo/templates/tablo/')
-    res = []
-    for i in range(0, counter):
-        flname = os.path.join(SHOWME, 'showme%s.html' % i)
-        fl = open(flname, "r").read()
-        res.append({'idx': i, 'content': fl})
-    res = sorted(res, key=lambda x: x['idx'])
-    return HttpResponse(json.dumps(res), content_type='application/json')
+    Sends the current snapshot immediately, then one event per publish. A 15s
+    keepalive comment holds the connection open through idle periods; the
+    ``retry`` directive tells the browser to reconnect no faster than 3s.
+    """
+    def event_stream():
+        yield 'retry: 3000\n\n'
+        last_revision = -1
+        while True:
+            revision, pages = monitor_state.wait_for_change(last_revision, timeout=15)
+            if revision != last_revision:
+                last_revision = revision
+                payload = json.dumps({'revision': revision, 'pages': pages})
+                yield 'event: snapshot\ndata: %s\n\n' % payload
+            else:
+                yield ': keepalive\n\n'
 
-
-class CounterView(TemplateView):
-    template_name = 'tablo/showme.html'
-
-    def get_template_names(self):
-        page = self.request.GET.get('page', 0)
-        if page == 0:
-            return self.template_name
-        else:
-            return 'tablo/showme%s.html' % page
+    response = StreamingHttpResponse(event_stream(),
+                                     content_type='text/event-stream')
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'
+    return response
 
 
 class _SetLanguageView(View):
@@ -752,26 +767,30 @@ class LanguageViewRu(_SetLanguageView):
     language_code = 'ru-RU'
 
 
+@login_required
 def has_updated(request):
-    res = {'result': gl_has_active_participant(request.user)}
-    return HttpResponse(json.dumps(res), content_type='application/json')
+    return JsonResponse({'result': judge_has_pending_score(request.user)})
 
 
+@staff_required
+@require_POST
 def open_judge(request, idx):
-    p = Participation.objects.filter(state=PS_DOING)[0]
-    qs = Score.objects.filter(participation=p.pk).select_related('judge').order_by('judge__username')
+    p = get_current_participation()
+    if p is None:
+        return HttpResponseRedirect(reverse_lazy('current_score'))
+    qs = (Score.objects.filter(participation=p.pk)
+          .select_related('judge').order_by('judge__username'))
     idx = int(idx)
-    if idx < qs.count():
+    if 0 <= idx < qs.count():
         item = qs[idx]
         Score.objects.filter(pk=item.pk).update(saved=False)
-        gl_reopen_participant(p, item.judge)
     return HttpResponseRedirect(reverse_lazy('current_score'))
 
 
+@staff_required
+@require_POST
 def delete_participation(request, pk):
-    judge = request.user
-    if judge.is_staff:
-        with transaction.atomic():
-            Score.objects.filter(participation=pk).delete()
-            Participation.objects.filter(pk=pk).delete()
+    with transaction.atomic():
+        Score.objects.filter(participation=pk).delete()
+        Participation.objects.filter(pk=pk).delete()
     return redirect_back(request)

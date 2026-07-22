@@ -7,8 +7,8 @@ from .views import (ParticipantCreateView, TabloListView, TabloDetailView,
                     PntElementView, JudgeView, login,
                     JudgeASubmit, JudgeBSubmit, CurrentParticipantScoreView,
                     JudgeCSubmit, JrebiView, TabloPrintView,
-                    MonitorView, ShowmeView, TabloMonitorView,
-                    LanguageViewEn, LanguageViewRu, showme_view,
+                    MonitorView, TabloMonitorView,
+                    LanguageViewEn, LanguageViewRu, monitor_stream,
                     has_updated, open_judge, delete_participation)
 
 urlpatterns = [
@@ -28,11 +28,10 @@ urlpatterns = [
     re_path(r'^logout/$', LogoutView.as_view(next_page=reverse_lazy('login')), name="logout"),
     re_path(r'^jrebi$', JrebiView.as_view(), name="paticipant_jrebi"),
     re_path(r'^monitor$', MonitorView.as_view(), name="monitor"),
-    re_path(r'^showme$', ShowmeView.as_view(), name="showme"),
+    re_path(r'^monitor/stream$', monitor_stream, name="monitor_stream"),
     re_path(r'^tablo/monitor/(?P<pk>\d+)/$', TabloMonitorView.as_view(), name="tablo_monitor"),
     re_path(r'^language/en$', LanguageViewEn.as_view(), name="lang_en"),
     re_path(r'^language/ru$', LanguageViewRu.as_view(), name="lang_ru"),
-    re_path(r'^showme_view$', showme_view, name="showme_view"),
     re_path(r'^has_update$', has_updated, name="has_updated"),
     re_path(r'^open_judge/(?P<idx>\d+)/$', open_judge, name="open_judge"),
     re_path(r'^delete_participation/(?P<pk>\d+)/$', delete_participation, name="delete_participation"),
