@@ -9,10 +9,6 @@ class ElementCategoryTest(TestCase):
         cat = ElementCategory.objects.create(name='nanquan')
         self.assertEqual(str(cat), 'nanquan')
 
-    def test_seven_twelve_default_true(self):
-        cat = ElementCategory.objects.create(name='x')
-        self.assertTrue(cat.seven_twelve)
-
 
 class ElementTest(TestCase):
     def test_str_lists_categories(self):

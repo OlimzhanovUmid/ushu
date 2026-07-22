@@ -12,7 +12,6 @@ DIFFICULTY_CHOICES = (
 
 class ElementCategory(models.Model):  # Chanqguan, Nanquan, Taljiquan
     name = models.CharField(max_length=16)
-    seven_twelve = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
