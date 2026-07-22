@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 2,
+  "title": "Design System: Ushu Federation Scoring",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Electric Blue", "canonical": "#2f6df6", "tonalRamp": ["#0a1c44", "#12306e", "#1e4fd0", "#2f6df6", "#5a8bf8", "#8db1fb", "#c0d4fd", "#e6eefe"] },
+      "accent": { "role": "secondary", "displayName": "Competition Red", "canonical": "#ef3e4a", "tonalRamp": ["#3d0e12", "#6e1a20", "#a5262f", "#c92f3a", "#ef3e4a", "#f47079", "#f8a3a9", "#fcd4d7"] },
+      "gold": { "role": "tertiary", "displayName": "Federation Gold", "canonical": "#f5b53d", "tonalRamp": ["#3d2c08", "#6b4c12", "#997020", "#c79430", "#f5b53d", "#f7c66b", "#fada9a", "#fdeecb"] },
+      "navy": { "role": "neutral", "displayName": "Deep Navy", "canonical": "#0b1f3a", "tonalRamp": ["#060f22", "#0b1f3a", "#122a4d", "#1c3a6e", "#2b508f", "#4d74b3", "#8fa8ce", "#d3dded"] },
+      "bg": { "role": "neutral", "displayName": "Cool Field", "canonical": "#eef2f8", "tonalRamp": ["#161a20", "#2a303a", "#454d5a", "#6b7787", "#98a3b3", "#c3ccd8", "#e3e8f0", "#eef2f8"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1b2430", "tonalRamp": ["#0d1219", "#1b2430", "#2f3b4c", "#495568", "#6b7787", "#98a3b3", "#c3ccd8", "#eef2f8"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Projector/monitor headline and giant score-entry numerals. Reads across a hall." },
+      "headline": { "displayName": "Headline", "purpose": "Topbar competition title and screen H1s." },
+      "title": { "displayName": "Title", "purpose": "Card titles, sign-in title, section headers." },
+      "body": { "displayName": "Body", "purpose": "Default text and inputs. Base weight 500 for confident legibility." },
+      "label": { "displayName": "Label", "purpose": "Uppercase table headers and captions. The only tracked text." }
+    },
+    "shadows": [
+      { "name": "ambient-low", "value": "0 1px 3px rgba(11,31,58,0.08)", "purpose": "Resting lift for small controls and white buttons." },
+      { "name": "ambient", "value": "0 4px 16px rgba(11,31,58,0.10)", "purpose": "Default card, table, and primary-button elevation." },
+      { "name": "ambient-high", "value": "0 18px 50px rgba(11,31,58,0.18)", "purpose": "Sign-in panel and modal-level floating surfaces." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "0.16s ease", "purpose": "Shared transition for all button/input/nav state changes." }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Working action on light app screens. Electric blue, lifts on hover, presses on active.",
+      "html": "<button class=\"ds-btn-primary\">Сохранить</button>",
+      "css": ".ds-btn-primary { background: #2f6df6; color: #fff; border: none; border-radius: 6px; font-weight: 600; padding: 13px 18px; box-shadow: 0 4px 16px rgba(11,31,58,0.10); transition: background 0.16s ease, transform 0.16s ease, filter 0.16s ease; cursor: pointer; } .ds-btn-primary:hover, .ds-btn-primary:focus-visible { background: #1e4fd0; transform: translateY(-1px); outline: none; } .ds-btn-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Red Button",
+      "kind": "button",
+      "refersTo": "button-red",
+      "description": "Destructive/negative action. Competition red identity accent, used sparingly.",
+      "html": "<button class=\"ds-btn-red\">Удалить</button>",
+      "css": ".ds-btn-red { background: #ef3e4a; color: #fff; border: 1px solid #ef3e4a; border-radius: 6px; font-weight: 600; padding: 13px 18px; transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease; cursor: pointer; } .ds-btn-red:hover, .ds-btn-red:focus-visible { background: #c92f3a; border-color: #c92f3a; outline: none; } .ds-btn-red:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "White Button",
+      "kind": "button",
+      "refersTo": "button-white",
+      "description": "Quiet secondary. White fill, blue text, hairline border; inverts to blue fill on hover.",
+      "html": "<button class=\"ds-btn-white\">Отмена</button>",
+      "css": ".ds-btn-white { background: #fff; color: #2f6df6; border: 1px solid #e3e8f0; border-radius: 6px; font-weight: 600; padding: 13px 18px; box-shadow: 0 1px 3px rgba(11,31,58,0.08); transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease; cursor: pointer; } .ds-btn-white:hover, .ds-btn-white:focus-visible { background: #2f6df6; color: #fff; border-color: #2f6df6; outline: none; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard form field. Hairline border, blue focus glow ring.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Фамилия участника\" />",
+      "css": ".ds-input { background: #fff; color: #1b2430; border: 1px solid #e3e8f0; border-radius: 6px; padding: 13px 14px; font-size: 16px; font-weight: 500; transition: border-color 0.16s ease, box-shadow 0.16s ease; } .ds-input::placeholder { color: #6b7787; } .ds-input:focus { outline: none; border-color: #2f6df6; box-shadow: 0 0 0 3px rgba(47,109,246,0.18); }"
+    },
+    {
+      "name": "Data Table",
+      "kind": "card",
+      "refersTo": "table",
+      "description": "Light-screen results/list table. Pale header band, uppercase muted labels, soft row hover, clipped rounded corners on ambient shadow.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>№</th><th>Участник</th><th>Клуб</th><th>Балл</th></tr></thead><tbody><tr><td>1</td><td>Иванов А.</td><td>Дракон</td><td>9.42</td></tr><tr><td>2</td><td>Петров С.</td><td>Тигр</td><td>9.18</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 16px rgba(11,31,58,0.10); border-collapse: collapse; color: #1b2430; } .ds-table thead th { background: #f7f9fc; color: #6b7787; font-weight: 600; text-transform: uppercase; font-size: 12px; letter-spacing: 0.04em; padding: 14px 16px; text-align: left; border-bottom: 2px solid #e3e8f0; } .ds-table tbody td { padding: 13px 16px; font-weight: 500; border-top: 1px solid #e3e8f0; } .ds-table tbody tr:hover { background: #f5f8ff; }"
+    },
+    {
+      "name": "Current Label",
+      "kind": "chip",
+      "refersTo": "label-current",
+      "description": "The gold 'current' marker — reserved for the live athlete/element. Rarity is the meaning.",
+      "html": "<span class=\"ds-label-current\">Выступает</span>",
+      "css": ".ds-label-current { display: inline-block; background: #f5b53d; color: #0b1f3a; font-weight: 700; font-size: 12px; letter-spacing: 0.02em; padding: 6px 10px; border-radius: 6px; box-shadow: 0 0 0 3px rgba(245,181,61,0.35); }"
+    },
+    {
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "navigation",
+      "description": "Fixed navy sidebar link; brightens with a gold left-edge marker on hover.",
+      "html": "<nav class=\"ds-side-nav\"><a href=\"#\" class=\"ds-side-link\">Табло</a><a href=\"#\" class=\"ds-side-link ds-active\">Судейство</a></nav>",
+      "css": ".ds-side-nav { background: #0b1f3a; width: 232px; padding: 16px 0; } .ds-side-link { display: block; padding: 14px 22px; color: rgba(255,255,255,0.82); font-weight: 500; text-decoration: none; border-left: 3px solid transparent; transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease; } .ds-side-link:hover, .ds-side-link.ds-active { color: #fff; background: rgba(255,255,255,0.06); border-left-color: #f5b53d; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Federation Standard",
+    "overview": "The visual language of an official sports federation running a live competition — structured, ceremonial, and trustworthy under pressure, without ever raising its voice. A deep navy shell frames every screen like the border of a crest; electric blue does the working; competition red marks identity and consequence; a single gold accent is reserved for what is current. An instrument of record first, an interface second. It runs on a LAN of weak clients and a hall projector, so the aesthetic is economical: soft navy-tinted shadows for depth, no glass, no decorative gradients. Two registers live in one system — a calm light workbench for judges and organizers, and immersive dark stage/monitor screens where the moment earns the drama.",
+    "keyCharacteristics": [
+      "Navy-framed shell with a red identity block and a single gold 'current' accent",
+      "Two registers in one system: calm light workbench, immersive dark stage/monitor",
+      "Soft ambient shadows for structure; no glass, no decorative gradients",
+      "Tactile, confident controls sized for fast, mistake-proof judge entry",
+      "Light enough to stay fast on weak LAN clients and old browsers"
+    ],
+    "rules": [
+      { "name": "The Gold-Means-Now Rule", "body": "Gold (#f5b53d) is forbidden as decoration. It appears only to mark what is current — the live athlete, active element, main mark. If gold is on screen in more than one meaning, one of them is wrong.", "section": "colors" },
+      { "name": "The Cool-Ground Rule", "body": "The light background is cool (#eef2f8), never a warm cream or beige. Warmth is not this brand; officialdom is.", "section": "colors" },
+      { "name": "The Navy-Shadow Rule", "body": "Shadows are tinted navy (rgba(11,31,58,…)), never neutral gray/black. A gray shadow reads as generic Bootstrap; the navy tint keeps depth on-brand.", "section": "elevation" },
+      { "name": "The One-Family Rule", "body": "Inter is the only typeface. Hierarchy is weight (500→800) and size. A second family would read as marketing, which this is not.", "section": "typography" }
+    ],
+    "dos": [
+      "Do reserve gold (#f5b53d) exclusively for current — the live athlete, active element, main mark.",
+      "Do keep the light background cool (#eef2f8); this brand carries no warmth.",
+      "Do tint shadows navy (rgba(11,31,58,…)) so depth stays on-brand.",
+      "Do build hierarchy from Inter weights (500→800) and size alone.",
+      "Do size the judging controls large and give clear press/hover feedback — the hot path must be fast and mistake-proof.",
+      "Do push the stage/monitor screens beyond AA contrast for hall-distance legibility, with a prefers-reduced-motion fallback.",
+      "Do keep runtime light — effects and JS must stay cheap for weak LAN clients and old browsers."
+    ],
+    "donts": [
+      "Don't make it look like consumer SaaS or a startup dashboard — no playful gradients, mascots, or marketing flourish.",
+      "Don't fall back to generic gray Bootstrap-admin — the flat gray-box default this system is being redesigned away from.",
+      "Don't build a cluttered broadcast scoreboard — no competing overlays or animations fighting for attention.",
+      "Don't drift to enterprise gray — no tiny gray text at ERP density; body text is 500-weight ink.",
+      "Don't introduce a second typeface or a decorative display face; Inter is the only family.",
+      "Don't use border-left/border-right greater than 1px as a colored accent stripe on cards or list items (the 3px gold sidebar marker on nav items is the one sanctioned exception).",
+      "Don't use decorative glassmorphism or gradient text anywhere."
+    ]
+  }
+}
