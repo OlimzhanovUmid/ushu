@@ -6,58 +6,137 @@
 {% block body_class %}stage{% endblock %}
 
 {% block content %}
+    <div class="screen-judgea">
+        <form method="POST" action="{% url "judgea_submit" %}" autocomplete="off" class="ja-form">
+            {% csrf_token %}
 
-    <form method="POST" action="{% url "judgea_submit" %}" autocomplete="off">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col-md-9">
-                <p class="lead text-top">{% trans "Click space when encountered mistake!" %}</p>
-                <hr class="col-md-8">
+            {# Gold-Means-Now: the athlete currently on the carpet #}
+            <div class="ja-subject">
+                <span class="ja-bib" title="{% trans "Draw order" %}">{{ score.participation.order }}</span>
+                <div class="ja-who">
+                    <span class="ja-name">{{ score.participation.participant.name_ru }}</span>
+                    <span class="ja-meta">{{ score.participation.participant.club.name }} &middot; {{ title }}</span>
+                </div>
+                <div class="ja-count">
+                    <span class="ja-count-num" id="counter">{{ score.a_error_count }}</span>
+                    <span class="ja-count-label">{% trans "Number of mistakes:" %}</span>
+                </div>
             </div>
 
-            <div class="col-md-3 col-sm-3">
-                <p class="lead text-top text-right">{% trans "Number of mistakes:" %}<span
-                        id="counter">{{ score.a_error_count }}</span></p>
-                <hr class="col-md-12">
+            <p class="ja-hint">{% trans "Click space when encountered mistake!" %}</p>
+
+            <div class="ja-entry js-entry">
+                <ul class="circle">
+                    {% for error in score.aclass.all %}
+                        <li class="circle-item designed">
+                            <div class="col-sm-12"><input autocomplete="off" name="error" type="text" maxlength="3"
+                                                          inputmode="numeric" pattern="[0-9]*"
+                                                          aria-label="{% trans "Error code" %}"
+                                                          class="form-control input-center"
+                                                          value="{{ error.error_code.number }}"/></div>
+                        </li>
+                    {% endfor %}
+                    <li id="last-circle-item"></li>
+                </ul>
+                <button type="button" class="ja-add js-add">
+                    <span class="ja-add-glyph" aria-hidden="true">+</span>
+                    <span class="ja-add-text">{% trans "Add mistake" %}</span>
+                </button>
             </div>
-        </div>
 
-        <div class="row text-center">
-            <ul class="circle">
-                {% for error in score.aclass.all %}
-                    <li class="circle-item designed">
-                        <div class="col-sm-12"><input autocomplete="off" name="error" type="text" maxlength="3"
-                                                      class="form-control input-center"
-                                                      value="{{ error.error_code.number }}"/></div>
-                    </li>
-                {% endfor %}
-                <li id="last-circle-item"></li>
-            </ul>
-        </div>
-
-        <input type="submit" style="position: absolute; left: -9999px"/>
-    </form>
+            <div class="ja-actions">
+                <button type="submit" class="btn btn-primary ja-submit">{% trans "Save score" %}</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}
 
 {% block js_assets_add %}
     <script type="text/javascript">
-        $(document).on('keypress', function (e) {
-            var tag = e.target.tagName.toLowerCase();
-            console.log(tag);
-            console.log(e.which);
-            var counter = $('#counter')[0];
-            if (e.which === 32) {
-                // user has pressed space
-                $('#last-circle-item').before('<li class="circle-item designed"><div class="col-sm-12"><input autocomplete="off"  name="error" type="text" maxlength="3" class="form-control input-center" /></div></li>');
-                counter.innerHTML = Number(counter.innerHTML) + 1;
+        (function () {
+            var form = document.querySelector('.ja-form');
+            var region = document.querySelector('.js-entry');
+            var lastLi = document.getElementById('last-circle-item');
+            var counterEl = document.getElementById('counter');
+            var addBtn = document.querySelector('.js-add');
+            var ERR_LABEL = "{% trans "Error code" %}";
+
+            // A-technical error codes are numbered 1-79 or shared 90+.
+            function isValidCode(v) {
+                if (v === '') return true; // empty tile: allowed, dropped on submit
+                var n = parseInt(v, 10);
+                return (n >= 1 && n <= 79) || n >= 90;
             }
 
-            if (e.which === 10 || e.which === 13) {
-                // enter pressed
-                $('form').submit();
+            function validateTile(input) {
+                input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+                var item = input.closest('.circle-item');
+                if (item) item.classList.toggle('is-invalid', !isValidCode(input.value));
             }
-        });
 
+            function addTile() {
+                var li = document.createElement('li');
+                li.className = 'circle-item designed';
+                li.innerHTML = '<div class="col-sm-12"><input autocomplete="off" name="error" ' +
+                    'type="text" maxlength="3" inputmode="numeric" pattern="[0-9]*" ' +
+                    'aria-label="' + ERR_LABEL + '" class="form-control input-center"></div>';
+                lastLi.parentNode.insertBefore(li, lastLi);
+                counterEl.textContent = String(Number(counterEl.textContent) + 1);
+                var input = li.querySelector('input');
+                input.focus();
+                return input;
+            }
+
+            // Client-side guard: never fire the irreversible submit unless the codes
+            // are clean, and drop blank tiles so they don't post as invalid.
+            function requestSubmit() {
+                if (form.requestSubmit) { form.requestSubmit(); } else { form.submit(); }
+            }
+
+            // Live validation, scoped to the entry region only.
+            region.addEventListener('input', function (e) {
+                if (e.target && e.target.name === 'error') validateTile(e.target);
+            });
+
+            addBtn.addEventListener('click', function () { addTile(); });
+
+            // Scoped keyboard accelerators. Ignore keys while a link or a button
+            // (log-out, submit, add) holds focus so a stray Space/Enter can never
+            // add a phantom tile or submit the card by accident.
+            document.addEventListener('keydown', function (e) {
+                if (e.target && e.target.closest && e.target.closest('a, button')) return;
+                var isSpace = e.key === ' ' || e.key === 'Spacebar' || e.keyCode === 32;
+                var isEnter = e.key === 'Enter' || e.keyCode === 13 || e.keyCode === 10;
+                if (isSpace) {
+                    e.preventDefault();
+                    addTile();
+                } else if (isEnter) {
+                    e.preventDefault();
+                    requestSubmit();
+                }
+            });
+
+            // Final gate before the POST: block on invalid codes, strip blanks.
+            form.addEventListener('submit', function (e) {
+                var invalid = region.querySelector('.circle-item.is-invalid');
+                if (invalid) {
+                    e.preventDefault();
+                    invalid.classList.remove('shake');
+                    void invalid.offsetWidth; // restart animation
+                    invalid.classList.add('shake');
+                    var badInput = invalid.querySelector('input');
+                    if (badInput) badInput.focus();
+                    return;
+                }
+                var inputs = region.querySelectorAll('input[name="error"]');
+                for (var i = 0; i < inputs.length; i++) {
+                    if (inputs[i].value.trim() === '') inputs[i].disabled = true;
+                }
+            });
+        })();
+    </script>
+
+    <script type="text/javascript">
         $(document).ready(function () {
             (function worker() {
                 var finish = false;

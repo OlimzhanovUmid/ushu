@@ -3,55 +3,182 @@
 
 {% block content %}
     {{ block.super }}
-    <div class="row">
-        <div class="col-md-9">
 
-        </div>
-        <div class="col-md-3 text-top">
-            <a href="{% url "lang_en" %}">
-                <button class="btn btn-link btn-lg">En</button>
-            </a>
-            <a href="{% url "lang_ru" %}">
-                <button class="btn btn-link btn-lg">Ru</button>
-            </a>
-            <a href="{% url "logout" %}">
-                <button class="btn btn-link btn-lg">{% trans "Log out" %}</button>
-            </a>
-        </div>
-    </div>
+    {% trans "Choose an element" as t_placeholder %}
+    {% trans "Remove element" as t_remove %}
+    {% trans "No elements yet" as t_empty %}
+    {% trans "Ready" as t_ready %}
+    {% trans "Add at least one element to every category, and fill every empty slot, before saving." as t_block %}
+    {% trans "Everything set — you can save." as t_gate_ok %}
 
-    <form method="POST" action="?" autocomplete="off">
-        {% csrf_token %}
+    <div class="screen-pnt_element">
 
-        {% for category in categories %}
-            <div class="row from-left" style="margin-top: 40px;">
-                <input autocomplete="off" type='hidden' name='counter-{{ category.pk }}' value='0'>
-                <label class="col-lg-12" style="padding-top: 10px; border-top: 1px solid white">{{ category }}</label>
-                <div class="col-lg-12">
-                    <span id="last_item"></span>
-                </div>
-                <span class="btn btn-white" value="{{ category.pk }}">{% trans "Add element" %}</span>
+        <div class="row">
+            <div class="col-md-9"></div>
+            <div class="col-md-3 text-top">
+                <a href="{% url "lang_en" %}">
+                    <button class="btn btn-link btn-lg">En</button>
+                </a>
+                <a href="{% url "lang_ru" %}">
+                    <button class="btn btn-link btn-lg">Ru</button>
+                </a>
+                <a href="{% url "logout" %}">
+                    <button class="btn btn-link btn-lg">{% trans "Log out" %}</button>
+                </a>
             </div>
-        {% endfor %}
+        </div>
 
-        <button type="submit" class="btn btn-white from-left" style="margin-top: 30px">{% trans "Save" %}</button>
+        <header class="pe-head">
+            <h1 class="pe-title">{% trans "Program of elements" %}</h1>
+            <p class="pe-lead">{% trans "Build the ordered element sequence for each category. The current element is marked in gold." %}</p>
+        </header>
 
-    </form>
+        <form method="POST" action="?" autocomplete="off" class="pe-form">
+            {% csrf_token %}
+
+            {% for category in categories %}
+                <section class="pe-cat" data-cat="{{ category.pk }}" data-count="0">
+                    <div class="pe-cat-head">
+                        <span class="pe-cat-name">{{ category }}</span>
+                        <span class="pe-cat-status" data-role="status" data-state="empty">{{ t_empty }}</span>
+                    </div>
+
+                    <div class="pe-slots" data-role="slots"></div>
+
+                    <button type="button" class="btn btn-white pe-add" data-cat="{{ category.pk }}">
+                        <span class="pe-add-plus" aria-hidden="true">+</span>{% trans "Add element" %}
+                    </button>
+                </section>
+            {% endfor %}
+
+            <div class="pe-footer">
+                <button type="submit" class="btn btn-primary pe-save" disabled>{% trans "Save" %}</button>
+                <span class="pe-gate" data-role="gate" data-state="blocked">{{ t_block }}</span>
+            </div>
+        </form>
+    </div>
 
 {% endblock %}
 
 {% block js_assets_add %}
-    <script type="text/javascript" src="{% static "js/react.min.js" %}"></script>
     <script type="text/javascript">
         var items = {
             {% for k,v in cat_items.items %}
-                {{k}}: {{v|safe}},
+                "{{ k }}": {{ v|safe }},
             {% endfor %}
         };
+
+        var PE_I18N = {
+            placeholder: "{{ t_placeholder|escapejs }}",
+            remove: "{{ t_remove|escapejs }}",
+            empty: "{{ t_empty|escapejs }}",
+            ready: "{{ t_ready|escapejs }}",
+            block: "{{ t_block|escapejs }}",
+            gateOk: "{{ t_gate_ok|escapejs }}"
+        };
     </script>
-    <script type="text/javascript" src="{% static "js/selector.js" %}"></script>
+    <script type="text/javascript">
+        (function () {
+            var root = document.querySelector('.screen-pnt_element');
+            if (!root) { return; }
+
+            function markCurrent(slot) {
+                var all = root.querySelectorAll('.pe-slot');
+                for (var i = 0; i < all.length; i++) { all[i].classList.remove('pe-slot--current'); }
+                if (slot) { slot.classList.add('pe-slot--current'); }
+            }
+
+            function renumber(cat) {
+                var slots = cat.querySelectorAll('.pe-slot');
+                for (var i = 0; i < slots.length; i++) {
+                    slots[i].querySelector('.pe-slot-num').textContent = (i + 1);
+                }
+            }
+
+            function updateGate() {
+                var cats = root.querySelectorAll('.pe-cat');
+                var ok = true;
+                for (var i = 0; i < cats.length; i++) {
+                    var selects = cats[i].querySelectorAll('select.pe-select');
+                    var status = cats[i].querySelector('[data-role="status"]');
+                    var empties = 0;
+                    for (var j = 0; j < selects.length; j++) { if (!selects[j].value) { empties++; } }
+                    if (selects.length === 0 || empties > 0) {
+                        ok = false;
+                        status.setAttribute('data-state', 'empty');
+                        status.textContent = PE_I18N.empty;
+                    } else {
+                        status.setAttribute('data-state', 'ready');
+                        status.textContent = PE_I18N.ready;
+                    }
+                }
+                var save = root.querySelector('.pe-save');
+                var gate = root.querySelector('[data-role="gate"]');
+                save.disabled = !ok;
+                gate.setAttribute('data-state', ok ? 'ready' : 'blocked');
+                gate.textContent = ok ? PE_I18N.gateOk : PE_I18N.block;
+            }
+
+            function addSlot(cat) {
+                var catPk = cat.getAttribute('data-cat');
+                var slotsBox = cat.querySelector('[data-role="slots"]');
+                var idx = parseInt(cat.getAttribute('data-count'), 10) || 0;
+
+                var wrap = document.createElement('div');
+                wrap.className = 'pe-slot';
+
+                var num = document.createElement('span');
+                num.className = 'pe-slot-num';
+
+                var sel = document.createElement('select');
+                sel.className = 'form-control pe-select';
+                sel.name = 'cat-' + catPk + '-' + idx;
+
+                var ph = document.createElement('option');
+                ph.value = '';
+                ph.textContent = PE_I18N.placeholder;
+                ph.disabled = true;
+                ph.selected = true;
+                sel.appendChild(ph);
+
+                var list = items[catPk] || [];
+                for (var i = 0; i < list.length; i++) {
+                    var o = document.createElement('option');
+                    o.value = list[i].pk;
+                    o.textContent = list[i].name;
+                    sel.appendChild(o);
+                }
+
+                var rm = document.createElement('button');
+                rm.type = 'button';
+                rm.className = 'btn pe-remove';
+                rm.setAttribute('aria-label', PE_I18N.remove);
+                rm.textContent = '×';
+
+                wrap.appendChild(num);
+                wrap.appendChild(sel);
+                wrap.appendChild(rm);
+                slotsBox.appendChild(wrap);
+
+                cat.setAttribute('data-count', idx + 1);
+
+                sel.addEventListener('change', function () { markCurrent(wrap); updateGate(); });
+                rm.addEventListener('click', function () { wrap.remove(); renumber(cat); updateGate(); });
+
+                renumber(cat);
+                markCurrent(wrap);
+                updateGate();
+                sel.focus();
+            }
+
+            var adders = root.querySelectorAll('.pe-add');
+            for (var a = 0; a < adders.length; a++) {
+                adders[a].addEventListener('click', function () {
+                    addSlot(this.closest('.pe-cat'));
+                });
+            }
+
+            updateGate();
+        })();
+    </script>
 {% endblock %}
-
-</body>
-</html>
-

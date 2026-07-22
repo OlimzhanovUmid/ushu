@@ -5,130 +5,213 @@
 {% block body_class %}stage{% endblock %}
 
 {% block content %}
-    <ul class="nav navbar-nav side-nav">
-        <div class="row" style="width: 170px; margin-left: 10px;">
-            <p style="color: white; margin-top: 30%; font-size: 11px;"><span class="label label-default label-orange"
-                                                                             style="padding: 5px; font-size: 15px;">V</span>
-                {% blocktrans %}If success click{% endblocktrans %}</p>
-            <p style="color: white; margin-top: 30%; font-size: 11px;"><span class="label label-default label-black"
-                                                                             style="padding: 5px; font-size: 15px;">C</span>
-                {% blocktrans %}If mistake click{% endblocktrans %}</p>
-        </div>
-    </ul>
+    <div class="screen-judgec">
 
-    <div class="row">
-        <div class="col-md-9"></div>
-        <div class="col-md-3 text-top">
-            <a href="{% url "lang_en" %}">
-                <button class="btn btn-link btn-lg active">En</button>
-            </a>
-            <a href="{% url "lang_en" %}">
-                <button class="btn btn-link btn-lg">Ru</button>
-            </a>
-            <a href="{% url "logout" %}">
-                <button class="btn btn-link btn-lg">{% trans "Log out" %}</button>
-            </a>
-        </div>
-    </div>
+        {# ---- Sidebar key legend (V / C / X / Enter) ---- #}
+        <ul class="nav navbar-nav side-nav">
+            <li class="jc-legend">
+                <span class="jc-legend-title">{% trans "Keys" %}</span>
+                <span class="jc-legend-row"><kbd class="jc-kbd jc-kbd-performed">V</kbd><span>{% trans "Performed" %}</span></span>
+                <span class="jc-legend-row"><kbd class="jc-kbd jc-kbd-failed">C</kbd><span>{% trans "Mistake" %}</span></span>
+                <span class="jc-legend-row"><kbd class="jc-kbd">X</kbd><span>{% trans "Undo" %}</span></span>
+                <span class="jc-legend-row"><kbd class="jc-kbd">&crarr;</kbd><span>{% trans "Submit" %}</span></span>
+            </li>
+        </ul>
 
-    <div class="row">
-        <div class="col-md-12 judge-top text-center">
-            <form method="POST" action="{% url "judgec_submit" %}" autocomplete="off">
-                {% csrf_token %}
-                <div class="row">
-                    <div id="items" class="marks col-lg-10 from-left">
-                        {% for comb in score.cclass.all %}
-                            {% for el in comb.statuses.all %}
-                                {{ request.iterator.next }}
-                                <div data-item="1" pk="{{ el.pk }}" class="label label-default {{ el.get_label }}"
-                                     style="margin-top:10px; display: inline-block;{% if forloop.last %}margin-right: 30px;{% endif %}">
-                                    {{ el.element.symbol }}
-                                    <input autocomplete="off" type="hidden" value="{{ el.get_id }}" name="{{ el.pk }}">
-                                </div>
-                            {% endfor %}
+        {# ---- Top utility row (language / logout) — behavior unchanged ---- #}
+        <div class="row">
+            <div class="col-md-12 text-top text-right jc-utility">
+                <a href="{% url "lang_en" %}">
+                    <button class="btn btn-link btn-lg active">En</button>
+                </a>
+                <a href="{% url "lang_en" %}">
+                    <button class="btn btn-link btn-lg">Ru</button>
+                </a>
+                <a href="{% url "logout" %}">
+                    <button class="btn btn-link btn-lg">{% trans "Log out" %}</button>
+                </a>
+            </div>
+        </div>
+
+        {# ---- Server feedback (completeness gate rejection lands here) ---- #}
+        {% if messages %}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="jc-messages" role="alert" aria-live="assertive">
+                        {% for message in messages %}
+                            <div class="jc-alert{% if message.tags %} jc-alert-{{ message.tags }}{% endif %}">{{ message }}</div>
                         {% endfor %}
                     </div>
                 </div>
-                <input type="submit" style="position: absolute; left: -9999px"/>
-            </form>
+            </div>
+        {% endif %}
+
+        <div class="row">
+            <div class="col-md-12 judge-top">
+                <form method="POST" action="{% url "judgec_submit" %}" autocomplete="off" id="jc-form">
+                    {% csrf_token %}
+
+                    <div id="items" class="jc-tree">
+                        {% for comb in score.cclass.all %}
+                            <section class="jc-combo">
+                                <header class="jc-combo-head">
+                                    {% trans "Combination" %} {{ forloop.counter }}
+                                </header>
+                                <div class="jc-combo-tiles">
+                                    {% for el in comb.statuses.all %}
+                                        <button type="button" data-item="1" pk="{{ el.pk }}"
+                                                class="el-tile"
+                                                data-state="{% if el.get_id == '1' %}performed{% elif el.get_id == '0' %}failed{% else %}untouched{% endif %}">
+                                            <span class="el-symbol">{{ el.element.symbol }}</span>
+                                            <input autocomplete="off" type="hidden" value="{{ el.get_id }}" name="{{ el.pk }}">
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </section>
+                        {% endfor %}
+                    </div>
+
+                    {# ---- Sticky control bar: progress + verbs + gated submit ---- #}
+                    <div class="jc-actionbar">
+                        <div class="jc-progress">
+                            <div class="jc-progress-count">
+                                <span id="jc-marked">0</span>&thinsp;/&thinsp;<span id="jc-total">{{ score.get_max_comb_count }}</span>
+                                <span class="jc-progress-label">{% trans "marked" %}</span>
+                            </div>
+                            <div class="jc-progress-track">
+                                <div class="jc-progress-fill" id="jc-fill"></div>
+                            </div>
+                        </div>
+
+                        <div class="jc-verbs" role="group" aria-label="{% trans "Score current element" %}">
+                            <button type="button" class="jc-verb jc-verb-performed" id="jc-do-performed">
+                                <kbd class="jc-kbd">V</kbd> {% trans "Performed" %}
+                            </button>
+                            <button type="button" class="jc-verb jc-verb-failed" id="jc-do-failed">
+                                <kbd class="jc-kbd">C</kbd> {% trans "Mistake" %}
+                            </button>
+                            <button type="button" class="jc-verb jc-verb-undo" id="jc-do-undo">
+                                <kbd class="jc-kbd">X</kbd> {% trans "Undo" %}
+                            </button>
+                        </div>
+
+                        <button type="submit" class="jc-submit" id="jc-submit" disabled>
+                            <span class="jc-submit-main">{% trans "Save score" %}</span>
+                            <span class="jc-submit-hint" id="jc-submit-hint"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block js_assets_add %}
     <script type="text/javascript">
-        $(document).ready(function () {
-            {% if score.get_c_is_reopen == True %}
-                var glCurrentCounter = {{score.get_max_comb_count}};
-            {%else%}
-                var glCurrentCounter = 0;
-            {%endif%}
-            var maxCounter = {{score.get_max_comb_count}};
+        $(function () {
+            var $tiles = $('#items [data-item="1"]');
+            var tiles = $tiles.toArray();
+            var total = tiles.length;
+            var STATE_VALUE = {untouched: '2', performed: '1', failed: '0'};
 
-            function show_current() {
-                try {
-                    if (glCurrentCounter < maxCounter) {
-                        var selector = 'div[data-item="1"]';
-                        $(selector).removeClass('label-current');
-                        var target = $(selector)[glCurrentCounter];
-                        target.setAttribute('class', target.getAttribute('class') + ' label-current');
-                        console.log(target);
-                    }
-                } catch (err) {
-                    console.log(err);
-                }
-            };
-            show_current();
+            function inputOf(t) { return t.querySelector('input[type="hidden"]'); }
+            function valueOf(t) { var i = inputOf(t); return i ? i.value : '2'; }
 
-            $(document).on('keypress', function (e) {
-                if (e.which === 10 || e.which === 13) {
-                    // enter pressed
-                    $('form').submit();
-                    return;
-                }
+            // Resume position after a reopen or a rejected partial submit:
+            // land on the FIRST still-untouched element (done === 2), scanning
+            // real input values rather than a single-element heuristic.
+            var current = total;
+            for (var k = 0; k < total; k++) {
+                if (valueOf(tiles[k]) === '2') { current = k; break; }
+            }
 
-                var value = glCurrentCounter;
-                if (e.which === 120) {
-                    value -= 1;
-                }
-                console.log(e.which, value);
-                var curr = 'label-current';
-                var def = 'label label-default label-blue';
-                var yes = 'label label-default label-orange';
-                var no = 'label label-default label-black';
-                var selector = 'div[data-item="1"]';
-                console.log(value, $(selector));
-                var target = $(selector)[value];
-                var inpSelector = 'input[name="' + target.getAttribute('pk') + '"]';
-                var inp = $(inpSelector)[0];
+            function setState(i, state) {
+                if (i < 0 || i >= total) return;
+                tiles[i].setAttribute('data-state', state);
+                var inp = inputOf(tiles[i]);
+                if (inp) inp.value = STATE_VALUE[state];
+            }
 
-                // 'c' and 'C'
-                // 'v' and 'V' 118, 86
-                if (e.which === 99 || e.which === 67) {
-                    // user has pressed space
-                    inp.setAttribute('value', 0);
-                    target.setAttribute('class', no);
-                    glCurrentCounter += 1;
-                    glCurrentCounter = Math.min(glCurrentCounter, maxCounter);
-                    show_current();
+            function markedCount() {
+                var n = 0;
+                for (var i = 0; i < total; i++) { if (valueOf(tiles[i]) !== '2') n++; }
+                return n;
+            }
+
+            var $submit = $('#jc-submit'), $hint = $('#jc-submit-hint'),
+                $marked = $('#jc-marked'), $fill = $('#jc-fill');
+
+            function render() {
+                $tiles.removeClass('is-current');
+                if (current >= 0 && current < total) {
+                    tiles[current].classList.add('is-current');
                 }
-                if (e.which == 118 || e.which == 86) {
-                    inp.setAttribute('value', 1);
-                    target.setAttribute('class', yes);
-                    glCurrentCounter += 1;
-                    glCurrentCounter = Math.min(glCurrentCounter, maxCounter);
-                    show_current();
+                var m = markedCount();
+                $marked.text(m);
+                $fill.css('width', (total ? Math.round(m / total * 100) : 100) + '%');
+                var complete = (m === total);
+                $submit.prop('disabled', !complete).toggleClass('is-ready', complete);
+                $hint.text(complete ? '' : '{% trans "left" %}: ' + (total - m));
+            }
+
+            function focusCurrent() {
+                if (current >= 0 && current < total && tiles[current].scrollIntoView) {
+                    tiles[current].scrollIntoView({block: 'center', inline: 'nearest'});
                 }
-                if (e.which === 120) {
-                    // removing last selected choice
-                    inp.setAttribute('value', 2);
-                    target.setAttribute('class', def);
-                    glCurrentCounter -= 1;
-                    glCurrentCounter = Math.max(glCurrentCounter, 0);
-                    show_current();
+            }
+
+            function performCurrent() {
+                if (current < total) { setState(current, 'performed'); current = Math.min(current + 1, total); render(); focusCurrent(); }
+            }
+            function failCurrent() {
+                if (current < total) { setState(current, 'failed'); current = Math.min(current + 1, total); render(); focusCurrent(); }
+            }
+            function undo() {
+                if (current > 0) { current -= 1; setState(current, 'untouched'); render(); focusCurrent(); }
+            }
+
+            function nudgeGate() {
+                $submit.removeClass('nudge');
+                void $submit[0].offsetWidth; // restart animation
+                $submit.addClass('nudge');
+            }
+
+            function trySubmit() {
+                if (markedCount() === total) {
+                    $('#jc-form').get(0).submit();
+                } else {
+                    nudgeGate();
                 }
+            }
+
+            // Pointer fallback: tap a tile to make it the current element
+            // (jump to it / correct a mis-mark without the keyboard).
+            $('#items').on('click', '[data-item="1"]', function (e) {
+                e.preventDefault();
+                current = tiles.indexOf(this);
+                render();
             });
 
+            $('#jc-do-performed').on('click', function (e) { e.preventDefault(); this.blur(); performCurrent(); });
+            $('#jc-do-failed').on('click', function (e) { e.preventDefault(); this.blur(); failCurrent(); });
+            $('#jc-do-undo').on('click', function (e) { e.preventDefault(); this.blur(); undo(); });
+
+            // Completeness gate: a partial card can never POST, by button or Enter.
+            $('#jc-form').on('submit', function (e) {
+                if (markedCount() !== total) { e.preventDefault(); nudgeGate(); }
+            });
+
+            $(document).on('keypress', function (e) {
+                var w = e.which;
+                if (w === 10 || w === 13) { e.preventDefault(); trySubmit(); return; }
+                if (w === 118 || w === 86) { performCurrent(); }       // v / V -> performed
+                else if (w === 99 || w === 67) { failCurrent(); }      // c / C -> mistake
+                else if (w === 120) { undo(); }                        // x     -> undo
+            });
+
+            render();
+
+            // Reload when the active participant changes (unchanged).
             (function worker() {
                 var finish = false;
                 $.ajax({
@@ -141,29 +224,10 @@
                         }
                     },
                     complete: function () {
-                        // Schedule the next request when the current one's complete
                         if (finish == false) setTimeout(worker, 5000);
                     }
                 });
             })();
         });
     </script>
-{% endblock %}
-
-{% block css_assets_add %}
-    <style>
-        .btn-link {
-            color: white;
-        }
-
-        .main-mark {
-            color: #f1c40f;
-        }
-
-        .marks div {
-            display: inline;
-            font-size: 40px;
-            padding: 10px;
-        }
-    </style>
 {% endblock %}

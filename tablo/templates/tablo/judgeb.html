@@ -5,69 +5,85 @@
 {% block body_class %}stage{% endblock %}
 
 {% block content %}
-    <ul class="nav navbar-nav side-nav">
-        <p class="enter-data">{% trans "Enter the result:" %}</p>
-        <p class="enter-data">{% trans "Enter error code:" %}</p>
-    </ul>
+    <div class="screen-judgeb">
+        <form method="POST" action="{% url "judgeb_submit" %}" autocomplete="off">
+            {% csrf_token %}
 
-    <form method="POST" action="{% url "judgeb_submit" %}" autocomplete="off">
-        {% csrf_token %}
-        <div class="from-left">
             <div class="row">
-                <div class="col-md-9"></div>
-
-                <div class="col-md-3 text-top">
-                    <a href="{% url "logout" %}">{% trans "Log out" %}</a>
+                <div class="col-xs-12 text-right judgeb-logout">
+                    <a class="btn-link" href="{% url "logout" %}">{% trans "Log out" %}</a>
                 </div>
             </div>
 
+            {# Gold-Means-Now: the single gold mark is the athlete on the carpet right now #}
             <div class="row text-center">
-                <input autocomplete="off" name="score" type="number" step="0.01"
-                       class="form-control input-center input-heading input-no-bg" maxlength="10"
-                       value={{ score.bclass|stringformat:".2f" }}>
+                <div class="current-athlete">
+                    <span class="current-athlete-label">{% trans "Now scoring" %}</span>
+                    <span class="current-athlete-bib">№ {{ score.participation.order }}</span>
+                    <span class="current-athlete-name">{{ score.participation.participant.name_ru }}</span>
+                </div>
+            </div>
+
+            {# Score entry — the number is the interface #}
+            <div class="row text-center">
+                <p class="section-label">{% trans "Enter the result:" %}</p>
+                <input autofocus autocomplete="off" name="score" type="number" step="0.01"
+                       class="form-control input-center input-heading input-no-bg score-input" maxlength="10"
+                       value="{{ score.bclass|stringformat:".2f" }}">
                 <hr class="main resized">
             </div>
 
+            {# Error codes — recorded tiles are solid, awaiting tiles are ghosted #}
             <div class="row text-center">
-                <div class="">
-                    <p class="lead">{% trans "Please insert participant result" %}</p>
-                    <hr class="resized">
-                </div>
-            </div>
-
-            <div class="row text-center">
+                <p class="section-label">{% trans "Enter error code:" %}</p>
                 <ul class="circle">
                     {% for e in score.berrors.all %}
                         <li class="circle-item designed">
                             <div class="col-sm-12"><input autocomplete="off" name="error" type="text" maxlength="3"
-                                                          class="form-control input-center"
-                                                          value={{ e.error_code.number }}></div>
+                                                          class="form-control input-center error-input"
+                                                          value="{{ e.error_code.number }}"></div>
                         </li>
                     {% endfor %}
-                    <li id="last-circle-item"></li>
+                    <li id="last-circle-item" class="circle-item circle-add" aria-hidden="true">
+                        <span class="circle-add-plus">+</span>
+                        <span class="circle-add-hint">{% trans "space" %}</span>
+                    </li>
                 </ul>
             </div>
 
+            {# Primary action — large and unmistakable, so submit is a deliberate act #}
             <div class="row text-center">
-                <p class="lead">{% trans "Please insert error code" %}</p>
-                <hr class="resized">
+                <button type="submit" class="btn btn-primary btn-submit-score">
+                    {% trans "Submit score" %}
+                </button>
+                <p class="submit-hint">{% trans "Space adds an error code · Enter submits" %}</p>
             </div>
-
-            <input type="submit" style="position: absolute; left: -9999px"/>
-        </div>
-
-    </form>
+        </form>
+    </div>
 {% endblock %}
 
 {% block js_assets_add %}
     <script type="text/javascript">
         $(document).on('keypress', function (e) {
+            var name = e.target && e.target.name ? e.target.name : '';
+
             if (e.which === 32) {
-                // user has pressed space
-                $('#last-circle-item').before('<li class="circle-item designed"><div class="col-sm-12"><input autocomplete="off"  name="error" type="text" maxlength="3" class="form-control input-center" /></div></li>');
+                // Space -> add a fresh (ghosted) error-code tile and jump into it.
+                e.preventDefault();
+                $('#last-circle-item').before('<li class="circle-item circle-blank"><div class="col-sm-12"><input autocomplete="off" name="error" type="text" maxlength="3" class="form-control input-center error-input" /></div></li>');
+                $('#last-circle-item').prev().find('input').focus();
+                return;
             }
+
             if (e.which === 10 || e.which === 13) {
-                // enter pressed
+                // Mistake-proofing: Enter while typing an error code must NOT fire a
+                // final submit — it only commits the tile. Submitting is deliberate,
+                // via Enter on the score field or the big Submit button.
+                if (name === 'error') {
+                    e.preventDefault();
+                    e.target.blur();
+                    return;
+                }
                 $('form').submit();
             }
         });

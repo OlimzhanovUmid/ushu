@@ -1,16 +1,30 @@
 {% extends "tablo/base_tablo_wmenu.html" %}
 {% load static i18n query_transform %}
 
-{%block meta_add%}<!-- 
+{% block title %}{% trans "Please wait" %}{% endblock %}
+
+{%block meta_add%}<!--
 <meta http-equiv="refresh" content="10"> -->
 {% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div class="screen-judge_empty">
+        <section class="wait-card" role="status" aria-live="polite">
+            <div class="wait-beacon" aria-hidden="true">
+                <span class="wait-beacon-ring"></span>
+                <span class="wait-beacon-ring wait-beacon-ring--delay"></span>
+                <span class="wait-beacon-core"></span>
+            </div>
 
-        <div class="text-top text-center">
-            <p class="text-top btn btn-lg btn-white" style="font-size: 4em;">{% trans "Please wait" %}</p>
-        </div>
+            <p class="wait-eyebrow">{% trans "Judging panel" %}</p>
+            <h1 class="wait-title">{% trans "Please wait" %}</h1>
+            <p class="wait-sub">{% trans "No participant on the platform. The next athlete will appear here automatically." %}</p>
+
+            <p class="wait-status">
+                <span class="wait-status-dot" aria-hidden="true"></span>
+                {% trans "Connected — waiting for the next participant" %}
+            </p>
+        </section>
     </div>
 {% endblock %}
 

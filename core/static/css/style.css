@@ -579,7 +579,7 @@ input[type=radio] { width: 1em; height: 1em; }
 /* neutral resting label — token muted, not Bootstrap #777 gray */
 .label-default { background: var(--c-muted);        color: var(--c-white); }
 .label-black  { background: var(--c-status-fail);   color: var(--c-white); }
-/* ink (not white) on amber: white on #f59e0b is 2.15:1; ink is ~8.6:1 */
+/* ink (not white) on amber: white on #f59e0b is 2.15:1; ink is 7.29:1 (clears >=7 stage bar) */
 .label-orange { background: var(--c-status-warn);   color: var(--c-ink); }
 /* deepened blue so white text clears the >=7:1 hall target on stage (#2f6df6 was 4.5:1) */
 .label-blue   { background: var(--c-status-ok-deep); color: var(--c-white); border: 1px solid rgba(255,255,255,0.6); }
@@ -662,3 +662,957 @@ body.monitor-screen .table > tbody > tr:hover { background: rgba(255, 255, 255, 
         transform: none !important;
     }
 }
+
+/* ===== Judge hot-path — screen-scoped ===== */
+
+/* Shared scoring-status labels on the dark stage — hall-legible (>=7:1).
+   .label-orange already carries ink-on-amber (7.29:1) globally (option: dark
+   ink text on amber), so warn no longer fails the old white-on-amber ~2.15:1.
+   .label-blue ships its own edge + deepened blue (white ~8.7:1). The near-ink
+   .label-black (--c-status-fail #1b2430) would dissolve into the navy stage,
+   so give it a hairline edge there — white text on it is already ~15:1. */
+body.stage .label-black {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* =========================================================================
+   Screen: judgea.html — A-judge error-code entry (dark stage)
+   ========================================================================= */
+.screen-judgea {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: calc(var(--topbar-h) + var(--space-md)) var(--gutter) var(--space-md);
+}
+
+/* Gold-Means-Now: the athlete currently on the carpet */
+.screen-judgea .ja-subject {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius);
+    padding: var(--space-sm) var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.screen-judgea .ja-bib {
+    flex: 0 0 auto;
+    min-width: 84px;
+    height: 84px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-gold);
+    color: var(--c-navy);                 /* navy ink on gold — matches .yellow */
+    border-radius: var(--radius-sm);
+    box-shadow: var(--ring-gold);
+    font-weight: var(--fw-display);
+    font-size: 44px;
+    line-height: 1;
+}
+
+.screen-judgea .ja-who {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.screen-judgea .ja-name {
+    font-size: var(--fs-headline);
+    font-weight: var(--fw-headline);
+    letter-spacing: var(--ls-headline);
+    line-height: var(--lh-headline);
+    color: var(--c-white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.screen-judgea .ja-meta {
+    font-size: var(--fs-body);
+    font-weight: var(--fw-body);
+    color: rgba(255, 255, 255, 0.72);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.screen-judgea .ja-count {
+    flex: 0 0 auto;
+    text-align: center;
+    padding-left: var(--space-md);
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.screen-judgea .ja-count-num {
+    display: block;
+    font-size: var(--fs-display);
+    font-weight: var(--fw-display);
+    line-height: 1;
+    letter-spacing: var(--ls-display);
+    color: var(--c-white);
+}
+
+.screen-judgea .ja-count-label {
+    display: block;
+    margin-top: 4px;
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.screen-judgea .ja-hint {
+    font-size: var(--fs-title);
+    font-weight: var(--fw-title);
+    color: rgba(255, 255, 255, 0.82);
+    margin: 0 0 var(--space-sm);
+}
+
+/* Entry region — data tiles + add affordance */
+.screen-judgea .ja-entry {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.screen-judgea .ja-entry .circle {
+    margin-bottom: 0;
+}
+
+/* crisp ink digit on the white tile */
+.screen-judgea .circle-item .input-center {
+    color: var(--c-ink);
+}
+
+/* Active tile: standard electric-blue focus ring (gold stays reserved for the athlete) */
+.screen-judgea .circle-item:focus-within {
+    box-shadow: var(--shadow), var(--focus-ring);
+}
+
+/* Out-of-range / rejected code */
+.screen-judgea .circle-item.is-invalid {
+    box-shadow: var(--shadow), 0 0 0 3px rgba(239, 62, 74, 0.65);
+}
+
+.screen-judgea .circle-item.is-invalid .input-center {
+    color: var(--c-accent);
+}
+
+.screen-judgea .circle-item.shake {
+    animation: ja-shake 0.3s ease;
+}
+
+@keyframes ja-shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .screen-judgea .circle-item.shake { animation: none; }
+}
+
+/* Add-mistake affordance — mirrors a tile so it reads as "one more" */
+.screen-judgea .ja-add {
+    width: 120px;
+    height: 120px;
+    margin: 14px 40px;
+    border-radius: 50%;
+    background: transparent;
+    border: 2px dashed rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.85);
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+
+.screen-judgea .ja-add:hover,
+.screen-judgea .ja-add:focus-visible {
+    /* sanctioned gold hover accent on a dark surface */
+    border-color: var(--c-gold);
+    color: var(--c-gold);
+    background: rgba(245, 181, 61, 0.08);
+    outline: none;
+}
+
+.screen-judgea .ja-add-glyph {
+    font-size: 40px;
+    font-weight: var(--fw-title);
+    line-height: 1;
+}
+
+.screen-judgea .ja-add-text {
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+}
+
+/* Singular primary action — large and unmistakable */
+.screen-judgea .ja-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-md);
+}
+
+.screen-judgea .ja-submit {
+    min-height: 56px;
+    min-width: 260px;
+    padding: 16px 48px;
+    font-size: var(--fs-title);
+    font-weight: var(--fw-title);
+}
+
+@media (max-width: 768px) {
+    .screen-judgea .ja-subject { flex-wrap: wrap; }
+    .screen-judgea .ja-count {
+        border-left: 0;
+        padding-left: 0;
+        text-align: left;
+        flex-basis: 100%;
+    }
+    .screen-judgea .ja-submit { width: 100%; }
+}
+
+/* =========================================================================
+   Screen: judgeb.html — Judge B single-score entry (dark stage)
+   ========================================================================= */
+.screen-judgeb { padding-top: var(--space-md); padding-bottom: 40px; }
+
+.screen-judgeb .judgeb-logout { margin-bottom: var(--space-sm); }
+
+/* Gold-Means-Now: the ONE gold mark on this screen is the current athlete */
+.screen-judgeb .current-athlete {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-sm);
+    max-width: 100%;
+    margin: 0 auto var(--space-md);
+    padding: 12px 22px;
+    background: var(--c-gold);
+    color: var(--c-navy);
+    border-radius: var(--radius);
+    box-shadow: var(--ring-gold);
+}
+.screen-judgeb .current-athlete-label {
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+.screen-judgeb .current-athlete-bib {
+    font-size: 26px;
+    font-weight: var(--fw-display);
+    line-height: 1;
+}
+.screen-judgeb .current-athlete-name {
+    font-size: var(--fs-headline);
+    font-weight: var(--fw-headline);
+    letter-spacing: var(--ls-headline);
+}
+
+/* Section labels (uppercase, on the dark stage) */
+.screen-judgeb .section-label {
+    margin: 0 0 var(--space-sm);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+}
+
+/* Score numeral tile — deepened blue so the white numeral clears the stage's
+   >=7:1 hall bar (plain --c-primary is ~4.5:1, rejected elsewhere in this sheet). */
+.screen-judgeb .score-input {
+    background: var(--c-status-ok-deep);
+    max-width: 360px;
+    width: 100%;
+    margin: 0 auto var(--space-sm);
+}
+
+/* Awaiting error tiles (added via space) read as ghosts vs. the solid,
+   recorded (.designed) white tiles — so pending vs. recorded count is legible. */
+.screen-judgeb .circle-blank {
+    background: rgba(255, 255, 255, 0.06);
+    border: 2px dashed rgba(255, 255, 255, 0.42);
+    box-shadow: none;
+}
+.screen-judgeb .circle-blank .error-input { color: var(--c-white); }
+
+/* Trailing "add another code" affordance (space) */
+.screen-judgeb .circle-add {
+    flex-direction: column;
+    background: transparent;
+    border: 2px dashed rgba(255, 255, 255, 0.35);
+    box-shadow: none;
+    color: rgba(255, 255, 255, 0.6);
+}
+.screen-judgeb .circle-add-plus {
+    font-size: 40px;
+    font-weight: var(--fw-display);
+    line-height: 1;
+}
+.screen-judgeb .circle-add-hint {
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+}
+
+/* Large, unmistakable primary action */
+.screen-judgeb .btn-submit-score {
+    min-width: 320px;
+    min-height: 64px;
+    padding: 18px 44px;
+    font-size: 22px;
+    font-weight: var(--fw-title);
+    margin-top: var(--space-md);
+}
+.screen-judgeb .submit-hint {
+    margin: var(--space-sm) 0 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+}
+
+/* =========================================================================
+   Screen: judgec.html — C-judge element tree (dark stage register).
+   Token-based; scoped under .screen-judgec.
+   ========================================================================= */
+.screen-judgec { padding-bottom: var(--space-md); }
+
+/* ---- Sidebar key legend ---- */
+.screen-judgec .jc-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 8px 22px;
+    color: rgba(255, 255, 255, 0.9);
+}
+.screen-judgec .jc-legend-title {
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+}
+.screen-judgec .jc-legend-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--fs-body);
+    font-weight: var(--fw-body);
+}
+
+/* ---- Key caps ---- */
+.screen-judgec .jc-kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: var(--c-white);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+}
+.screen-judgec .jc-kbd-performed { background: var(--c-status-warn); border-color: var(--c-status-warn); color: var(--c-ink); }
+.screen-judgec .jc-kbd-failed    { background: var(--c-status-fail); border-color: rgba(255, 255, 255, 0.35); color: var(--c-white); }
+
+/* ---- Utility row ---- */
+.screen-judgec .jc-utility { margin-bottom: var(--space-sm); }
+
+/* ---- Server feedback ---- */
+.screen-judgec .jc-messages { margin: var(--space-sm) 0; }
+.screen-judgec .jc-alert {
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--c-white);
+    font-weight: 600;
+    font-size: var(--fs-body);
+}
+.screen-judgec .jc-alert + .jc-alert { margin-top: 10px; }
+.screen-judgec .jc-alert-error {
+    background: rgba(239, 62, 74, 0.18);
+    border-color: var(--c-accent);
+}
+.screen-judgec .jc-alert-warning {
+    background: rgba(245, 158, 11, 0.16);
+    border-color: var(--c-status-warn);
+}
+
+/* ---- Combination tree ---- */
+.screen-judgec .jc-tree {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+}
+.screen-judgec .jc-combo {
+    padding: 16px 18px 18px;
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.screen-judgec .jc-combo-head {
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 12px;
+}
+.screen-judgec .jc-combo-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* ---- Element tiles (tri-state, tappable, >=56px targets) ---- */
+.screen-judgec .el-tile {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    min-height: 56px;
+    padding: 8px 14px;
+    margin: 0;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform var(--transition), box-shadow var(--transition),
+                background var(--transition), color var(--transition);
+}
+.screen-judgec .el-tile:focus-visible { outline: none; box-shadow: var(--ring-gold); }
+.screen-judgec .el-symbol { pointer-events: none; }
+
+/* untouched (done=2): reads as "not yet" — dashed, cool, low-fill */
+.screen-judgec .el-tile[data-state="untouched"] {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.92);
+}
+/* performed (done=1): amber, ink text (AA on #f59e0b) */
+.screen-judgec .el-tile[data-state="performed"] {
+    background: var(--c-status-warn);
+    color: var(--c-ink);
+}
+/* failed (done=0): ink/dark, white text */
+.screen-judgec .el-tile[data-state="failed"] {
+    background: var(--c-status-fail);
+    color: var(--c-white);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+/* redundant state glyph so performed/failed read without relying on colour */
+.screen-judgec .el-tile[data-state="performed"]::after,
+.screen-judgec .el-tile[data-state="failed"]::after {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+}
+.screen-judgec .el-tile[data-state="performed"]::after {
+    content: "\2713"; /* check */
+    background: var(--c-ink);
+    color: var(--c-status-warn);
+}
+.screen-judgec .el-tile[data-state="failed"]::after {
+    content: "\2715"; /* cross */
+    background: var(--c-white);
+    color: var(--c-status-fail);
+}
+
+/* current element — Gold-Means-Now: one gold tile, unmistakable */
+.screen-judgec .el-tile.is-current {
+    background: var(--c-gold);
+    color: var(--c-navy);
+    border: 2px solid var(--c-gold);
+    box-shadow: 0 0 0 4px rgba(245, 181, 61, 0.45), 0 10px 26px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px) scale(1.05);
+    z-index: 1;
+    animation: jc-current-pulse 1.6s ease-in-out infinite;
+}
+.screen-judgec .el-tile.is-current::after { display: none; }
+@keyframes jc-current-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(245, 181, 61, 0.45), 0 10px 26px rgba(0, 0, 0, 0.4); }
+    50%      { box-shadow: 0 0 0 7px rgba(245, 181, 61, 0.28), 0 10px 26px rgba(0, 0, 0, 0.4); }
+}
+
+/* ---- Sticky control bar ---- */
+.screen-judgec .jc-actionbar {
+    position: sticky;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    padding: 14px 18px;
+    background: var(--c-navy-deep);
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius) var(--radius) 0 0;
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* progress */
+.screen-judgec .jc-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 150px;
+    flex: 0 1 auto;
+}
+.screen-judgec .jc-progress-count {
+    font-size: var(--fs-title);
+    font-weight: 700;
+    color: var(--c-white);
+}
+.screen-judgec .jc-progress-label {
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-left: 4px;
+}
+.screen-judgec .jc-progress-track {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    overflow: hidden;
+}
+.screen-judgec .jc-progress-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: var(--c-primary);
+    transition: width 0.24s ease-out;
+}
+
+/* verb buttons (mirror the keyboard) */
+.screen-judgec .jc-verbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 1 1 auto;
+    justify-content: center;
+}
+.screen-judgec .jc-verb {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    padding: 0 20px;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    font-family: inherit;
+    font-size: var(--fs-body);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform var(--transition), filter var(--transition), background var(--transition);
+}
+.screen-judgec .jc-verb .jc-kbd { pointer-events: none; }
+.screen-judgec .jc-verb:hover { filter: brightness(1.08); }
+.screen-judgec .jc-verb:active { transform: translateY(1px); }
+.screen-judgec .jc-verb-performed { background: var(--c-status-warn); color: var(--c-ink); }
+.screen-judgec .jc-verb-performed .jc-kbd { background: rgba(27, 36, 48, 0.18); border-color: rgba(27, 36, 48, 0.3); color: var(--c-ink); }
+.screen-judgec .jc-verb-failed { background: var(--c-status-fail); color: var(--c-white); border-color: rgba(255, 255, 255, 0.25); }
+.screen-judgec .jc-verb-undo {
+    background: transparent;
+    color: var(--c-white);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* gated submit */
+.screen-judgec .jc-submit {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 56px;
+    padding: 8px 26px;
+    border-radius: var(--radius-sm);
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.45);
+    font-family: inherit;
+    font-weight: 700;
+    line-height: 1.15;
+    cursor: not-allowed;
+    transition: background var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition);
+    flex: 0 0 auto;
+}
+.screen-judgec .jc-submit .jc-submit-main { font-size: var(--fs-body); }
+.screen-judgec .jc-submit .jc-submit-hint {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+}
+.screen-judgec .jc-submit.is-ready {
+    background: var(--c-primary);
+    border: 1px solid transparent;
+    color: var(--c-white);
+    cursor: pointer;
+    box-shadow: var(--shadow);
+}
+.screen-judgec .jc-submit.is-ready:hover { background: var(--c-primary-dark); }
+.screen-judgec .jc-submit.is-ready:active { transform: translateY(1px); }
+.screen-judgec .jc-submit.nudge { animation: jc-nudge 0.4s ease; }
+@keyframes jc-nudge {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+
+@media (max-width: 767px) {
+    .screen-judgec .jc-actionbar { gap: 12px; }
+    .screen-judgec .jc-progress,
+    .screen-judgec .jc-verbs,
+    .screen-judgec .jc-submit { flex: 1 1 100%; }
+    .screen-judgec .jc-verbs { justify-content: space-between; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .screen-judgec .el-tile.is-current { animation: none; }
+    .screen-judgec .jc-submit.nudge { animation: none; }
+    .screen-judgec .el-tile,
+    .screen-judgec .jc-verb,
+    .screen-judgec .jc-progress-fill { transition: none; }
+}
+
+/* =========================================================================
+   Screen: judge_empty.html — Judge waiting state.
+   Calm "workbench" (light) register — the idle counterpart to the dark
+   judging stage. No gold: there is no current athlete to mark yet.
+   ========================================================================= */
+.screen-judge_empty {
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding: calc(var(--topbar-h) + var(--gutter)) var(--space-md) var(--gutter);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.screen-judge_empty .wait-card {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--gutter);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+
+/* Listening beacon: static core + expanding rings = "connected, waiting" */
+.screen-judge_empty .wait-beacon {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    margin-bottom: var(--space-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.screen-judge_empty .wait-beacon-core {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--c-primary);
+    box-shadow: 0 0 0 6px rgba(47, 109, 246, 0.14);
+}
+.screen-judge_empty .wait-beacon-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--c-primary);
+    opacity: 0;
+    animation: wait-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.screen-judge_empty .wait-beacon-ring--delay { animation-delay: 1.2s; }
+@keyframes wait-ping {
+    0%   { transform: scale(0.35); opacity: 0.5; }
+    100% { transform: scale(1);    opacity: 0; }
+}
+
+.screen-judge_empty .wait-eyebrow {
+    margin: 0;
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    line-height: var(--lh-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--c-muted);
+}
+
+.screen-judge_empty .wait-title {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: var(--fw-headline);     /* 700 — calmer than the 800 display */
+    line-height: var(--lh-display);
+    letter-spacing: var(--ls-headline);
+    color: var(--c-navy);                /* navy authority, not shouting */
+}
+
+.screen-judge_empty .wait-sub {
+    margin: 0 auto;
+    max-width: 40ch;
+    font-size: var(--fs-body);
+    font-weight: var(--fw-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+}
+
+/* Connection status pill — reassures the client is polling, not stalled */
+.screen-judge_empty .wait-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: var(--space-sm) 0 0;
+    padding: 6px 14px;
+    background: var(--c-surface-alt);
+    border: 1px solid var(--c-border);
+    border-radius: 999px;
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--c-muted);
+}
+.screen-judge_empty .wait-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--c-primary);
+    animation: wait-blink 2.4s ease-in-out infinite;
+}
+@keyframes wait-blink {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.2; }
+}
+
+/* Weak-client / reduced-motion fallback: hold a quiet steady state */
+@media (prefers-reduced-motion: reduce) {
+    .screen-judge_empty .wait-beacon-ring {
+        animation: none;
+        opacity: 0.22;
+        transform: scale(0.92);
+    }
+    .screen-judge_empty .wait-status-dot { animation: none; }
+}
+
+/* =========================================================================
+   Screen: pnt_element.html — Element-points helper (light register)
+   ========================================================================= */
+.screen-pnt_element .pe-head {
+    margin: var(--space-md) 0 var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--c-border);
+}
+.screen-pnt_element .pe-title {
+    font-weight: var(--fw-headline);
+    font-size: var(--fs-headline);
+    line-height: var(--lh-headline);
+    letter-spacing: var(--ls-headline);
+    color: var(--c-ink);
+    margin: 0 0 6px;
+}
+.screen-pnt_element .pe-lead {
+    font-weight: var(--fw-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-muted);
+    margin: 0;
+}
+
+/* Category card */
+.screen-pnt_element .pe-cat {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+.screen-pnt_element .pe-cat-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+.screen-pnt_element .pe-cat-name {
+    font-weight: var(--fw-title);
+    font-size: var(--fs-title);
+    line-height: var(--lh-title);
+    color: var(--c-ink);
+}
+.screen-pnt_element .pe-cat-status {
+    font-weight: var(--fw-label);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+.screen-pnt_element .pe-cat-status[data-state="empty"] {
+    color: var(--c-muted);
+    background: var(--c-surface-alt);
+    border: 1px solid var(--c-border);
+}
+.screen-pnt_element .pe-cat-status[data-state="ready"] {
+    color: var(--c-white);
+    background: var(--c-status-ok);
+    border: 1px solid var(--c-status-ok);
+}
+
+/* Slot rows */
+.screen-pnt_element .pe-slots { display: flex; flex-direction: column; gap: 10px; }
+.screen-pnt_element .pe-slot {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 6px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    transition: box-shadow var(--transition), border-color var(--transition);
+}
+.screen-pnt_element .pe-slot-num {
+    flex: 0 0 auto;
+    min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--c-surface-alt);
+    border: 1px solid var(--c-border);
+    color: var(--c-muted);
+    font-weight: var(--fw-label);
+    font-size: var(--fs-label);
+}
+.screen-pnt_element .pe-select {
+    flex: 1 1 auto;
+    height: 44px;
+    min-height: 44px;
+    font-size: var(--fs-body);
+    font-weight: var(--fw-body);
+    border-radius: var(--radius-sm);
+}
+
+/* Gold-Means-Now: the current element being configured */
+.screen-pnt_element .pe-slot--current {
+    border-color: var(--c-gold);
+    box-shadow: var(--ring-gold);
+}
+.screen-pnt_element .pe-slot--current .pe-slot-num {
+    background: var(--c-gold);
+    border-color: var(--c-gold);
+    color: var(--c-navy);
+}
+
+/* Remove / undo */
+.screen-pnt_element .pe-remove {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--c-accent-dark);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+}
+.screen-pnt_element .pe-remove:hover,
+.screen-pnt_element .pe-remove:focus-visible {
+    color: var(--c-white);
+    background: var(--c-accent-dark);
+    border-color: var(--c-accent-dark);
+    outline: none;
+}
+
+/* Add element */
+.screen-pnt_element .pe-add {
+    margin-top: var(--space-sm);
+    min-height: 44px;
+    font-size: var(--fs-body);
+}
+.screen-pnt_element .pe-add-plus { font-weight: 800; margin-right: 8px; }
+
+/* Footer + submit gate */
+.screen-pnt_element .pe-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--c-border);
+}
+.screen-pnt_element .pe-save {
+    min-height: 44px;
+    font-size: var(--fs-body);
+    padding-left: 28px;
+    padding-right: 28px;
+}
+.screen-pnt_element .pe-save:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+.screen-pnt_element .pe-gate {
+    font-weight: var(--fw-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+}
+.screen-pnt_element .pe-gate[data-state="blocked"] { color: var(--c-accent-dark); }
+.screen-pnt_element .pe-gate[data-state="ready"] { color: var(--c-status-ok-deep); }
+
+/* Screen: scores.html — no screen-scoped CSS was supplied for this screen
+   (the source block carried only a placeholder, not a rule set), so nothing
+   is emitted here; add real declarations when the scores.html block lands. */

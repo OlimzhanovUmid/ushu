@@ -5,38 +5,10 @@
 {% block nav_title %}{{ title }}{% endblock %}
 {% block body_class %}stage{% endblock %}
 
-{% block css_assets_add %}
-    <style>
-        .btn-link,
-        .col-md-9 h2 {
-            color: white;
-        }
-
-        .marks li {
-            display: inline;
-            font-size: 40px;
-            padding: 10px;
-        }
-
-        .marks #hardcode {
-            display: inline;
-            font-size: 40px;
-            padding: 10px;
-        }
-
-        .marks, p {
-            color: white;
-        }
-
-        .main-mark {
-            color: #f1c40f;
-        }
-    </style>
-{% endblock %}
-
 {% block content %}
     {{ block.super }}
 
+    <div class="screen-scores">
     <form method="POST"
           action="{% if current_p_view %}
     {% url "current_score" %}
@@ -61,140 +33,130 @@
             </div>
         </div>
 
-
-        <div class="row from-left">
+        {# ---- Section A: technical judges (deductions) ---- #}
+        <div class="row from-left scores-section">
             <div class="col-md-6">
                 {% for score in scores.a %}
-                    <div class="row">
-                        <ul class="marks">
-                            {% if participation.is_saved == False %}
-                                <li><button type="submit" formmethod="post"
-                                       formaction="{% url "open_judge" idx=forloop.counter0 %}"
-                                       class="btn btn-link btn-lg">X</button></li>
-                            {% endif %}
-                            <li class="main-mark">A{{ forloop.counter }}</li>
+                    <div class="judge-line">
+                        {% if participation.is_saved == False %}
+                            <button type="submit" formmethod="post"
+                                    formaction="{% url "open_judge" idx=forloop.counter0 %}"
+                                    class="reopen-btn" title="{% trans "Reopen" %}"
+                                    onclick="return confirm('Переоткрыть оценку этого судьи?');">&times;</button>
+                        {% endif %}
+                        <span class="judge-chip">A{{ forloop.counter }}</span>
+                        {% if score %}
                             {% for s in score %}
-                                <li>{{ s.error_code.name }}</li>
+                                <span class="label label-orange">{{ s.error_code.name }}</span>
                             {% endfor %}
-                        </ul>
+                        {% else %}
+                            <span class="label label-blue">&#10003;</span>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>
 
-
             <div class="col-md-6">
-                <div class="row" style="text-align: center;">
-                    <p class="lead">{% trans "Mistakes" %}</p>
-                </div>
-
-                <ul class="marks no-margin">
+                <p class="scores-col-title">{% trans "Mistakes" %}</p>
+                <div class="chip-row">
                     {% for error in scores.final_a.0 %}
-                        <li>{{ error.name }}</li>
+                        <span class="label label-orange">{{ error.name }}</span>
                     {% endfor %}
-                </ul>
-
-                <div class="row result-top">
-                    <p class="lead text-right">{% trans "Total for" %} A: {{ scores.final_a.1|stringformat:".1f" }}</p>
                 </div>
+                <p class="subtotal">{% trans "Total for" %} A:
+                    <span class="subtotal-value">{{ scores.final_a.1|stringformat:".1f" }}</span></p>
             </div>
         </div>
 
         <hr class="from-left">
 
-        <div class="row from-left">
+        {# ---- Section B: artistic judges (numeric) ---- #}
+        <div class="row from-left scores-section">
             <div class="col-md-7">
                 {% for score in scores.b %}
-                    <div class="row">
-                        <ul class="marks">
-                            {% if participation.is_saved == False %}
-                                <li><button type="submit" formmethod="post"
-                                       formaction="{% url "open_judge" idx=forloop.counter0|add:"3" %}"
-                                       class="btn btn-link btn-lg">X</button></li>
-                            {% endif %}
-                            <li class="main-mark">B{{ forloop.counter }}</li>
-                            <li>{{ score|default:"" }}</li>
-                        </ul>
+                    <div class="judge-line">
+                        {% if participation.is_saved == False %}
+                            <button type="submit" formmethod="post"
+                                    formaction="{% url "open_judge" idx=forloop.counter0|add:"3" %}"
+                                    class="reopen-btn" title="{% trans "Reopen" %}"
+                                    onclick="return confirm('Переоткрыть оценку этого судьи?');">&times;</button>
+                        {% endif %}
+                        <span class="judge-chip">B{{ forloop.counter }}</span>
+                        <span class="score-tile">{{ score|default:"" }}</span>
                     </div>
                     {% if forloop.last %}
-                        <div class="row">
-                            <div class="checkbox" style="padding-left: 50px;">
-                                <label>
-                                    <input autocomplete="off" type="checkbox" id="bonus_score"
-                                           {% if scores.bonus %}checked{% endif %}> Bonus (0.05)
-                                </label>
-                            </div>
+                        <div class="bonus-row">
+                            <label class="bonus-label">
+                                <input autocomplete="off" type="checkbox" id="bonus_score"
+                                       {% if scores.bonus %}checked{% endif %}> Bonus (0.05)
+                            </label>
                         </div>
                     {% endif %}
                 {% endfor %}
             </div>
 
-
             <div class="col-md-5">
-                <div class="row" style="padding-top: 210px;">
-                    <p class="lead text-right">{% trans "Total for" %} B: <span
-                            id="score_b">{{ scores.final_b|stringformat:".2f" }}</span></p>
-                </div>
+                <p class="subtotal subtotal-b">{% trans "Total for" %} B:
+                    <span id="score_b">{{ scores.final_b|stringformat:".2f" }}</span></p>
             </div>
         </div>
 
         <hr class="from-left">
 
-
-        <div class="row from-left">
+        {# ---- Section C: element judges (ok / performed / failed) ---- #}
+        <div class="row from-left scores-section">
             <div class="col-md-12">
                 {% if show_c %}
                     <!-- show when participant is in (A(2), 19(3)) groups -->
                     {% for s in scores.c %}
-                        <div class="row">
-                            <ul class="marks">
-                                {% if participation.is_saved == False %}
-                                    <li><button type="submit" formmethod="post"
-                                           formaction="{% url "open_judge" idx=forloop.counter0|add:"7" %}"
-                                           class="btn btn-link btn-lg">X</button></li>
-                                {% endif %}
-                                <li class="main-mark">C{{ forloop.counter }}</li>
-                                {% for els in s.1 %}
-                                    <div id="hardcode"
-                                         class="{% if s.0 == False %}
-                  label label-default label-blue
-                 {% elif els.done %}
-                  label label-default label-orange
-                 {% else %}
-                  label label-default label-black
-                 {% endif %}"
-                                         style="margin-top:10px; display: inline-block;{% if forloop.last %}margin-right: 30px;{% endif %}">
-                                        {{ els.element.name }}
-                                    </div>
-                                {% endfor %}
-                                {% if forloop.last %}
-                                    <p class="lead text-right" style="margin-top: 10px;">{% trans "Total for" %}
-                                        C: {{ scores.final_c.1|stringformat:".2f" }}</p>
-                                {% endif %}
-                            </ul>
+                        <div class="judge-line">
+                            {% if participation.is_saved == False %}
+                                <button type="submit" formmethod="post"
+                                        formaction="{% url "open_judge" idx=forloop.counter0|add:"7" %}"
+                                        class="reopen-btn" title="{% trans "Reopen" %}"
+                                        onclick="return confirm('Переоткрыть оценку этого судьи?');">&times;</button>
+                            {% endif %}
+                            <span class="judge-chip">C{{ forloop.counter }}</span>
+                            {% for els in s.1 %}
+                                <span class="label {% if s.0 == False %}label-blue{% elif els.done %}label-orange{% else %}label-black{% endif %}">{{ els.element.name }}</span>
+                            {% endfor %}
+                            {% if forloop.last %}
+                                <p class="subtotal">{% trans "Total for" %} C:
+                                    <span class="subtotal-value">{{ scores.final_c.1|stringformat:".2f" }}</span></p>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% endif %}
 
-                <p class="lead text-right" style="margin-top: 10px;">{% trans "Total" %}: <span
-                        id="final_score">{{ scores.final|stringformat:".2f" }}</span></p>
+                {# THE main mark: the single gold aggregate (Gold-Means-Now) #}
+                <div class="final-row">
+                    <span class="final-label">{% trans "Total" %}</span>
+                    <span class="main-mark final-score" id="final_score">{{ scores.final|stringformat:".2f" }}</span>
+                </div>
 
-                <div class="row text-right" style="margin-bottom: 50px;">
-                    <a href="{% url "tablo_detail" pk=participation.tablo.category_id %}?{% query_transform request age=participation.tablo.age sex=participation.tablo.sex %}"
-                       class="btn btn-white btn-lg">Табло</a>
-                    {% if scores.can_be_saved and not scores.saved %}
-                        <button type="submit" name="save" class="btn btn-white btn-lg">{% trans "Save" %}</button>
+                <div class="actions-row">
+                    <div class="actions-primary">
+                        <a href="{% url "tablo_detail" pk=participation.tablo.category_id %}?{% query_transform request age=participation.tablo.age sex=participation.tablo.sex %}"
+                           class="btn btn-white btn-lg">Табло</a>
+                        {% if scores.can_be_saved and not scores.saved %}
+                            <button type="submit" name="save" class="btn btn-white btn-lg">{% trans "Save" %}</button>
+                        {% endif %}
+                        {% if participation.is_saved %}
+                            <button type="submit" name="monitor"
+                                    class="btn btn-white btn-lg">{% trans "Send to monitor" %}</button>
+                        {% endif %}
+                    </div>
+                    {% if not participation.is_saved %}
+                        <div class="actions-danger">
+                            <button type="submit" name="notavailable" class="btn btn-red btn-lg"
+                                    onclick="return confirm('Отметить участника как не явившегося? Итоговый балл будет обнулён.');">Не пришел(ла)</button>
+                        </div>
                     {% endif %}
-                    {% if participation.is_saved %}
-                        <button type="submit" name="monitor"
-                                class="btn btn-white btn-lg">{% trans "Send to monitor" %}</button>
-                    {% else %}
-                        <button type="submit" name="notavailable" class="btn btn-red btn-lg">Не пришел(ла)</button>
-                    {% endif %}
-                    <!-- <button type="submit" name="print" class="btn btn-white btn-lg">{%trans "Print results"%}</button> -->
                 </div>
             </div>
         </div>
     </form>
+    </div>
 
 {% endblock %}
 
