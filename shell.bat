@@ -1,7 +1,4 @@
 @ECHO OFF
-
-set PYTHONPATH=C:\Python36
-set PATH=%PYTHONPATH%;%PATH%;%PYTHONPATH%\Scripts
-
-cd %PYTHONPATH%\Scripts\ushu
+cd /d "%~dp0"
+call .venv\Scripts\activate.bat
 python manage.py shell
