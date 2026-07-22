@@ -13,18 +13,35 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
+# Configuration comes from the environment (the launcher writes an env file
+# next to it); the defaults below are for local development only.
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '03t^_4+o()tu3koz&nbu-wg-+&-fxjhsq#1tg_r+l9req2+2mm'
+def _env_bool(name, default):
+    return os.environ.get(name, str(default)).lower() in ('1', 'true', 'yes', 'on')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-# TEMPLATE_DEBUG = True
+# SECURITY WARNING: production supplies USHU_SECRET_KEY; the historical
+# committed key must not be used to sign anything real.
+SECRET_KEY = os.environ.get(
+    'USHU_SECRET_KEY',
+    'dev-insecure-do-not-use-in-production-set-USHU_SECRET_KEY',
+)
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: production launcher sets USHU_DEBUG=0.
+DEBUG = _env_bool('USHU_DEBUG', True)
+
+# Comma-separated hosts; '*' suits an isolated venue LAN reached by IP.
+ALLOWED_HOSTS = [h.strip() for h in
+                 os.environ.get('USHU_ALLOWED_HOSTS', '*').split(',') if h.strip()]
+
+# Audience-facing monitor branding (was hardcoded in the template).
+EVENT_TITLE = os.environ.get('USHU_EVENT_TITLE', "O'ZBEKISTON USHU FEDERATSIYASI")
+EVENT_SUBTITLE = os.environ.get('USHU_EVENT_SUBTITLE', "O'RTA OSIYO CHEMPIONATI")
+
+# The venue runs on an isolated plain-HTTP LAN with no TLS, so the *_COOKIE_SECURE
+# flags are intentionally left unset — enabling them would stop cookies from being
+# sent over HTTP and break every client. `manage.py check --deploy` will warn
+# about this (security.W012/W016); the warning is accepted for this trust model.
 
 # Keep the historical 32-bit AutoField primary keys (the existing DB schema
 # uses them); avoids a needless BigAutoField migration on Django >= 3.2.
@@ -52,6 +69,9 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE = (
+    'django.middleware.security.SecurityMiddleware',
+    # WhiteNoise serves static files with DEBUG off; keep it near the top.
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,18 +92,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # Busy-timeout for ~10 concurrent judge writers. WAL journal mode and
+        # busy_timeout PRAGMA are also applied per-connection in core.apps.
+        'OPTIONS': {
+            'timeout': 20,
+        },
     },
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'ushu_back',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'postgres',
-    #     'HOST': 'localhost',  # Set to empty string for localhost.
-    #     'PORT': '5433',  # Set to empty string for default.
-    # },
-    'OPTIONS': {
-        'timeout': 40,
-    }
 }
 
 # Internationalization
@@ -104,6 +118,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# WhiteNoise: gzip static assets, no hashed manifest (the collected tree is
+# not manifest-clean and manifest storage would 500 on any missing reference).
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+    },
+}
+# Serve media (country flags) through Django on the LAN even with DEBUG off.
+SERVE_MEDIA = _env_bool('USHU_SERVE_MEDIA', True)
 
 LOGIN_URL = '/login'
 LOGOUT_URL = '/logout'
