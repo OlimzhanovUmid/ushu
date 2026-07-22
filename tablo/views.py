@@ -14,6 +14,7 @@ from django.http import (HttpResponseRedirect, HttpResponse,
                          StreamingHttpResponse)
 from django.template import loader
 from django.template.response import TemplateResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
@@ -185,7 +186,7 @@ class PntElementView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         pk = kwargs.get('pk')
-        p = Participant.objects.get(pk=pk)
+        p = get_object_or_404(Participant, pk=pk)
 
         context = super(PntElementView, self).get_context_data(**kwargs)
         combinations = Combination.objects.all().prefetch_related('elements')
@@ -220,7 +221,7 @@ class PntElementView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
-        p = Participant.objects.get(pk=pk)
+        p = get_object_or_404(Participant, pk=pk)
 
         POST = request.POST
         tablos = {}
@@ -317,7 +318,8 @@ class TabloDetailView(LoginRequiredMixin, TemplateView):
         GET = self.request.GET
         sex = GET.get('sex')
         age = GET.get('age')
-        return Tablo.objects.get(category=pk, sex=sex, age=age)
+        # 404 (not 500) when params are missing/blank or no Tablo matches
+        return get_object_or_404(Tablo, category=pk, sex=sex, age=age)
 
     def get_context_data(self, **kwargs):
         self.object = None
@@ -367,7 +369,7 @@ class TabloDetailView(LoginRequiredMixin, TemplateView):
 class TabloMonitorView(StaffRequiredMixin, TabloDetailView):
     def get_tablo(self):
         pk = self.kwargs.get('pk', None)
-        return Tablo.objects.get(pk=pk)
+        return get_object_or_404(Tablo, pk=pk)
 
     PARTICIPANTS_PER_SCREEN = 6
 
@@ -390,7 +392,7 @@ class TabloPrintView(TabloDetailView):
 
     def get_tablo(self):
         pk = self.kwargs.get('pk', None)
-        return Tablo.objects.get(pk=pk)
+        return get_object_or_404(Tablo, pk=pk)
 
 
 def judge_has_pending_score(judge):
@@ -691,7 +693,7 @@ class JrebiView(StaffRequiredMixin, View):
         if not tablo_id:
             return HttpResponseRedirect(ref)
 
-        tablo = Tablo.objects.get(pk=tablo_id)
+        tablo = get_object_or_404(Tablo, pk=tablo_id)
         if tablo.started:
             return HttpResponseRedirect(ref)
 

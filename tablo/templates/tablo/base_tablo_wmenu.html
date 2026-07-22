@@ -19,6 +19,9 @@
         {% if current_active %}
             <li{% if active_page == "current_score" %} class="active"{% endif %}><a href="{% url "current_score" %}">{% trans "Current participant" %}</a></li>
         {% endif %}
+        {% if request.user.is_staff %}
+            <li><a href="{% url "admin:index" %}">{% trans "Admin" %}</a></li>
+        {% endif %}
     </ul>
     {% endwith %}
 {% endblock %}
