@@ -9,12 +9,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import IntegrityError, transaction
+from django.db.models import Count, Q
 from django.http import (HttpResponseRedirect, HttpResponse,
                          HttpResponseForbidden, JsonResponse,
                          StreamingHttpResponse)
 from django.template import loader
 from django.template.response import TemplateResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
@@ -27,7 +28,8 @@ from django.views.generic import TemplateView, View
 from clubs.models import Club
 from core.views import LoginRequiredMixin, StaffRequiredMixin, staff_required
 from elements.models import ElementCategory, Combination, ErrorCode
-from judges.models import JUDGE_A, JUDGE_B, JUDGE_C, JUDGE_CATEGORIES
+from judges.models import (User as Judge, JUDGE_A, JUDGE_B, JUDGE_C,
+                           JUDGE_CATEGORIES)
 from participants.models import (Participant, SEX_CHOICES,
                                  AGE_9_11, AGE_12_14,
                                  AGE_15_17, AGE_18_plus, AGE_7_8, AGE_11, AGE_CHOICES)
@@ -796,3 +798,316 @@ def delete_participation(request, pk):
         Score.objects.filter(participation=pk).delete()
         Participation.objects.filter(pk=pk).delete()
     return redirect_back(request)
+
+
+# =========================================================================
+# Staff console — task-first correction surface (is_staff only)
+#
+# The console owns the hot, dangerous correction jobs (find a participant,
+# re-open a judge's slot or a whole participation, withdraw a participation,
+# retire a judge) in domain language. Every irreversible action confirms
+# first, names the concrete object, and keeps the single-active-participant
+# invariant (the partial unique index on state=PS_DOING).
+# =========================================================================
+
+# Russian state labels — the console UI is Russian; these are shown, not
+# translated through gettext (no .po round-trip needed for the console).
+PS_LABELS_RU = {
+    PS_WAITING: 'Ожидает',
+    PS_DOING: 'На ковре',
+    PS_FINISHED: 'Завершено',
+}
+
+
+def _judge_rows(participation):
+    '''Per-judge score state for a participation, ordered by judge username.
+
+    Each row exposes the judge's login, category letter, whether the slot is
+    saved, and the Score pk (the target for a per-judge re-open).
+    '''
+    scores = (Score.objects.filter(participation=participation)
+              .select_related('judge').order_by('judge__username'))
+    rows = []
+    for s in scores:
+        rows.append({
+            'score_pk': s.pk,
+            'username': s.judge.username,
+            'category': JUDGE_CATEGORIES[s.judge.category][1],
+            'saved': s.saved,
+        })
+    return rows
+
+
+def _other_doing(participation):
+    '''The OTHER participation currently on the carpet (DOING), if any.
+
+    Re-opening sets a participation to DOING; at most one may be DOING at a
+    time (partial unique index). This surfaces a conflicting active
+    participation so the operator can be warned and asked to choose, rather
+    than silently ending up with two DOING rows.
+    '''
+    return (Participation.objects
+            .select_related('participant', 'tablo', 'tablo__category')
+            .filter(state=PS_DOING)
+            .exclude(pk=participation.pk)
+            .first())
+
+
+def _console_base(request, **extra):
+    '''Shared context for the plain-View console confirmation pages.
+
+    The TemplateView-based console pages get ``current_active`` from
+    LoginRequiredMixin; the confirm pages render manually, so mirror the two
+    values the shell (sidebar + brand) needs.
+    '''
+    ctx = {
+        'left_title': request.user.username,
+        'current_active': Participation.objects.filter(state=PS_DOING).exists(),
+    }
+    ctx.update(extra)
+    return ctx
+
+
+class StaffConsoleHome(StaffRequiredMixin, TemplateView):
+    template_name = 'tablo/console/home.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StaffConsoleHome, self).get_context_data(**kwargs)
+        context['left_title'] = self.request.user.username
+        return context
+
+
+class ConsoleFindParticipant(StaffRequiredMixin, TemplateView):
+    template_name = 'tablo/console/find.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsoleFindParticipant, self).get_context_data(**kwargs)
+        context['left_title'] = self.request.user.username
+        q = (self.request.GET.get('q') or '').strip()
+        context['q'] = q
+        results = []
+        if q:
+            # Safe search: icontains across name / club / tablo category only.
+            participants = (Participant.objects
+                            .select_related('club', 'club__country')
+                            .filter(Q(name_en__icontains=q)
+                                    | Q(name_ru__icontains=q)
+                                    | Q(club__name__icontains=q)
+                                    | Q(participation__tablo__category__name__icontains=q))
+                            .distinct()
+                            .order_by('name_en'))
+            for p in participants:
+                parts = (Participation.objects.filter(participant=p)
+                         .select_related('tablo', 'tablo__category')
+                         .order_by('tablo__category__name'))
+                rows = []
+                for part in parts:
+                    judges = _judge_rows(part)
+                    rows.append({
+                        'participation': part,
+                        'state_label': PS_LABELS_RU[part.state],
+                        'is_doing': part.state == PS_DOING,
+                        'judges': judges,
+                        'saved_count': sum(1 for j in judges if j['saved']),
+                        'total': len(judges),
+                    })
+                results.append({'participant': p, 'participations': rows})
+        context['results'] = results
+        return context
+
+
+class ConsoleParticipationDetail(StaffRequiredMixin, TemplateView):
+    template_name = 'tablo/console/participation.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsoleParticipationDetail, self).get_context_data(**kwargs)
+        context['left_title'] = self.request.user.username
+        p = get_object_or_404(
+            Participation.objects.select_related(
+                'participant', 'participant__club', 'tablo', 'tablo__category'),
+            pk=self.kwargs['pk'])
+        context['participation'] = p
+        context['state_label'] = PS_LABELS_RU[p.state]
+        context['is_doing'] = (p.state == PS_DOING)
+        context['judges'] = _judge_rows(p)
+        return context
+
+
+class ConsoleReopenJudge(StaffRequiredMixin, View):
+    '''Re-open ONE judge's slot for ANY participation (including finished).
+
+    Mechanism: set the participation to PS_DOING and the target judge's
+    Score.saved=False, so re-entry happens through the normal JudgeView (/)
+    and re-aggregates through the validated scoring path. If another
+    participation is already DOING, the operator must explicitly choose to
+    send it back to the queue (``displace``) — we never create two DOING.
+    '''
+    def get_score(self):
+        return get_object_or_404(
+            Score.objects.select_related(
+                'judge', 'participation', 'participation__participant',
+                'participation__tablo', 'participation__tablo__category'),
+            pk=self.kwargs['pk'])
+
+    def get(self, request, *args, **kwargs):
+        score = self.get_score()
+        p = score.participation
+        return render(request, 'tablo/console/confirm_reopen_judge.html',
+                      _console_base(request, score=score, participation=p,
+                                    state_label=PS_LABELS_RU[p.state],
+                                    other_doing=_other_doing(p)))
+
+    def post(self, request, *args, **kwargs):
+        score = self.get_score()
+        p = score.participation
+        try:
+            with transaction.atomic():
+                other = (Participation.objects.select_for_update()
+                         .filter(state=PS_DOING).exclude(pk=p.pk).first())
+                if other is not None and request.POST.get('displace') != '1':
+                    messages.error(request, 'На ковре уже есть участник. Подтвердите '
+                                   'возврат текущего участника в очередь.')
+                    return HttpResponseRedirect(
+                        reverse('console_reopen_judge', kwargs={'pk': score.pk}))
+                if other is not None:
+                    other.state = PS_WAITING
+                    other.save()
+                p.state = PS_DOING
+                p.save()
+                Score.objects.filter(pk=score.pk).update(saved=False)
+        except IntegrityError:
+            # a concurrent activation grabbed the single DOING slot
+            messages.error(request, 'На ковре уже есть участник. Попробуйте ещё раз.')
+            return HttpResponseRedirect(
+                reverse('console_reopen_judge', kwargs={'pk': score.pk}))
+        messages.success(request, 'Судья %s может заново ввести оценку на экране '
+                         'судьи.' % score.judge.username)
+        return HttpResponseRedirect(
+            reverse('console_participation', kwargs={'pk': p.pk}))
+
+
+class ConsoleReopenParticipation(StaffRequiredMixin, View):
+    '''Re-open a WHOLE participation (un-finalize) for re-judging.
+
+    Same mechanism as the per-judge re-open, but clears saved=False on every
+    judge's slot so all judges re-enter through the normal judging screens.
+    '''
+    def get_participation(self):
+        return get_object_or_404(
+            Participation.objects.select_related(
+                'participant', 'tablo', 'tablo__category'),
+            pk=self.kwargs['pk'])
+
+    def get(self, request, *args, **kwargs):
+        p = self.get_participation()
+        return render(request, 'tablo/console/confirm_reopen_participation.html',
+                      _console_base(request, participation=p,
+                                    state_label=PS_LABELS_RU[p.state],
+                                    other_doing=_other_doing(p)))
+
+    def post(self, request, *args, **kwargs):
+        p = self.get_participation()
+        try:
+            with transaction.atomic():
+                other = (Participation.objects.select_for_update()
+                         .filter(state=PS_DOING).exclude(pk=p.pk).first())
+                if other is not None and request.POST.get('displace') != '1':
+                    messages.error(request, 'На ковре уже есть участник. Подтвердите '
+                                   'возврат текущего участника в очередь.')
+                    return HttpResponseRedirect(
+                        reverse('console_reopen_participation', kwargs={'pk': p.pk}))
+                if other is not None:
+                    other.state = PS_WAITING
+                    other.save()
+                p.state = PS_DOING
+                p.save()
+                Score.objects.filter(participation=p.pk).update(saved=False)
+        except IntegrityError:
+            # a concurrent activation grabbed the single DOING slot
+            messages.error(request, 'На ковре уже есть участник. Попробуйте ещё раз.')
+            return HttpResponseRedirect(
+                reverse('console_reopen_participation', kwargs={'pk': p.pk}))
+        messages.success(request, 'Участие переоткрыто — судьи могут заново '
+                         'ввести оценки на экране судьи.')
+        return HttpResponseRedirect(
+            reverse('console_participation', kwargs={'pk': p.pk}))
+
+
+class ConsoleWithdraw(StaffRequiredMixin, View):
+    '''Withdraw (delete) a participation behind a named, red confirmation.
+
+    Reuses the delete_participation logic (transaction: delete Scores then the
+    Participation) but reached from a confirmation page that names the
+    participant and tablo. Irreversible.
+    '''
+    def get_participation(self):
+        return get_object_or_404(
+            Participation.objects.select_related(
+                'participant', 'participant__club', 'tablo', 'tablo__category'),
+            pk=self.kwargs['pk'])
+
+    def get(self, request, *args, **kwargs):
+        p = self.get_participation()
+        return render(request, 'tablo/console/confirm_withdraw.html',
+                      _console_base(request, participation=p,
+                                    state_label=PS_LABELS_RU[p.state]))
+
+    def post(self, request, *args, **kwargs):
+        p = self.get_participation()
+        name = p.participant.name_en
+        tablo = str(p.tablo)
+        with transaction.atomic():
+            Score.objects.filter(participation=p.pk).delete()
+            Participation.objects.filter(pk=p.pk).delete()
+        messages.success(request, 'Участие снято: %s — %s.' % (name, tablo))
+        return HttpResponseRedirect(reverse('staff_console'))
+
+
+class ConsoleJudges(StaffRequiredMixin, TemplateView):
+    template_name = 'tablo/console/judges.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ConsoleJudges, self).get_context_data(**kwargs)
+        context['left_title'] = self.request.user.username
+        judges = (Judge.objects.filter(is_superuser=False)
+                  .annotate(score_count=Count('score'))
+                  .order_by('-is_active', 'username'))
+        rows = []
+        for j in judges:
+            rows.append({
+                'pk': j.pk,
+                'username': j.username,
+                'category': JUDGE_CATEGORIES[j.category][1],
+                'is_active': j.is_active,
+                'is_staff': j.is_staff,
+                'score_count': j.score_count,
+            })
+        context['judges'] = rows
+        return context
+
+
+class ConsoleRetireJudge(StaffRequiredMixin, View):
+    '''Retire a judge by is_active=False (never delete — scores are PROTECTed).
+
+    The confirmation states that retirement preserves competition history.
+    '''
+    def get_judge(self):
+        return get_object_or_404(
+            Judge.objects.filter(is_superuser=False)
+            .annotate(score_count=Count('score')),
+            pk=self.kwargs['pk'])
+
+    def get(self, request, *args, **kwargs):
+        judge = self.get_judge()
+        return render(request, 'tablo/console/confirm_retire_judge.html',
+                      _console_base(
+                          request, judge=judge,
+                          category=JUDGE_CATEGORIES[judge.category][1],
+                          score_count=judge.score_count))
+
+    def post(self, request, *args, **kwargs):
+        judge = self.get_judge()
+        Judge.objects.filter(pk=judge.pk).update(is_active=False)
+        messages.success(request, 'Судья %s выведен из ротации. История оценок '
+                         'сохранена.' % judge.username)
+        return HttpResponseRedirect(reverse('console_judges'))

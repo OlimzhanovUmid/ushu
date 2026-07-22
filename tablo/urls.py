@@ -9,7 +9,11 @@ from .views import (ParticipantCreateView, TabloListView, TabloDetailView,
                     JudgeCSubmit, JrebiView, TabloPrintView,
                     MonitorView, TabloMonitorView,
                     LanguageViewEn, LanguageViewRu, monitor_stream,
-                    has_updated, open_judge, delete_participation)
+                    has_updated, open_judge, delete_participation,
+                    StaffConsoleHome, ConsoleFindParticipant,
+                    ConsoleParticipationDetail, ConsoleReopenJudge,
+                    ConsoleReopenParticipation, ConsoleWithdraw,
+                    ConsoleJudges, ConsoleRetireJudge)
 
 urlpatterns = [
     re_path(r'^tablo/pcreate$', ParticipantCreateView.as_view(), name="paticipant_create"),
@@ -35,4 +39,14 @@ urlpatterns = [
     re_path(r'^has_update$', has_updated, name="has_updated"),
     re_path(r'^open_judge/(?P<idx>\d+)/$', open_judge, name="open_judge"),
     re_path(r'^delete_participation/(?P<pk>\d+)/$', delete_participation, name="delete_participation"),
+
+    # Staff console (is_staff only)
+    re_path(r'^console/$', StaffConsoleHome.as_view(), name="staff_console"),
+    re_path(r'^console/find/$', ConsoleFindParticipant.as_view(), name="console_find"),
+    re_path(r'^console/participation/(?P<pk>\d+)/$', ConsoleParticipationDetail.as_view(), name="console_participation"),
+    re_path(r'^console/reopen-judge/(?P<pk>\d+)/$', ConsoleReopenJudge.as_view(), name="console_reopen_judge"),
+    re_path(r'^console/reopen/(?P<pk>\d+)/$', ConsoleReopenParticipation.as_view(), name="console_reopen_participation"),
+    re_path(r'^console/withdraw/(?P<pk>\d+)/$', ConsoleWithdraw.as_view(), name="console_withdraw"),
+    re_path(r'^console/judges/$', ConsoleJudges.as_view(), name="console_judges"),
+    re_path(r'^console/retire-judge/(?P<pk>\d+)/$', ConsoleRetireJudge.as_view(), name="console_retire_judge"),
 ]

@@ -1,0 +1,44 @@
+{% extends "tablo/console/base_console.html" %}
+{% load i18n %}
+
+{% block console_title %}Служебная консоль{% endblock %}
+
+{% block console_content %}
+    <h1 class="cn-title">Служебная консоль</h1>
+    <p class="cn-hint">Задачи для главного судьи и секретаря во время соревнования.
+        Исправления проходят через обычный экран судьи, чтобы результат
+        пересчитывался по проверенному пути.</p>
+
+    <div class="cn-cards">
+        <a class="cn-card" href="{% url "console_find" %}">
+            <div class="cn-card-h">Найти участника</div>
+            <p class="cn-card-p">Поиск по имени, клубу или табло. Отсюда видно
+                состояние оценок каждого судьи.</p>
+        </a>
+
+        <a class="cn-card" href="{% url "console_find" %}">
+            <div class="cn-card-h">Переоткрыть судью</div>
+            <p class="cn-card-p">Сначала найдите участника, затем переоткройте
+                слот судьи или всё участие для повторного ввода.</p>
+        </a>
+
+        <a class="cn-card cn-card-danger" href="{% url "console_find" %}">
+            <div class="cn-card-h">Снять участие</div>
+            <p class="cn-card-p">Найдите участника, затем удалите ошибочно
+                зарегистрированное участие. Действие необратимо.</p>
+        </a>
+
+        <a class="cn-card cn-card-danger" href="{% url "console_judges" %}">
+            <div class="cn-card-h">Вывести судью из ротации</div>
+            <p class="cn-card-p">Деактивировать судью. Оценки сохраняются —
+                удаления не происходит.</p>
+        </a>
+    </div>
+
+    <div class="cn-setup">
+        <span class="cn-setup-t">Настройка</span>
+        <p class="cn-setup-p">Клубы, страны, элементы, коды ошибок, судьи и
+            участники — в полном администрировании.</p>
+        <a class="btn btn-white" href="{% url "admin:index" %}">Открыть админ</a>
+    </div>
+{% endblock %}

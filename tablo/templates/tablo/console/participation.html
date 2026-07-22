@@ -1,0 +1,49 @@
+{% extends "tablo/console/base_console.html" %}
+{% load i18n %}
+
+{% block console_title %}Участие · {{ participation.participant.name_en }}{% endblock %}
+
+{% block console_content %}
+    <a class="cn-back btn btn-link" href="{% url "console_find" %}">← Найти участника</a>
+    <h1 class="cn-title">{{ participation.participant.name_en }}</h1>
+    <p class="cn-hint">
+        {{ participation.tablo.category.name }} ·
+        {{ participation.tablo.get_age_display }} ·
+        {{ participation.tablo.get_sex_display }} ·
+        {{ participation.participant.club.name }}
+        <span class="cn-state{% if is_doing %} is-doing{% endif %}">{{ state_label }}</span>
+    </p>
+
+    <div class="cn-result">
+        <div class="cn-result-head">
+            <span class="cn-result-name">Судьи и состояние оценок</span>
+        </div>
+        <div class="cn-result-body">
+            <div class="cn-part">
+                <div class="cn-judge-forms">
+                    {% for j in judges %}
+                        <form method="get" action="{% url "console_reopen_judge" pk=j.score_pk %}">
+                            <button class="cn-judge{% if j.saved %} is-saved{% endif %}" type="submit"
+                                    title="Переоткрыть слот судьи {{ j.username }}">
+                                <span class="cn-judge-cat">{{ j.category }}</span>{{ j.username }}
+                                · {% if j.saved %}сохранено{% else %}не сохранено{% endif %}
+                                · переоткрыть
+                            </button>
+                        </form>
+                    {% empty %}
+                        <span class="cn-judge">Нет судейских карточек.</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cn-actions">
+        <a class="btn btn-primary" href="{% url "console_reopen_participation" pk=participation.pk %}">Переоткрыть всё участие</a>
+    </div>
+
+    <div class="cn-danger-zone">
+        <span class="cn-zone-label">Необратимые действия</span>
+        <a class="btn btn-red" href="{% url "console_withdraw" pk=participation.pk %}">Снять участие</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,305 @@
+{% extends "tablo/base_tablo_wmenu.html" %}
+{% load static i18n %}
+
+{% block title %}{% block console_title %}Служебная консоль{% endblock %} · {{ EVENT_TITLE }}{% endblock %}
+
+{% block css_assets_add %}
+<style>
+/* =======================================================================
+   Staff console — scoped to .screen-console. Tokens only, no literal colors.
+   ======================================================================= */
+.screen-console {
+    margin-top: calc(var(--topbar-h) + var(--gutter));
+    margin-left: calc(var(--sidebar-w) + var(--gutter));
+    margin-right: var(--gutter);
+    padding-bottom: var(--gutter);
+}
+
+/* Header / titles */
+.screen-console .cn-title {
+    margin: 0 0 var(--space-sm);
+    color: var(--c-ink);
+    font-weight: var(--fw-headline);
+    font-size: var(--fs-headline);
+    line-height: var(--lh-headline);
+    letter-spacing: var(--ls-headline);
+}
+.screen-console .cn-hint {
+    margin: 0 0 var(--space-md);
+    color: var(--c-muted);
+    font-size: var(--fs-body);
+    max-width: 68ch;
+}
+.screen-console .cn-back {
+    display: inline-block;
+    margin-bottom: var(--space-md);
+    font-weight: var(--fw-title);
+}
+
+/* Flash messages */
+.screen-console .cn-messages { margin-bottom: var(--space-md); }
+.screen-console .cn-msg {
+    padding: 13px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--c-border);
+    background: var(--c-surface);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--space-sm);
+    font-weight: var(--fw-body);
+}
+.screen-console .cn-msg-success {
+    border-color: var(--c-primary);
+    box-shadow: var(--shadow-sm), var(--focus-ring);
+}
+.screen-console .cn-msg-error {
+    border-color: var(--c-accent-dark);
+    color: var(--c-accent-dark);
+}
+
+/* Task-card grid on the console home */
+.screen-console .cn-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--gutter);
+}
+.screen-console .cn-card {
+    display: block;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--space-md);
+    color: var(--c-ink);
+    text-decoration: none;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+.screen-console .cn-card:hover,
+.screen-console .cn-card:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    text-decoration: none;
+    outline: none;
+    color: var(--c-ink);
+}
+.screen-console .cn-card:focus-visible { box-shadow: var(--shadow), var(--focus-ring); }
+.screen-console .cn-card-h {
+    font-weight: var(--fw-title);
+    font-size: var(--fs-title);
+    line-height: var(--lh-title);
+    margin-bottom: 6px;
+    color: var(--c-ink);
+}
+.screen-console .cn-card-p {
+    color: var(--c-muted);
+    font-size: var(--fs-body);
+    margin: 0;
+}
+.screen-console .cn-card-danger { border-color: var(--c-accent-dark); }
+.screen-console .cn-card-danger .cn-card-h { color: var(--c-accent-dark); }
+
+/* Setup / open-admin strip */
+.screen-console .cn-setup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+.screen-console .cn-setup-t { font-weight: var(--fw-title); font-size: var(--fs-title); }
+.screen-console .cn-setup-p { color: var(--c-muted); margin: 0; flex: 1 1 200px; }
+
+/* Search form */
+.screen-console .cn-search {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--gutter);
+}
+.screen-console .cn-search .form-control { max-width: 420px; }
+
+/* Result / detail cards */
+.screen-console .cn-result {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: var(--space-md);
+    overflow: hidden;
+}
+.screen-console .cn-result-head {
+    padding: 14px 16px;
+    background: var(--c-surface-alt);
+    border-bottom: 1px solid var(--c-border);
+}
+.screen-console .cn-result-name {
+    font-weight: var(--fw-title);
+    font-size: var(--fs-title);
+    color: var(--c-ink);
+}
+.screen-console .cn-result-sub { color: var(--c-muted); font-size: var(--fs-body); }
+.screen-console .cn-result-body { padding: 0; }
+
+/* Participation row */
+.screen-console .cn-part {
+    padding: 14px 16px;
+    border-top: 1px solid var(--c-border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md);
+}
+.screen-console .cn-part:first-child { border-top: none; }
+/* Gold-Means-Now: only the participation currently on the carpet is marked */
+.screen-console .cn-part.is-doing { box-shadow: inset 3px 0 0 var(--c-gold); }
+.screen-console .cn-part-main { flex: 1 1 260px; }
+.screen-console .cn-part-tablo { font-weight: var(--fw-title); color: var(--c-ink); }
+.screen-console .cn-part-meta { color: var(--c-muted); font-size: var(--fs-label); }
+
+/* State pill */
+.screen-console .cn-state {
+    display: inline-block;
+    font-weight: var(--fw-label);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--c-border);
+    color: var(--c-muted);
+    background: var(--c-surface);
+}
+.screen-console .cn-state.is-doing {
+    color: var(--c-navy);
+    background: var(--c-gold);
+    border-color: var(--c-gold);
+}
+
+/* Judge chips: saved (blue) vs pending (hairline) — never gold */
+.screen-console .cn-judges { display: flex; flex-wrap: wrap; gap: 8px; }
+.screen-console .cn-judge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--c-border);
+    background: var(--c-surface);
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
+    color: var(--c-muted);
+}
+.screen-console .cn-judge.is-saved {
+    color: var(--c-primary-dark);
+    border-color: var(--c-primary);
+}
+.screen-console .cn-judge-cat {
+    font-weight: var(--fw-label);
+    opacity: 0.8;
+}
+.screen-console .cn-judge-forms { display: flex; flex-wrap: wrap; gap: 8px; }
+.screen-console .cn-judge-forms .cn-judge { text-transform: none; }
+
+/* Action clusters */
+.screen-console .cn-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+}
+/* Destructive actions are separated from routine ones */
+.screen-console .cn-danger-zone {
+    margin-top: var(--gutter);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--c-border);
+}
+.screen-console .cn-danger-zone .cn-zone-label {
+    display: block;
+    font-weight: var(--fw-label);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--c-accent-dark);
+    margin-bottom: var(--space-sm);
+}
+
+/* Confirmation panel */
+.screen-console .cn-confirm {
+    max-width: 640px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--gutter);
+}
+.screen-console .cn-confirm.is-danger { border-color: var(--c-accent-dark); }
+.screen-console .cn-confirm-obj {
+    margin: var(--space-md) 0;
+    padding: var(--space-md);
+    background: var(--c-surface-alt);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+}
+.screen-console .cn-confirm-obj dt {
+    font-weight: var(--fw-label);
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--c-muted);
+}
+.screen-console .cn-confirm-obj dd {
+    margin: 0 0 12px;
+    font-weight: var(--fw-title);
+    color: var(--c-ink);
+}
+.screen-console .cn-confirm-obj dd:last-child { margin-bottom: 0; }
+.screen-console .cn-warn {
+    margin: var(--space-md) 0;
+    padding: var(--space-md);
+    border: 1px solid var(--c-accent-dark);
+    border-radius: var(--radius-sm);
+    color: var(--c-accent-dark);
+    background: var(--c-surface);
+    font-weight: var(--fw-body);
+}
+.screen-console .cn-note { color: var(--c-muted); font-size: var(--fs-body); }
+.screen-console .cn-confirm-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    align-items: center;
+    margin-top: var(--gutter);
+}
+/* Large targets on every console button */
+.screen-console .btn { min-height: 48px; padding: 13px 20px; font-weight: var(--fw-title); }
+
+.screen-console .cn-empty {
+    padding: var(--gutter);
+    text-align: center;
+    color: var(--c-muted);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+    <div class="screen-console">
+        {% if messages %}
+            <div class="cn-messages" role="status" aria-live="polite">
+                {% for message in messages %}
+                    <div class="cn-msg cn-msg-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block console_content %}{% endblock %}
+    </div>
+{% endblock %}

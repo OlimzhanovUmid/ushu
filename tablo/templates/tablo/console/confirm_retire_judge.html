@@ -1,0 +1,32 @@
+{% extends "tablo/console/base_console.html" %}
+{% load i18n %}
+
+{% block console_title %}Вывести судью из ротации{% endblock %}
+
+{% block console_content %}
+    <a class="cn-back btn btn-link" href="{% url "console_judges" %}">← Назад к судьям</a>
+    <h1 class="cn-title">Вывести судью из ротации</h1>
+
+    <div class="cn-confirm is-danger">
+        <p class="cn-note">Судья будет деактивирован (is_active=False) и перестанет
+            получать судейские карточки на новых участиях. Это не удаление:
+            все уже выставленные оценки и история соревнования сохраняются.</p>
+
+        <dl class="cn-confirm-obj">
+            <dt>Судья</dt>
+            <dd>{{ judge.username }}</dd>
+            <dt>Категория</dt>
+            <dd>{{ category }}</dd>
+            <dt>Сохранено оценок в истории</dt>
+            <dd>{{ score_count }}</dd>
+        </dl>
+
+        <form method="post" action="{% url "console_retire_judge" pk=judge.pk %}">
+            {% csrf_token %}
+            <div class="cn-confirm-actions">
+                <a class="btn btn-white" href="{% url "console_judges" %}">Отмена</a>
+                <button class="btn btn-red" type="submit">Вывести из ротации</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

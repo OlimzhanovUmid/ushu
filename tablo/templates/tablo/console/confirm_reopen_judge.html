@@ -1,0 +1,49 @@
+{% extends "tablo/console/base_console.html" %}
+{% load i18n %}
+
+{% block console_title %}Переоткрыть судью{% endblock %}
+
+{% block console_content %}
+    <a class="cn-back btn btn-link" href="{% url "console_participation" pk=participation.pk %}">← Назад к участию</a>
+    <h1 class="cn-title">Переоткрыть слот судьи</h1>
+
+    <div class="cn-confirm">
+        <p class="cn-note">Слот судьи будет переоткрыт, участие переведётся на
+            ковёр, и судья заново введёт оценку на своём экране. Результат
+            пересчитается по проверенному пути.</p>
+
+        <dl class="cn-confirm-obj">
+            <dt>Участник</dt>
+            <dd>{{ participation.participant.name_en }} — {{ participation.participant.club.name }}</dd>
+            <dt>Табло</dt>
+            <dd>{{ participation.tablo.category.name }} ·
+                {{ participation.tablo.get_age_display }} ·
+                {{ participation.tablo.get_sex_display }} · {{ state_label }}</dd>
+            <dt>Судья</dt>
+            <dd>{{ score.judge.username }}</dd>
+        </dl>
+
+        {% if other_doing %}
+            <div class="cn-warn" role="alert">
+                На ковре уже находится участник:
+                <strong>{{ other_doing.participant.name_en }}</strong>
+                ({{ other_doing.tablo.category.name }}).
+                Одновременно может выступать только один участник. Подтвердите
+                возврат текущего участника в очередь ожидания.
+            </div>
+        {% endif %}
+
+        <form method="post" action="{% url "console_reopen_judge" pk=score.pk %}">
+            {% csrf_token %}
+            <div class="cn-confirm-actions">
+                <a class="btn btn-white" href="{% url "console_participation" pk=participation.pk %}">Отмена</a>
+                {% if other_doing %}
+                    <input type="hidden" name="displace" value="1">
+                    <button class="btn btn-red" type="submit">Вернуть текущего в очередь и переоткрыть</button>
+                {% else %}
+                    <button class="btn btn-primary" type="submit">Переоткрыть судью</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+{% endblock %}

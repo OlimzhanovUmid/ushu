@@ -1,0 +1,37 @@
+{% extends "tablo/console/base_console.html" %}
+{% load i18n %}
+
+{% block console_title %}Судьи{% endblock %}
+
+{% block console_content %}
+    <a class="cn-back btn btn-link" href="{% url "staff_console" %}">← Консоль</a>
+    <h1 class="cn-title">Вывести судью из ротации</h1>
+    <p class="cn-hint">Деактивация судьи сохраняет всю историю оценок — удаления
+        не происходит. Деактивированный судья не получает карточек на новых
+        участиях.</p>
+
+    <div class="cn-result">
+        <div class="cn-result-body">
+            {% for j in judges %}
+                <div class="cn-part">
+                    <div class="cn-part-main">
+                        <div class="cn-part-tablo">
+                            <span class="cn-judge-cat">{{ j.category }}</span> {{ j.username }}
+                        </div>
+                        <div class="cn-part-meta">
+                            оценок в истории: {{ j.score_count }}{% if j.is_staff %} · главный судья{% endif %}
+                        </div>
+                    </div>
+                    {% if j.is_active %}
+                        <span class="cn-state">В ротации</span>
+                        <a class="btn btn-red" href="{% url "console_retire_judge" pk=j.pk %}">Вывести из ротации</a>
+                    {% else %}
+                        <span class="cn-state">Выведен</span>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="cn-part"><span class="cn-part-meta">Судей нет.</span></div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
