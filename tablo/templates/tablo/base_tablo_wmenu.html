@@ -5,21 +5,21 @@
     <nav class="navbar navbar-fixed-top navbar-inverse navbar-heading">
         <div class="navbar-header navbar-height">
             <a class="navbar-brand brand" href="{% url "judge_view" %}">{{ left_title }}</a>
-            <p class="navbar-text-secondary">{% block nav_title %}Championship{% endblock %}</p>
+            <p class="navbar-text-secondary">{% block nav_title %}{{ EVENT_TITLE }}{% endblock %}</p>
             <img class="logo-right" src="{% static "img/logo.png" %}" alt="A1">
         </div>
     </nav>
 {% endblock %}
 
 {% block content %}
+    {% with active_page=request.resolver_match.url_name %}
     <ul class="nav navbar-nav side-nav">
-        <li><a href="{% url "tablo_list" %}">{% trans "Standings" %}</a></li>
-        <li><a href="{% url "paticipant_create" %}">{% trans "Add participant" %}</a></li>
+        <li{% if active_page == "tablo_list" %} class="active"{% endif %}><a href="{% url "tablo_list" %}">{% trans "Standings" %}</a></li>
+        <li{% if active_page == "paticipant_create" %} class="active"{% endif %}><a href="{% url "paticipant_create" %}">{% trans "Add participant" %}</a></li>
         {% if current_active %}
-            <li><a href="{% url "current_score" %}">{% trans "Current participant" %}</a></li>
+            <li{% if active_page == "current_score" %} class="active"{% endif %}><a href="{% url "current_score" %}">{% trans "Current participant" %}</a></li>
         {% endif %}
     </ul>
+    {% endwith %}
 {% endblock %}
-</body>
-</html>
 

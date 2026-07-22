@@ -6,42 +6,65 @@
 
 :root {
     /* Brand palette */
-    --c-primary:        #2f6df6;   /* electric blue */
+    --c-primary:        #2f6df6;   /* electric blue — the working color */
     --c-primary-dark:   #1e4fd0;
     --c-navy:           #0b1f3a;   /* deep navy (shell) */
     --c-navy-2:         #122a4d;
-    --c-accent:         #ef3e4a;   /* red */
+    --c-navy-glow:      #1c3a6e;   /* radial-glow stop on dark gradients (navy ramp) */
+    --c-navy-deep:      #060f22;   /* darkest navy — shared base of every dark gradient */
+    --c-accent:         #ef3e4a;   /* competition red — identity */
     --c-accent-dark:    #c92f3a;
-    --c-gold:           #f5b53d;   /* highlight / current */
+    --c-accent-deeper:  #a5262f;   /* deeper red for btn-red hover (accent ramp) */
+    --c-gold:           #f5b53d;   /* Gold-Means-Now Rule: ONLY marks the current athlete/element/mark */
 
-    /* Neutrals */
+    /* Neutrals — Cool-Ground Rule: the light field is cool #eef2f8, never a warm cream/beige */
     --c-white:          #ffffff;
-    --c-bg:             #eef2f8;   /* app background */
+    --c-bg:             #eef2f8;   /* app background (cool) */
     --c-surface:        #ffffff;   /* cards / tables */
+    --c-surface-alt:    #f7f9fc;   /* pale table-header band */
     --c-ink:            #1b2430;   /* text */
-    --c-muted:          #6b7787;
+    --c-muted:          #57616f;   /* secondary text — darkened from DESIGN.md #6b7787 for AA (see note) */
     --c-border:         #e3e8f0;
+    --c-row-hover:      #f5f8ff;   /* soft table row hover tint */
 
     /* Semantic scoring statuses (ElementStatus.get_label) */
     --c-status-ok:      #2f6df6;   /* untouched / default (2) */
+    --c-status-ok-deep: #163a8f;   /* deepened blue for hall-legible status label (>=7:1 on stage) */
     --c-status-warn:    #f59e0b;   /* performed (1) */
     --c-status-fail:    #1b2430;   /* failed (0) */
 
-    /* Typography */
+    /* Typography — One-Family Rule: Inter only; hierarchy is weight (500->800) + size, never a 2nd family */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Type scale (single source of truth — DESIGN.md: display / headline / title / body / label) */
+    --fw-display: 800;  --fs-display: clamp(3rem, 8vw, 6rem); --lh-display: 1.05; --ls-display: -0.02em;
+    --fw-headline: 700; --fs-headline: 26px;                  --lh-headline: 1.2; --ls-headline: -0.01em;
+    --fw-title: 600;    --fs-title: 19px;                     --lh-title: 1.25;   --ls-title: normal;
+    --fw-body: 500;     --fs-body: 16px;                      --lh-body: 1.5;     --ls-body: normal;
+    --fw-label: 600;    --fs-label: 12px;                     --lh-label: 1.4;    --ls-label: 0.04em;
 
     /* Layout (single source of truth for shell offsets) */
     --topbar-h:  72px;
     --sidebar-w: 232px;
     --gutter:    32px;
+    --space-md:  24px;
+    --space-sm:  14px;
 
-    /* Shape / depth */
+    /* Shape */
     --radius-sm: 6px;
     --radius:    10px;
     --radius-lg: 16px;
-    --shadow-sm: 0 1px 3px rgba(11, 31, 58, 0.08);
-    --shadow:    0 4px 16px rgba(11, 31, 58, 0.10);
-    --shadow-lg: 0 18px 50px rgba(11, 31, 58, 0.18);
+
+    /* Depth — Navy-Shadow Rule: shadows are navy-tinted rgba(11,31,58,..), never neutral gray/black */
+    --shadow-sm:      0 1px 3px rgba(11, 31, 58, 0.08);
+    --shadow:         0 4px 16px rgba(11, 31, 58, 0.10);
+    --shadow-lg:      0 18px 50px rgba(11, 31, 58, 0.18);
+    --shadow-sidebar: 2px 0 16px rgba(11, 31, 58, 0.28);   /* rightward variant for the fixed sidebar */
+
+    /* Rings */
+    --focus-ring: 0 0 0 3px rgba(47, 109, 246, 0.18);      /* electric-blue focus glow */
+    --ring-gold:  0 0 0 3px rgba(245, 181, 61, 0.35);      /* Gold-Means-Now current marker */
+
     --transition: 0.16s ease;
 }
 
@@ -60,8 +83,11 @@ h1, h2, h3, h4, h5, .brand {
     letter-spacing: -0.01em;
 }
 
-a { color: var(--c-primary); }
-a:hover, a:focus { color: var(--c-primary-dark); }
+/* Link TEXT uses the deeper blue: --c-primary (#2f6df6) is only ~4.0:1 on the
+   cool bg (fails AA for body text); --c-primary-dark (#1e4fd0) is ~7:1. The
+   bright primary stays for fills, not text. */
+a { color: var(--c-primary-dark); }
+a:hover, a:focus { color: var(--c-navy-2); }
 
 hr { border-top: 1px solid var(--c-border); }
 
@@ -71,7 +97,7 @@ hr { border-top: 1px solid var(--c-border); }
 .login-page {
     min-height: 100vh;
     margin: 0;
-    background: radial-gradient(1200px 600px at 70% -10%, #1c3a6e 0%, transparent 60%),
+    background: radial-gradient(1200px 600px at 70% -10%, var(--c-navy-glow) 0%, transparent 60%),
                 linear-gradient(135deg, var(--c-navy) 0%, var(--c-primary-dark) 100%);
     display: flex;
     align-items: center;
@@ -99,17 +125,18 @@ hr { border-top: 1px solid var(--c-border); }
     margin: 0 auto 14px;
 }
 
-.login-title {
-    font-size: 19px;
-    font-weight: 700;
+.login-title {                          /* Title scale */
+    font-size: var(--fs-title);
+    font-weight: var(--fw-title);
     color: var(--c-navy);
     margin: 0 0 4px;
-    line-height: 1.25;
+    line-height: var(--lh-title);
 }
 
-.login-subtitle {
-    font-size: 12px;
-    letter-spacing: 0.14em;
+.login-subtitle {                       /* Label scale */
+    font-size: var(--fs-label);
+    font-weight: var(--fw-label);
+    letter-spacing: var(--ls-label);
     text-transform: uppercase;
     color: var(--c-muted);
     margin: 0;
@@ -140,7 +167,7 @@ hr { border-top: 1px solid var(--c-border); }
 
 .form-signin .form-control:focus {
     border-color: var(--c-primary);
-    box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.22);
+    box-shadow: var(--focus-ring);
 }
 
 .btn-login {
@@ -203,8 +230,9 @@ hr { border-top: 1px solid var(--c-border); }
     display: flex;
     align-items: center;
     margin: 0;
-    font-size: 26px;
-    font-weight: 600;
+    font-size: var(--fs-headline);      /* Headline scale */
+    font-weight: var(--fw-headline);
+    letter-spacing: var(--ls-headline);
     color: var(--c-white);
     white-space: nowrap;
     overflow: hidden;
@@ -236,7 +264,7 @@ hr { border-top: 1px solid var(--c-border); }
     border-radius: 0;
     overflow-y: auto;
     background: var(--c-navy);
-    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.28);
+    box-shadow: var(--shadow-sidebar);  /* Navy-Shadow Rule: navy tint, not black */
     z-index: 1000;
 }
 
@@ -256,7 +284,8 @@ hr { border-top: 1px solid var(--c-border); }
 }
 
 .side-nav > li > a:hover,
-.side-nav > li > a:focus {
+.side-nav > li > a:focus,
+.side-nav > li.active > a {
     outline: none;
     color: var(--c-white);
     background: rgba(255, 255, 255, 0.06);
@@ -269,7 +298,7 @@ hr { border-top: 1px solid var(--c-border); }
     display: block;
     padding: 10px 15px 10px 38px;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.72);   /* >=7:1 on navy for hall legibility */
     transition: color var(--transition);
 }
 
@@ -285,7 +314,7 @@ hr { border-top: 1px solid var(--c-border); }
 .from-left      { margin-left: calc(var(--sidebar-w) + var(--gutter)); }
 .text-top,
 .link-text-left { margin-top: calc(var(--topbar-h) + var(--gutter)); }
-.text-top-input { margin-top: calc(var(--topbar-h) + 14px); }
+.text-top-input { margin-top: calc(var(--topbar-h) + var(--space-sm)); }
 .link-text-left,
 .link-left      { margin-left: calc(var(--sidebar-w) + var(--gutter)); }
 .link-text-left-2 {
@@ -294,7 +323,7 @@ hr { border-top: 1px solid var(--c-border); }
 }
 .text-align-left { margin-left: 60px; }
 .judge-left      { margin-left: calc(var(--sidebar-w) + 4%); }
-.judge-top       { margin-top: calc(var(--topbar-h) + 24px); }
+.judge-top       { margin-top: calc(var(--topbar-h) + var(--space-md)); }
 .result-top      { margin-top: 40px; }
 .no-margin       { margin: 0; }
 
@@ -328,9 +357,29 @@ table .from-left a { margin-left: 5px; }
 }
 
 .btn:active { transform: translateY(1px); }
+/* Keyboard focus ring (mouse presses don't trigger focus-visible, so no sticky ring) */
+.btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
 .btn-space { margin-right: 14px; }
 .btn-save  { margin-left: 40px; }
+
+/* Primary — the working action. Token-based so it never falls back to Bootstrap blue. */
+.btn-primary {
+    color: var(--c-white);
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+    box-shadow: var(--shadow);
+}
+
+.btn-primary:hover, .btn-primary:focus-visible {
+    color: var(--c-white);
+    background: var(--c-primary-dark);
+    border-color: var(--c-primary-dark);
+    outline: none;
+    transform: translateY(-1px);
+}
+
+.btn-primary:focus-visible { box-shadow: var(--shadow), var(--focus-ring); }
 
 .btn-white {
     color: var(--c-primary);
@@ -339,60 +388,92 @@ table .from-left a { margin-left: 5px; }
     box-shadow: var(--shadow-sm);
 }
 
-.btn-white:hover, .btn-white:focus {
+.btn-white:hover, .btn-white:focus-visible {
     color: var(--c-white);
     background: var(--c-primary);
     border-color: var(--c-primary);
+    outline: none;
 }
 
+.btn-white:focus-visible { box-shadow: var(--focus-ring); }
+
+/* Resting red is accent-dark, not accent: white on #ef3e4a is 3.85:1 (fails AA);
+   #c92f3a is 5.31:1. Hover deepens further to #a5262f (7.2:1). */
 .btn-red {
-    color: var(--c-white);
-    background: var(--c-accent);
-    border-color: var(--c-accent);
-}
-
-.btn-red:hover, .btn-red:focus {
     color: var(--c-white);
     background: var(--c-accent-dark);
     border-color: var(--c-accent-dark);
 }
 
+.btn-red:hover, .btn-red:focus-visible {
+    color: var(--c-white);
+    background: var(--c-accent-deeper);
+    border-color: var(--c-accent-deeper);
+    outline: none;
+}
+
 /* Default link-buttons sit on light content -> use brand colour.
    Inside dark surfaces (topbar, sidebar, stage screens) they turn white. */
-.btn-link, .btn-visible-link { color: var(--c-primary); font-weight: 600; }
-.btn-link:hover, .btn-link:focus { color: var(--c-primary-dark); text-decoration: none; }
+.btn-link, .btn-visible-link { color: var(--c-primary-dark); font-weight: 600; box-shadow: none; }
+.btn-link:hover, .btn-link:focus-visible { color: var(--c-navy-2); text-decoration: none; }
+.btn-link:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
+/* White+gold inversion for link-buttons on the navy topbar, sidebar and dark stage */
 .navbar-heading .btn-link,
 .side-nav .btn-link,
 .stage .btn-link,
 .stage .btn-visible-link { color: var(--c-white); }
 
 .navbar-heading .btn-link:hover,
+.navbar-heading .btn-link:focus-visible,
 .side-nav .btn-link:hover,
+.side-nav .btn-link:focus-visible,
 .stage .btn-link:hover,
-.stage .btn-link:focus { color: var(--c-gold); }
+.stage .btn-link:focus-visible { color: var(--c-gold); outline: none; }
 
 /* =========================================================================
    Cards / tables
    ========================================================================= */
+/* Generic card containers — cool surface, hairline border, navy-tinted lift.
+   Keeps any Bootstrap panel/well off the flat-gray default. */
+.panel, .well {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    color: var(--c-ink);
+}
+
+.panel-heading {                            /* Title scale */
+    background: var(--c-surface-alt);
+    border-bottom: 1px solid var(--c-border);
+    border-radius: var(--radius) var(--radius) 0 0;
+    color: var(--c-ink);
+    font-weight: var(--fw-title);
+    font-size: var(--fs-title);
+    padding: 14px 16px;
+}
+
+.panel-body { padding: 16px; }
+
 .table {
     background: var(--c-surface);
     border-radius: var(--radius);
     overflow: hidden;
     box-shadow: var(--shadow);
-    margin-bottom: 24px;
+    margin-bottom: var(--space-md);
 }
 
 .table.container { width: auto; }
 
-.table > thead > tr > th {
-    background: #f7f9fc;
+.table > thead > tr > th {                  /* Label scale */
+    background: var(--c-surface-alt);
     border-bottom: 2px solid var(--c-border);
     color: var(--c-muted);
-    font-weight: 600;
+    font-weight: var(--fw-label);
     text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 0.04em;
+    font-size: var(--fs-label);
+    letter-spacing: var(--ls-label);
     padding: 14px 16px;
     vertical-align: middle;
 }
@@ -405,7 +486,7 @@ table .from-left a { margin-left: 5px; }
     font-weight: 500;
 }
 
-.table > tbody > tr:hover { background: #f5f8ff; }
+.table > tbody > tr:hover { background: var(--c-row-hover); }
 
 .table-fixed-width { width: 90%; }
 
@@ -421,8 +502,10 @@ table .from-left a { margin-left: 5px; }
 
 .form-control:focus {
     border-color: var(--c-primary);
-    box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.18);
+    box-shadow: var(--focus-ring);
 }
+
+.form-control::placeholder { color: var(--c-muted); }
 
 input[type=radio] { width: 1em; height: 1em; }
 
@@ -438,7 +521,8 @@ input[type=radio] { width: 1em; height: 1em; }
     background: transparent;
 }
 
-.input-heading { height: 150px; font-size: 110px; font-weight: 700; }
+/* Display scale — giant score-entry numeral */
+.input-heading { height: 150px; font-size: 110px; font-weight: var(--fw-display); letter-spacing: var(--ls-display); }
 
 .input-no-bg {
     background: var(--c-primary);
@@ -480,7 +564,7 @@ input[type=radio] { width: 1em; height: 1em; }
 }
 
 .designed { background: var(--c-white); }
-.yellow { background: var(--c-gold); }
+.yellow { background: var(--c-gold); color: var(--c-navy); }  /* Gold-Means-Now: navy ink on gold */
 
 /* =========================================================================
    Scoring labels (semantic; ElementStatus.get_label)
@@ -492,10 +576,15 @@ input[type=radio] { width: 1em; height: 1em; }
     padding: 0.35em 0.6em;
 }
 
-.label-black  { background: var(--c-status-fail); color: var(--c-white); }
-.label-orange { background: var(--c-status-warn); color: var(--c-white); }
-.label-blue   { background: var(--c-status-ok);   color: var(--c-white); border: 1px solid rgba(255,255,255,0.6); }
-.label-current { box-shadow: 0 0 0 3px var(--c-gold); }
+/* neutral resting label — token muted, not Bootstrap #777 gray */
+.label-default { background: var(--c-muted);        color: var(--c-white); }
+.label-black  { background: var(--c-status-fail);   color: var(--c-white); }
+/* ink (not white) on amber: white on #f59e0b is 2.15:1; ink is ~8.6:1 */
+.label-orange { background: var(--c-status-warn);   color: var(--c-ink); }
+/* deepened blue so white text clears the >=7:1 hall target on stage (#2f6df6 was 4.5:1) */
+.label-blue   { background: var(--c-status-ok-deep); color: var(--c-white); border: 1px solid rgba(255,255,255,0.6); }
+/* Gold-Means-Now: the current-marker ring */
+.label-current { box-shadow: var(--ring-gold); }
 
 /* =========================================================================
    Score breakdown screen (scores.html) accents
@@ -508,8 +597,8 @@ input[type=radio] { width: 1em; height: 1em; }
    (scores.html, judgea/b/c). White text + colour labels read on dark.
    ========================================================================= */
 body.stage {
-    background: radial-gradient(1200px 700px at 80% -10%, #14305c 0%, transparent 55%),
-                linear-gradient(160deg, var(--c-navy) 0%, #07142a 100%);
+    background: radial-gradient(1200px 700px at 80% -10%, var(--c-navy-glow) 0%, transparent 55%),
+                linear-gradient(160deg, var(--c-navy) 0%, var(--c-navy-deep) 100%);
     min-height: 100vh;
 }
 
@@ -536,12 +625,13 @@ body.stage .marks li { font-weight: 500; }
    ========================================================================= */
 body.monitor-screen {
     color: var(--c-white);
-    background: radial-gradient(1400px 800px at 50% -20%, #16356a 0%, transparent 60%),
-                linear-gradient(160deg, var(--c-navy) 0%, #060f22 100%);
+    background: radial-gradient(1400px 800px at 50% -20%, var(--c-navy-glow) 0%, transparent 60%),
+                linear-gradient(160deg, var(--c-navy) 0%, var(--c-navy-deep) 100%);
     min-height: 100vh;
 }
 
-body.monitor-screen h1 { font-weight: 800; letter-spacing: 0.01em; }
+/* Display scale — projector headline */
+body.monitor-screen h1 { font-weight: var(--fw-display); letter-spacing: var(--ls-display); }
 body.monitor-screen .table { background: transparent; box-shadow: none; }
 body.monitor-screen .table > thead > tr > th,
 body.monitor-screen .table > tbody > tr > td {
@@ -550,3 +640,25 @@ body.monitor-screen .table > tbody > tr > td {
     border-color: rgba(255, 255, 255, 0.12);
 }
 body.monitor-screen .table > tbody > tr:hover { background: rgba(255, 255, 255, 0.04); }
+
+/* =========================================================================
+   Reduced motion — collapse every transition to an instant crossfade and
+   drop the lift/press transforms. State colours still change; nothing moves.
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+
+    /* neutralize the button/login lift + press transforms */
+    .btn, .btn:hover, .btn:focus-visible, .btn:active,
+    .btn-primary:hover, .btn-primary:focus-visible,
+    .btn-login, .btn-login:hover, .btn-login:focus {
+        transform: none !important;
+    }
+}

@@ -12,7 +12,7 @@ colors:
   bg: "#eef2f8"
   surface: "#ffffff"
   ink: "#1b2430"
-  muted: "#6b7787"
+  muted: "#57616f"
   border: "#e3e8f0"
   status-ok: "#2f6df6"
   status-warn: "#f59e0b"
@@ -130,7 +130,7 @@ A federation palette: navy authority, electric-blue utility, competition red for
 - **Cool Field** (#eef2f8): The light app background. Cool, not warm — a workbench, not paper.
 - **Surface White** (#ffffff): Cards, tables, inputs, the sign-in panel.
 - **Ink** (#1b2430): Primary text; also the `status-fail` (failed element) color.
-- **Muted Slate** (#6b7787): Secondary text, table header labels, captions. Never used for body copy that must be read at distance.
+- **Muted Slate** (#57616f): Secondary text, table header labels, captions. Darkened from the original #6b7787 to clear WCAG AA (≥4.5:1) on the surface white and cool field. Never used for body copy that must be read at distance.
 - **Hairline** (#e3e8f0): Borders and dividers.
 
 ### Semantic scoring

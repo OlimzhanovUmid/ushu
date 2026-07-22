@@ -158,6 +158,7 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
+                'core.context_processors.event_branding',
             ],
         },
     },
