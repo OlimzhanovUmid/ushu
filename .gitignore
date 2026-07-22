@@ -1,4 +1,3 @@
-idea/
 # Created by https://www.gitignore.io
 
 ### OSX ###
@@ -38,6 +37,7 @@ __pycache__/
 env/
 venv/
 .venv/
+.venv*/
 build/
 develop-eggs/
 dist/
@@ -90,6 +90,13 @@ local_settings.py
 
 .env
 db.sqlite3
+backup.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+
+# local Elixir/Phoenix rewrite (not shipped yet)
+elixir/
+erl_crash.dump
 
 
 
