@@ -58,8 +58,15 @@
         <tbody>
         {% for p in participations %}
             <tr>
-                <th><a href="{% url "delete_participation" pk=p.pk %}" class="btn-link">X</a></th>
-                <th>{{ forloop.counter }}</th>
+                <th>
+                    <form method="POST" action="{% url "delete_participation" pk=p.pk %}"
+                          onsubmit="return confirm('{% trans "Delete this participation?" %}');"
+                          style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-link">X</button>
+                    </form>
+                </th>
+                <th>{% if p.rank %}{{ p.rank }}{% else %}-{% endif %}</th>
                 <th>{{ p.participant.club.name }}</th>
 
                 {% if 'group' != tablo.category.name.lower %}
@@ -70,8 +77,13 @@
 
                 {% if not in_process %}
                     {% if p.pk == active_pk %}
-                        <th><a class="btn btn-white"
-                               href="{% url "participant_activate" %}?{% query_transform request pk=active_pk %}">{% trans "Activate" %}</a>
+                        <th>
+                            <form method="POST" action="{% url "participant_activate" %}"
+                                  style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="pk" value="{{ active_pk }}">
+                                <button type="submit" class="btn btn-white">{% trans "Activate" %}</button>
+                            </form>
                         </th>
                     {% elif p.state == 0 %}
                         <th></th>

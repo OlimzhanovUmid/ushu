@@ -68,8 +68,9 @@
                     <div class="row">
                         <ul class="marks">
                             {% if participation.is_saved == False %}
-                                <li><a href="{% url "open_judge" idx=forloop.counter0 %}"
-                                       class="btn btn-link btn-lg">X</a></li>
+                                <li><button type="submit" formmethod="post"
+                                       formaction="{% url "open_judge" idx=forloop.counter0 %}"
+                                       class="btn btn-link btn-lg">X</button></li>
                             {% endif %}
                             <li class="main-mark">A{{ forloop.counter }}</li>
                             {% for s in score %}
@@ -106,8 +107,9 @@
                     <div class="row">
                         <ul class="marks">
                             {% if participation.is_saved == False %}
-                                <li><a href="{% url "open_judge" idx=forloop.counter0|add:"3" %}"
-                                       class="btn btn-link btn-lg">X</a></li>
+                                <li><button type="submit" formmethod="post"
+                                       formaction="{% url "open_judge" idx=forloop.counter0|add:"3" %}"
+                                       class="btn btn-link btn-lg">X</button></li>
                             {% endif %}
                             <li class="main-mark">B{{ forloop.counter }}</li>
                             <li>{{ score|default:"" }}</li>
@@ -146,8 +148,9 @@
                         <div class="row">
                             <ul class="marks">
                                 {% if participation.is_saved == False %}
-                                    <li><a href="{% url "open_judge" idx=forloop.counter0|add:"7" %}"
-                                           class="btn btn-link btn-lg">X</a></li>
+                                    <li><button type="submit" formmethod="post"
+                                           formaction="{% url "open_judge" idx=forloop.counter0|add:"7" %}"
+                                           class="btn btn-link btn-lg">X</button></li>
                                 {% endif %}
                                 <li class="main-mark">C{{ forloop.counter }}</li>
                                 {% for els in s.1 %}

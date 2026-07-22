@@ -19,11 +19,10 @@
                     -{% endif %}</span></td>
                 {% if is_group == False %}
                     <td class="lead clubname">
-                        <img src="{{ p.participant.club.country.image.url }}"
-                             alt="{{ p.participant.club.country.name_ru }}" style="max-width:100%;">
-                        <!-- <span class="clubname">
-
-                        </span> -->
+                        {% if p.participant.club.country.image %}
+                            <img src="{{ p.participant.club.country.image.url }}"
+                                 alt="{{ p.participant.club.country.name_ru }}" style="max-width:100%;">
+                        {% endif %}
                     </td>
                 {% endif %}
                 <td class="lead">

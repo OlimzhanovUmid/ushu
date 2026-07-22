@@ -132,7 +132,7 @@
             (function worker() {
                 var finish = false;
                 $.ajax({
-                    url: 'has_update',
+                    url: '{% url "has_updated" %}',
                     success: function (data) {
                         if (data.result == false) {
                             location.reload();
