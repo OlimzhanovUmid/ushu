@@ -18,8 +18,13 @@ class UserAdmin(UserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password', 'category',)}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                       'groups', 'user_permissions')}),
+        (_('Permissions'), {
+            'fields': ('is_active', 'is_staff', 'is_superuser',
+                       'groups', 'user_permissions'),
+            'description': _('To retire a judge who already has recorded '
+                             'scores, uncheck "active" — deletion is blocked '
+                             'to preserve competition history.'),
+        }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups',)

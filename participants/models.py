@@ -30,7 +30,7 @@ class Participant(models.Model):
     name_en = models.CharField(max_length=64)
     sex = models.IntegerField(choices=SEX_CHOICES)
     age = models.IntegerField(choices=AGE_CHOICES)
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.name_en} --- {self.club.name}'
