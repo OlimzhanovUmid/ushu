@@ -8,6 +8,7 @@ from .models import User
 
 # Register your models here.
 class UserAdmin(UserAdmin):
+    list_display = ('username', 'category', 'is_staff', 'is_active')
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -27,7 +28,7 @@ class UserAdmin(UserAdmin):
         }),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
-    list_filter = ('is_staff', 'is_superuser', 'is_active', 'groups',)
+    list_filter = ('category', 'is_staff', 'is_superuser', 'is_active', 'groups',)
     filter_horizontal = ('groups', 'user_permissions',)
     add_form = forms.UserCreationFormForAdmin
 

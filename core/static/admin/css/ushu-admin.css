@@ -1,0 +1,288 @@
+/* =========================================================================
+   Ushu Federation — Django admin re-skin ("The Federation Standard")
+
+   Loaded AFTER Django's base.css / dark_mode.css via {% block extrastyle %},
+   together with the foundation tokens in css/style.css. This file only
+   remaps Django admin's own CSS custom properties onto the foundation
+   tokens (navy header, cool surfaces, electric-blue buttons, Inter) so the
+   admin stops reading as generic Bootstrap / enterprise-gray — a PRODUCT.md
+   anti-reference — without a custom AdminSite or per-model CSS.
+
+   Token-based: every colour below resolves to a --c-* / --font-* token from
+   style.css (fallbacks kept so the sheet degrades if loaded alone). The admin
+   is a calm *light* workbench (PRODUCT.md), so we pin one branded light theme
+   across auto/dark to keep the navy shell coherent, and hide the theme toggle.
+   ========================================================================= */
+
+:root,
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+    /* Typography — One-Family Rule: Inter only */
+    --font-family-primary: var(--font-sans, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+
+    /* Brand accents — navy authority, electric-blue utility */
+    --primary:        var(--c-navy, #0b1f3a);      /* module caption bars, section headers */
+    --primary-fg:     #ffffff;
+    --secondary:      var(--c-navy, #0b1f3a);
+    --accent:         var(--c-primary, #2f6df6);
+
+    /* Header — navy shell, white text, gold hover (set on #header below too) */
+    --header-bg:              var(--c-navy, #0b1f3a);
+    --header-color:           #ffffff;
+    --header-branding-color:  #ffffff;
+    --header-link-color:      #ffffff;
+
+    /* Breadcrumbs — a cool light band under the navy header */
+    --breadcrumbs-bg:      var(--c-surface-alt, #f7f9fc);
+    --breadcrumbs-fg:      var(--c-muted, #57616f);
+    --breadcrumbs-link-fg: var(--c-primary-dark, #1e4fd0);
+
+    /* Surfaces — Cool-Ground Rule */
+    --body-bg:        var(--c-bg, #eef2f8);
+    --body-fg:        var(--c-ink, #1b2430);
+    --body-quiet-color:  var(--c-muted, #57616f);
+    --body-medium-color: var(--c-muted, #57616f);
+    --body-loud-color:   var(--c-ink, #1b2430);
+    --darkened-bg:    var(--c-surface-alt, #f7f9fc);
+    --selected-bg:    var(--c-row-hover, #f5f8ff);
+    --selected-row:   var(--c-row-hover, #f5f8ff);
+
+    --border-color:   var(--c-border, #e3e8f0);
+    --hairline-color: var(--c-border, #e3e8f0);
+
+    /* Links — deeper blue for AA on the cool ground */
+    --link-fg:          var(--c-primary-dark, #1e4fd0);
+    --link-hover-color: var(--c-navy-2, #122a4d);
+    --link-selected-fg: var(--c-primary-dark, #1e4fd0);
+
+    /* Buttons — token-based, never Bootstrap/Django default */
+    --button-bg:               var(--c-primary, #2f6df6);
+    --button-fg:               #ffffff;
+    --button-hover-bg:         var(--c-primary-dark, #1e4fd0);
+    --default-button-bg:       var(--c-primary-dark, #1e4fd0);
+    --default-button-hover-bg: var(--c-navy-2, #122a4d);
+    --close-button-bg:         var(--c-muted, #57616f);
+    --close-button-hover-bg:   var(--c-ink, #1b2430);
+
+    /* Destructive — competition red (accent-dark clears AA on white) */
+    --delete-button-bg:       var(--c-accent-dark, #c92f3a);
+    --delete-button-hover-bg: var(--c-accent-deeper, #a5262f);
+
+    /* Object tools (add / history buttons) — navy, gold-hover handled below */
+    --object-tools-bg:       var(--c-navy, #0b1f3a);
+    --object-tools-fg:       #ffffff;
+    --object-tools-hover-bg: var(--c-navy-2, #122a4d);
+
+    /* Focus ring */
+    --primary-fg-focus: var(--c-primary, #2f6df6);
+    color-scheme: light;
+}
+
+/* Force the branded light theme regardless of the OS / toggle preference so
+   the navy shell stays coherent; the dead toggle is hidden below. */
+@media (prefers-color-scheme: dark) {
+    :root { color-scheme: light; }
+}
+
+body {
+    font-family: var(--font-family-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Header: navy gradient shell, gold hover on links -------------------- */
+#header {
+    background: linear-gradient(90deg, var(--c-navy, #0b1f3a) 0%, var(--c-navy-2, #122a4d) 100%);
+    color: #ffffff;
+    box-shadow: var(--shadow, 0 4px 16px rgba(11, 31, 58, 0.10));
+    border-bottom: none;
+}
+
+#branding h1,
+#site-name a:link,
+#site-name a:visited {
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+#header a:link,
+#header a:visited { color: #ffffff; }
+
+#header a:hover,
+#header a:focus,
+#site-name a:hover { color: var(--c-gold, #f5b53d); }
+
+#user-tools { color: rgba(255, 255, 255, 0.82); }
+
+/* "← Вернуться в приложение" — escape hatch back to the app, not a dead end */
+.ushu-back-link {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    padding: 7px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--radius-sm, 6px);
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 13px;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: border-color 0.16s ease, color 0.16s ease, background 0.16s ease;
+}
+.ushu-back-link:hover,
+.ushu-back-link:focus {
+    color: var(--c-gold, #f5b53d) !important;
+    border-color: var(--c-gold, #f5b53d);
+    background: rgba(245, 181, 61, 0.10);
+    text-decoration: none;
+}
+
+/* ---- Breadcrumbs -------------------------------------------------------- */
+div.breadcrumbs {
+    background: var(--c-surface-alt, #f7f9fc);
+    color: var(--c-muted, #57616f);
+    border-bottom: 1px solid var(--c-border, #e3e8f0);
+    font-weight: 600;
+}
+div.breadcrumbs a { color: var(--c-primary-dark, #1e4fd0); }
+div.breadcrumbs a:hover,
+div.breadcrumbs a:focus { color: var(--c-navy-2, #122a4d); }
+
+/* ---- Module cards: surface white, navy caption, navy-tinted lift -------- */
+.module {
+    background: var(--c-surface, #ffffff);
+    border: 1px solid var(--c-border, #e3e8f0);
+    border-radius: var(--radius, 10px);
+    box-shadow: var(--shadow, 0 4px 16px rgba(11, 31, 58, 0.10));
+    overflow: hidden;
+}
+.module caption,
+.module h2,
+.module h3 {
+    background: linear-gradient(90deg, var(--c-navy, #0b1f3a) 0%, var(--c-navy-2, #122a4d) 100%);
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+.module caption a,
+.module h2 a { color: #ffffff; }
+
+/* App index list rows */
+.app-list .module a:hover,
+.dashboard .module a:hover { color: var(--c-primary-dark, #1e4fd0); }
+
+/* ---- Result list tables (Cool-Ground, hairline rows) -------------------- */
+#result_list,
+.results table {
+    background: var(--c-surface, #ffffff);
+}
+#changelist table thead th {
+    background: var(--c-surface-alt, #f7f9fc);
+    color: var(--c-muted, #57616f);
+    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid var(--c-border, #e3e8f0);
+}
+#changelist table tbody tr:hover td,
+#changelist table tbody tr:hover th { background: var(--c-row-hover, #f5f8ff); }
+#changelist-filter { background: var(--c-surface, #ffffff); border-left: 1px solid var(--c-border, #e3e8f0); }
+#changelist-filter h2 {
+    background: var(--c-navy, #0b1f3a);
+    color: #ffffff;
+    border-radius: var(--radius, 10px) var(--radius, 10px) 0 0;
+}
+
+/* ---- Buttons: token radius + press feedback ----------------------------- */
+.button,
+input[type=submit],
+input[type=button],
+.submit-row input,
+a.button {
+    border-radius: var(--radius-sm, 6px);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(11, 31, 58, 0.08));
+    transition: background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+}
+.button:active,
+input[type=submit]:active,
+input[type=button]:active { transform: translateY(1px); }
+
+.button.default,
+input[type=submit].default,
+.submit-row input.default {
+    background: var(--c-primary, #2f6df6);
+    color: #ffffff;
+}
+.button.default:hover,
+input[type=submit].default:hover { background: var(--c-primary-dark, #1e4fd0); }
+
+.object-tools a:link,
+.object-tools a:visited {
+    background: var(--c-navy, #0b1f3a);
+    border-radius: var(--radius-sm, 6px);
+    font-weight: 600;
+}
+.object-tools a:hover,
+.object-tools a:focus {
+    background: var(--c-navy-2, #122a4d);
+    color: var(--c-gold, #f5b53d);
+}
+
+/* Delete / danger — competition red */
+.deletelink,
+.deletelink-box a,
+a.deletelink {
+    background: var(--c-accent-dark, #c92f3a);
+    color: #ffffff;
+    border-radius: var(--radius-sm, 6px);
+}
+.deletelink:hover,
+a.deletelink:hover { background: var(--c-accent-deeper, #a5262f); }
+
+/* ---- Inputs: hairline border, electric-blue focus ring ------------------ */
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url],
+input[type=number],
+input[type=tel],
+textarea,
+select,
+.vTextField {
+    border-radius: var(--radius-sm, 6px);
+    border: 1px solid var(--c-border, #e3e8f0);
+}
+input:focus,
+textarea:focus,
+select:focus,
+.vTextField:focus {
+    border-color: var(--c-primary, #2f6df6);
+    box-shadow: var(--focus-ring, 0 0 0 3px rgba(47, 109, 246, 0.18));
+    outline: none;
+}
+
+/* ---- Login card: cool workbench panel ----------------------------------- */
+body.login #container {
+    background: var(--c-surface, #ffffff);
+    border: 1px solid var(--c-border, #e3e8f0);
+    border-radius: var(--radius-lg, 16px);
+    box-shadow: var(--shadow-lg, 0 18px 50px rgba(11, 31, 58, 0.18));
+}
+body.login #header { border-radius: var(--radius-lg, 16px) var(--radius-lg, 16px) 0 0; }
+
+/* ---- Links (content area) ----------------------------------------------- */
+a:link, a:visited { color: var(--c-primary-dark, #1e4fd0); }
+#content a:hover, #content a:focus { color: var(--c-navy-2, #122a4d); }
+
+/* ---- Hide the theme toggle: we pin one branded light theme -------------- */
+button.theme-toggle,
+.theme-toggle { display: none !important; }
+
+/* ---- Reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    .button, input[type=submit], input[type=button], a.button { transition: none; }
+    .button:active, input[type=submit]:active, input[type=button]:active { transform: none; }
+}

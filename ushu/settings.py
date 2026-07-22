@@ -146,7 +146,10 @@ LOCALE_PATHS = (
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Оставляем пустым — шаблоны в приложениях
+        # core/templates is registered on the filesystem loader (checked before
+        # app dirs) so core/templates/admin/base_site.html overrides the one
+        # django.contrib.admin ships, even though 'core' is listed after it.
+        'DIRS': [os.path.join(BASE_DIR, 'core', 'templates')],
         'APP_DIRS': True,  # Включает автоматический поиск templates в приложениях
         'OPTIONS': {
             'context_processors': [

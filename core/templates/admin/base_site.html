@@ -1,0 +1,26 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% comment %}
+  Ushu Federation Standard — branded admin shell.
+  Escapes Django's default blue/gray (a PRODUCT.md anti-reference) by pulling
+  the foundation tokens (css/style.css) plus a small admin re-skin
+  (admin/css/ushu-admin.css) that remaps Django's own admin CSS variables onto
+  those tokens. No custom AdminSite, no per-model CSS. The nav-global block
+  adds a way back to the app so the admin is not a dead-end silo.
+{% endcomment %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/css/ushu-admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
+{% endblock %}
+
+{% block nav-global %}
+  <a class="ushu-back-link" href="{% url 'tablo_list' %}">&larr; Вернуться в приложение</a>
+{% endblock %}

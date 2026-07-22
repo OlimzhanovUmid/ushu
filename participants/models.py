@@ -32,5 +32,9 @@ class Participant(models.Model):
     age = models.IntegerField(choices=AGE_CHOICES)
     club = models.ForeignKey(Club, on_delete=models.PROTECT)
 
+    class Meta:
+        verbose_name = 'участник'
+        verbose_name_plural = 'участники'
+
     def __str__(self):
         return f'{self.name_en} --- {self.club.name}'

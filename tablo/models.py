@@ -28,6 +28,8 @@ class Tablo(models.Model):
     started = models.BooleanField(default=False)  # True if jrebi already done
 
     class Meta:
+        verbose_name = 'табло'
+        verbose_name_plural = 'табло'
         constraints = [
             models.UniqueConstraint(
                 fields=['age', 'sex', 'category'],
@@ -134,6 +136,8 @@ class Participation(models.Model):
     objects = ParticipationManager()
 
     class Meta:
+        verbose_name = 'участие'
+        verbose_name_plural = 'участия'
         constraints = [
             models.UniqueConstraint(
                 fields=['participant', 'tablo'],
@@ -373,6 +377,8 @@ class Score(models.Model):
     saved = models.BooleanField(default=False)
 
     class Meta:
+        verbose_name = 'оценка судьи'
+        verbose_name_plural = 'оценки судей'
         constraints = [
             models.UniqueConstraint(
                 fields=['judge', 'participation'],
