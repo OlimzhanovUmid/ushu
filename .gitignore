@@ -98,6 +98,11 @@ backup.sqlite3
 elixir/
 erl_crash.dump
 
+# local agent / tool state
+.claude/
+.codegraph/
+.codex/
+
 
 
 # Dependency directories
