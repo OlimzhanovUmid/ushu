@@ -33,8 +33,8 @@ class Participant(models.Model):
     club = models.ForeignKey(Club, on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = 'участник'
-        verbose_name_plural = 'участники'
+        verbose_name = _('participant')
+        verbose_name_plural = _('participants')
 
     def __str__(self):
         return f'{self.name_en} --- {self.club.name}'

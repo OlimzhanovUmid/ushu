@@ -1,6 +1,7 @@
 from collections import Counter
 
 from django.db import models, transaction
+from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from sortedm2m.fields import SortedManyToManyField
 
@@ -28,8 +29,8 @@ class Tablo(models.Model):
     started = models.BooleanField(default=False)  # True if jrebi already done
 
     class Meta:
-        verbose_name = 'табло'
-        verbose_name_plural = 'табло'
+        verbose_name = _('tablo')
+        verbose_name_plural = _('tablos')
         constraints = [
             models.UniqueConstraint(
                 fields=['age', 'sex', 'category'],
@@ -136,8 +137,8 @@ class Participation(models.Model):
     objects = ParticipationManager()
 
     class Meta:
-        verbose_name = 'участие'
-        verbose_name_plural = 'участия'
+        verbose_name = _('participation')
+        verbose_name_plural = _('participations')
         constraints = [
             models.UniqueConstraint(
                 fields=['participant', 'tablo'],
@@ -377,8 +378,8 @@ class Score(models.Model):
     saved = models.BooleanField(default=False)
 
     class Meta:
-        verbose_name = 'оценка судьи'
-        verbose_name_plural = 'оценки судей'
+        verbose_name = _('judge score')
+        verbose_name_plural = _('judge scores')
         constraints = [
             models.UniqueConstraint(
                 fields=['judge', 'participation'],

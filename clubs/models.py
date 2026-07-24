@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class Country(models.Model):
@@ -9,8 +10,8 @@ class Country(models.Model):
     image = models.ImageField(blank=True, upload_to='countries')
 
     class Meta:
-        verbose_name = 'страна'
-        verbose_name_plural = 'страны'
+        verbose_name = _('country')
+        verbose_name_plural = _('countries')
 
     def __str__(self):
         return self.name_en_short
@@ -21,8 +22,8 @@ class Club(models.Model):
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
 
     class Meta:
-        verbose_name = 'клуб'
-        verbose_name_plural = 'клубы'
+        verbose_name = _('club')
+        verbose_name_plural = _('clubs')
 
     def __str__(self):
         return f'{self.name} ({self.country.name_en_short})'

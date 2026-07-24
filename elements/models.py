@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 from sortedm2m.fields import SortedManyToManyField
 
 # Create your models here.
@@ -14,8 +15,8 @@ class ElementCategory(models.Model):  # Chanqguan, Nanquan, Taljiquan
     name = models.CharField(max_length=16)
 
     class Meta:
-        verbose_name = 'категория элементов'
-        verbose_name_plural = 'категории элементов'
+        verbose_name = _('element category')
+        verbose_name_plural = _('element categories')
 
     def __str__(self):
         return self.name
@@ -30,8 +31,8 @@ class Element(models.Model):
     symbol = models.CharField(max_length=64, default="")
 
     class Meta:
-        verbose_name = 'элемент'
-        verbose_name_plural = 'элементы'
+        verbose_name = _('element')
+        verbose_name_plural = _('elements')
 
     def __str__(self):
         cat_names = [cat.name for cat in self.categories.all()]
@@ -42,8 +43,8 @@ class Combination(models.Model):
     elements = SortedManyToManyField(Element)
 
     class Meta:
-        verbose_name = 'комбинация'
-        verbose_name_plural = 'комбинации'
+        verbose_name = _('combination')
+        verbose_name_plural = _('combinations')
 
     def __str__(self):
         names = [el.name for el in self.elements.all()]
@@ -56,8 +57,8 @@ class ErrorCode(models.Model):
     value = models.FloatField(default=0)
 
     class Meta:
-        verbose_name = 'код сбавки'
-        verbose_name_plural = 'коды сбавок'
+        verbose_name = _('deduction code')
+        verbose_name_plural = _('deduction codes')
 
     def __str__(self):
         return f'({self.number}) {self.name}'
