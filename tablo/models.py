@@ -59,11 +59,13 @@ class ParticipationManager(models.Manager):
     def assign_participation(self, participant, category):
         '''
         participant - uchastnik chempionata
-        category - nanquan, jinshu, daishu,....
+        category - nanquan, jinshu, daishu,.... (a single ElementCategory or
+        an iterable/queryset of them)
         '''
         age = int(participant.age)
         sex = int(participant.sex)
-        for tablo in Tablo.objects.filter(age=age, sex=sex, category=category):
+        categories = [category] if isinstance(category, ElementCategory) else category
+        for tablo in Tablo.objects.filter(age=age, sex=sex, category__in=categories):
             group = False
             cat_name = tablo.category.name.lower()
             if cat_name == 'group':
