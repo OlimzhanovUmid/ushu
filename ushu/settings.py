@@ -103,7 +103,12 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = 'ru'
+
+LANGUAGES = [
+    ('ru', 'Русский'),
+    ('en', 'English'),
+]
 
 TIME_ZONE = 'UTC'
 

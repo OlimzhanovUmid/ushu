@@ -3,243 +3,993 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-28 08:54+0000\n"
+"POT-Creation-Date: 2026-07-24 13:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: judges/admin.py:14 judges/admin.py:18
+#: clubs/models.py:13
+msgid "country"
+msgstr "страна"
+
+#: clubs/models.py:14
+msgid "countries"
+msgstr "страны"
+
+#: clubs/models.py:25
+msgid "club"
+msgstr "клуб"
+
+#: clubs/models.py:26
+msgid "clubs"
+msgstr "клубы"
+
+#: core/admin.py:19
+msgid "Judging — Administration"
+msgstr "Судейская — администрирование"
+
+#: core/admin.py:20
+msgid "Wushu · Administration"
+msgstr "Ушу · Администрирование"
+
+#: core/admin.py:21
+msgid "Setup and reference data"
+msgstr "Настройка и справочные данные"
+
+#: core/templates/404.html:6
+msgid "Not found"
+msgstr "Не найдено"
+
+#: core/templates/404.html:17
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+#: core/templates/404.html:18 core/templates/500.html:18
+msgid "Back to start"
+msgstr "На главную"
+
+#: core/templates/500.html:6
+msgid "Server error"
+msgstr "Ошибка сервера"
+
+#: core/templates/500.html:17
+msgid "Something went wrong. Try again."
+msgstr "Что-то пошло не так. Попробуйте ещё раз."
+
+#: core/templates/admin/base_site.html:13
+msgid "Django site admin"
+msgstr "Администрирование сайта"
+
+#: core/templates/admin/base_site.html:21
+msgid "Django administration"
+msgstr "Администрирование Django"
+
+#: core/templates/admin/base_site.html:25
+msgid "Back to the app"
+msgstr "Вернуться в приложение"
+
+#: elements/models.py:18
+msgid "element category"
+msgstr "категория элементов"
+
+#: elements/models.py:19
+msgid "element categories"
+msgstr "категории элементов"
+
+#: elements/models.py:34
+msgid "element"
+msgstr "элемент"
+
+#: elements/models.py:35
+msgid "elements"
+msgstr "элементы"
+
+#: elements/models.py:46
+msgid "combination"
+msgstr "комбинация"
+
+#: elements/models.py:47
+msgid "combinations"
+msgstr "комбинации"
+
+#: elements/models.py:60
+msgid "deduction code"
+msgstr "код сбавки"
+
+#: elements/models.py:61
+msgid "deduction codes"
+msgstr "коды сбавок"
+
+#: judges/admin.py:17 judges/admin.py:21
 msgid "Personal info"
-msgstr ""
+msgstr "Личная информация"
 
-#: judges/admin.py:19
+#: judges/admin.py:22
 msgid "Permissions"
-msgstr ""
+msgstr "Права доступа"
 
-#: judges/admin.py:21
+#: judges/admin.py:25
+msgid ""
+"To retire a judge who already has recorded scores, uncheck \"active\" — "
+"deletion is blocked to preserve competition history."
+msgstr "Чтобы вывести судью, у которого уже есть выставленные оценки, снимите флажок «активен» — удаление заблокировано ради сохранения истории соревнования."
+
+#: judges/admin.py:29
 msgid "Important dates"
-msgstr ""
+msgstr "Важные даты"
 
 #: judges/forms.py:16
 msgid "A user with that username already exists."
-msgstr ""
+msgstr "Пользователь с таким логином уже существует."
 
 #: judges/forms.py:17
 msgid "The two password fields didn't match."
-msgstr ""
+msgstr "Пароли не совпадают."
 
-#: judges/forms.py:19 tablo/templates/tablo/login.html:44
-#: tablo/templates/tablo/login.html:45
+#: judges/forms.py:19 tablo/templates/tablo/login.html:47
+#: tablo/templates/tablo/login.html:49
 msgid "Username"
 msgstr "Логин"
 
 #: judges/forms.py:21
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr ""
+msgstr "Обязательно. Не более 30 символов. Только буквы, цифры и @/./+/-/_."
 
 #: judges/forms.py:24
 msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
-msgstr ""
+msgstr "Значение может содержать только буквы, цифры и символы @/./+/-/_."
 
-#: judges/forms.py:26 tablo/templates/tablo/login.html:47
+#: judges/forms.py:26 tablo/templates/tablo/login.html:51
+#: tablo/templates/tablo/login.html:53
 msgid "Password"
 msgstr "Пароль"
 
 #: judges/forms.py:28
 msgid "Password confirmation"
-msgstr "Пароль"
+msgstr "Подтверждение пароля"
 
 #: judges/forms.py:30
 msgid "Enter the same password as above, for verification."
-msgstr ""
+msgstr "Введите тот же пароль ещё раз для проверки."
 
-#: participants/models.py:7
-msgid "Men"
-msgstr ""
+#: participants/admin.py:16 tablo/admin.py:17
+msgid "age"
+msgstr "возраст"
+
+#: participants/admin.py:20 tablo/admin.py:21
+msgid "sex"
+msgstr "пол"
 
 #: participants/models.py:8
-msgid "Women"
-msgstr ""
+msgid "Men"
+msgstr "Мужчины"
 
-#: tablo/templates/tablo/base_tablo_wmenu.html:16
+#: participants/models.py:9
+msgid "Women"
+msgstr "Женщины"
+
+#: participants/models.py:36 tablo/admin.py:39 tablo/admin.py:61
+msgid "participant"
+msgstr "участник"
+
+#: participants/models.py:37
+msgid "participants"
+msgstr "участники"
+
+#: tablo/admin.py:66
+msgid "judge"
+msgstr "судья"
+
+#: tablo/admin.py:71 tablo/models.py:32
+msgid "tablo"
+msgstr "табло"
+
+#: tablo/models.py:33
+msgid "tablos"
+msgstr "табло"
+
+#: tablo/models.py:140
+msgid "participation"
+msgstr "участие"
+
+#: tablo/models.py:141
+msgid "participations"
+msgstr "участия"
+
+#: tablo/models.py:381
+msgid "judge score"
+msgstr "оценка судьи"
+
+#: tablo/models.py:382
+msgid "judge scores"
+msgstr "оценки судей"
+
+#: tablo/templates/tablo/base_tablo_wmenu.html:17
+#: tablo/templates/tablo/tablo_list.html:10
 msgid "Standings"
 msgstr "Табло"
 
-#: tablo/templates/tablo/base_tablo_wmenu.html:17
+#: tablo/templates/tablo/base_tablo_wmenu.html:18
+#: tablo/templates/tablo/participant_create.html:9
 msgid "Add participant"
-msgstr "Добавить участников"
+msgstr "Добавить участника"
 
-#: tablo/templates/tablo/base_tablo_wmenu.html:19
+#: tablo/templates/tablo/base_tablo_wmenu.html:20
 msgid "Current participant"
 msgstr "Текущий участник"
 
-#: tablo/templates/tablo/judge_empty.html:8
+#: tablo/templates/tablo/base_tablo_wmenu.html:23
+msgid "Admin"
+msgstr "Админ"
+
+#: tablo/templates/tablo/console/base_console.html:4
+#: tablo/templates/tablo/console/home.html:4
+#: tablo/templates/tablo/console/home.html:7
+msgid "Staff console"
+msgstr "Служебная консоль"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:4
+#: tablo/templates/tablo/console/home.html:20
+msgid "Re-open a judge"
+msgstr "Переоткрыть судью"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:7
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:7
+#: tablo/templates/tablo/console/confirm_withdraw.html:7
+msgid "Back to the participation"
+msgstr "Назад к участию"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:8
+msgid "Re-open a judge's slot"
+msgstr "Переоткрыть слот судьи"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:11
+msgid ""
+"The judge's slot will be re-opened, the\n"
+"            participation will move onto the carpet, and the judge will re-"
+"enter the\n"
+"            score on their screen. The result is recalculated along the "
+"verified\n"
+"            path."
+msgstr "Слот судьи будет переоткрыт, участие переведётся на ковёр, и судья заново введёт оценку на своём экране. Результат пересчитается по проверенному пути."
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:17
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:17
+#: tablo/templates/tablo/console/confirm_withdraw.html:17
+#: tablo/templates/tablo/tablo_detail.html:54
+#: tablo/templates/tablo/tablo_print.html:21
+msgid "Participant"
+msgstr "Участник"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:19
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:19
+#: tablo/templates/tablo/console/confirm_withdraw.html:19
+#: tablo/templates/tablo/scores.html:140
+msgid "Tablo"
+msgstr "Табло"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:23
+#: tablo/templates/tablo/console/confirm_retire_judge.html:17
+msgid "Judge"
+msgstr "Судья"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:29
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:27
+msgid "Another participant is already on the carpet:"
+msgstr "На ковре уже находится участник:"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:32
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:30
+msgid ""
+"Only one participant can perform at a time. Confirm\n"
+"                returning the current participant to the waiting queue."
+msgstr "Одновременно может выступать только один участник. Подтвердите возврат текущего участника в очередь ожидания."
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:40
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:38
+#: tablo/templates/tablo/console/confirm_retire_judge.html:28
+#: tablo/templates/tablo/console/confirm_withdraw.html:28
+msgid "Cancel"
+msgstr "Отмена"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:43
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:41
+msgid "Return the current one to the queue and re-open"
+msgstr "Вернуть текущего в очередь и переоткрыть"
+
+#: tablo/templates/tablo/console/confirm_reopen_judge.html:45
+msgid "Re-open the judge"
+msgstr "Переоткрыть судью"
+
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:4
+msgid "Re-open a participation"
+msgstr "Переоткрыть участие"
+
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:8
+#: tablo/templates/tablo/console/participation.html:42
+msgid "Re-open the whole participation"
+msgstr "Переоткрыть всё участие"
+
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:11
+msgid ""
+"All judge slots will be re-opened, the\n"
+"            participation will move onto the carpet, and the judges will re-"
+"enter\n"
+"            their scores. The saved final result will be cancelled and "
+"recalculated\n"
+"            from scratch."
+msgstr "Все судейские слоты будут переоткрыты, участие переведётся на ковёр, и судьи заново введут оценки. Сохранённый итоговый результат будет отменён и пересчитан заново."
+
+#: tablo/templates/tablo/console/confirm_reopen_participation.html:43
+msgid "Re-open the participation"
+msgstr "Переоткрыть участие"
+
+#: tablo/templates/tablo/console/confirm_retire_judge.html:4
+#: tablo/templates/tablo/console/confirm_retire_judge.html:8
+#: tablo/templates/tablo/console/home.html:32
+#: tablo/templates/tablo/console/judges.html:8
+msgid "Retire a judge from rotation"
+msgstr "Вывести судью из ротации"
+
+#: tablo/templates/tablo/console/confirm_retire_judge.html:7
+msgid "Back to the judges"
+msgstr "Назад к судьям"
+
+#: tablo/templates/tablo/console/confirm_retire_judge.html:11
+msgid ""
+"The judge will be deactivated\n"
+"            (is_active=False) and will stop receiving judge cards for new\n"
+"            participations. This is not a deletion: all recorded scores and "
+"the\n"
+"            competition history are preserved."
+msgstr "Судья будет деактивирован (is_active=False) и перестанет получать судейские карточки на новых участиях. Это не удаление: все уже выставленные оценки и история соревнования сохраняются."
+
+#: tablo/templates/tablo/console/confirm_retire_judge.html:19
+#: tablo/templates/tablo/participant_create.html:119
+#: tablo/templates/tablo/tablo_list.html:25
+msgid "Category"
+msgstr "Категория"
+
+#: tablo/templates/tablo/console/confirm_retire_judge.html:21
+msgid "Scores kept in history"
+msgstr "Сохранено оценок в истории"
+
+#: tablo/templates/tablo/console/confirm_retire_judge.html:29
+#: tablo/templates/tablo/console/judges.html:27
+msgid "Retire from rotation"
+msgstr "Вывести из ротации"
+
+#: tablo/templates/tablo/console/confirm_withdraw.html:4
+#: tablo/templates/tablo/console/confirm_withdraw.html:8
+#: tablo/templates/tablo/console/home.html:26
+msgid "Withdraw a participation"
+msgstr "Снять участие"
+
+#: tablo/templates/tablo/console/confirm_withdraw.html:12
+msgid ""
+"This cannot be undone. The participation and all of its\n"
+"            judge scores will be deleted with no way to restore them."
+msgstr "Действие необратимо. Участие и все его судейские оценки будут удалены без возможности восстановления."
+
+#: tablo/templates/tablo/console/confirm_withdraw.html:29
+#: tablo/templates/tablo/console/participation.html:47
+msgid "Withdraw participation"
+msgstr "Снять участие"
+
+#: tablo/templates/tablo/console/find.html:4
+#: tablo/templates/tablo/console/find.html:8
+#: tablo/templates/tablo/console/home.html:14
+#: tablo/templates/tablo/console/participation.html:7
+msgid "Find a participant"
+msgstr "Найти участника"
+
+#: tablo/templates/tablo/console/find.html:7
+#: tablo/templates/tablo/console/judges.html:7
+msgid "Console"
+msgstr "Консоль"
+
+#: tablo/templates/tablo/console/find.html:9
+msgid ""
+"Search by participant name, club name or tablo\n"
+"        category. Find the right object before making any correction."
+msgstr "Поиск по имени участника, названию клуба или категории табло. Найдите нужный объект перед любым исправлением."
+
+#: tablo/templates/tablo/console/find.html:14
+msgid "Name, club or tablo"
+msgstr "Имя, клуб или табло"
+
+#: tablo/templates/tablo/console/find.html:15
+msgid "Search"
+msgstr "Искать"
+
+#: tablo/templates/tablo/console/find.html:38
+#, python-format
+msgid "scores saved %(saved)s/%(total)s"
+msgstr "оценок сохранено %(saved)s/%(total)s"
+
+#: tablo/templates/tablo/console/find.html:46
+#: tablo/templates/tablo/console/participation.html:29
+msgid "saved"
+msgstr "сохранено"
+
+#: tablo/templates/tablo/console/find.html:46
+msgid "not yet"
+msgstr "нет"
+
+#: tablo/templates/tablo/console/find.html:49
+msgid "no judge cards"
+msgstr "нет судейских карточек"
+
+#: tablo/templates/tablo/console/find.html:52
+#: tablo/templates/tablo/tablo_list.html:49
+#: tablo/templates/tablo/tablo_list.html:51
+#: tablo/templates/tablo/tablo_list.html:54
+#: tablo/templates/tablo/tablo_list.html:56
+#: tablo/templates/tablo/tablo_list.html:59
+#: tablo/templates/tablo/tablo_list.html:61
+#: tablo/templates/tablo/tablo_list.html:64
+#: tablo/templates/tablo/tablo_list.html:66
+#: tablo/templates/tablo/tablo_list.html:69
+#: tablo/templates/tablo/tablo_list.html:71
+#: tablo/templates/tablo/tablo_list.html:74
+#: tablo/templates/tablo/tablo_list.html:76
+msgid "Open"
+msgstr "Открыть"
+
+#: tablo/templates/tablo/console/find.html:55
+msgid "No participations."
+msgstr "Нет участий."
+
+#: tablo/templates/tablo/console/find.html:60
+#, python-format
+msgid "Nothing found for “%(q)s”."
+msgstr "Ничего не найдено по запросу «%(q)s»."
+
+#: tablo/templates/tablo/console/home.html:8
+msgid ""
+"Tasks for the chief judge and the secretary\n"
+"        during the competition. Corrections go through the normal judge "
+"screen so\n"
+"        the result is recalculated along the verified path."
+msgstr "Задачи для главного судьи и секретаря во время соревнования. Исправления проходят через обычный экран судьи, чтобы результат пересчитывался по проверенному пути."
+
+#: tablo/templates/tablo/console/home.html:15
+msgid ""
+"Search by name, club or tablo.\n"
+"                Shows the state of every judge's score."
+msgstr "Поиск по имени, клубу или табло. Отсюда видно состояние оценок каждого судьи."
+
+#: tablo/templates/tablo/console/home.html:21
+msgid ""
+"First find the participant, then\n"
+"                re-open a judge's slot or the whole participation for re-"
+"entry."
+msgstr "Сначала найдите участника, затем переоткройте слот судьи или всё участие для повторного ввода."
+
+#: tablo/templates/tablo/console/home.html:27
+msgid ""
+"Find the participant, then delete a\n"
+"                participation registered by mistake. This cannot be undone."
+msgstr "Найдите участника, затем удалите ошибочно зарегистрированное участие. Действие необратимо."
+
+#: tablo/templates/tablo/console/home.html:33
+msgid ""
+"Deactivate a judge. Scores are\n"
+"                preserved — nothing is deleted."
+msgstr "Деактивировать судью. Оценки сохраняются — удаления не происходит."
+
+#: tablo/templates/tablo/console/home.html:39
+msgid "Setup"
+msgstr "Настройка"
+
+#: tablo/templates/tablo/console/home.html:40
+msgid ""
+"Clubs, countries, elements, error codes,\n"
+"            judges and participants — in the full administration."
+msgstr "Клубы, страны, элементы, коды ошибок, судьи и участники — в полном администрировании."
+
+#: tablo/templates/tablo/console/home.html:42
+msgid "Open admin"
+msgstr "Открыть админ"
+
+#: tablo/templates/tablo/console/judges.html:4
+msgid "Judges"
+msgstr "Судьи"
+
+#: tablo/templates/tablo/console/judges.html:9
+msgid ""
+"Deactivating a judge preserves the whole score\n"
+"        history — nothing is deleted. A deactivated judge no longer receives "
+"cards for\n"
+"        new participations."
+msgstr "Деактивация судьи сохраняет всю историю оценок — удаления не происходит. Деактивированный судья не получает карточек на новых участиях."
+
+#: tablo/templates/tablo/console/judges.html:22
+#, python-format
+msgid "scores in history: %(count)s"
+msgstr "оценок в истории: %(count)s"
+
+#: tablo/templates/tablo/console/judges.html:22
+msgid "chief judge"
+msgstr "главный судья"
+
+#: tablo/templates/tablo/console/judges.html:26
+msgid "In rotation"
+msgstr "В ротации"
+
+#: tablo/templates/tablo/console/judges.html:29
+msgid "Retired"
+msgstr "Выведен"
+
+#: tablo/templates/tablo/console/judges.html:33
+msgid "No judges."
+msgstr "Судей нет."
+
+#: tablo/templates/tablo/console/participation.html:4
+msgid "Participation"
+msgstr "Участие"
+
+#: tablo/templates/tablo/console/participation.html:19
+msgid "Judges and score state"
+msgstr "Судьи и состояние оценок"
+
+#: tablo/templates/tablo/console/participation.html:27
+#, python-format
+msgid "Re-open the slot of judge %(username)s"
+msgstr "Переоткрыть слот судьи %(username)s"
+
+#: tablo/templates/tablo/console/participation.html:29
+msgid "not saved"
+msgstr "не сохранено"
+
+#: tablo/templates/tablo/console/participation.html:30
+msgid "re-open"
+msgstr "переоткрыть"
+
+#: tablo/templates/tablo/console/participation.html:34
+msgid "No judge cards."
+msgstr "Нет судейских карточек."
+
+#: tablo/templates/tablo/console/participation.html:46
+msgid "Irreversible actions"
+msgstr "Необратимые действия"
+
+#: tablo/templates/tablo/judge_empty.html:4
+#: tablo/templates/tablo/judge_empty.html:20
 msgid "Please wait"
 msgstr "Пожалуйста подождите"
 
-#: tablo/templates/tablo/judgea.html:13
-msgid "Click space when encountered mistake!"
-msgstr "При обнаружении ошибки нажмите пробел!"
+#: tablo/templates/tablo/judge_empty.html:19
+msgid "Judging panel"
+msgstr "Судейская панель"
 
-#: tablo/templates/tablo/judgea.html:18
+#: tablo/templates/tablo/judge_empty.html:21
+msgid ""
+"No participant on the platform. The next athlete will appear here "
+"automatically."
+msgstr "На площадке нет участника. Следующий спортсмен появится здесь автоматически."
+
+#: tablo/templates/tablo/judge_empty.html:25
+msgid "Connected — waiting for the next participant"
+msgstr "Подключено — ждём следующего участника"
+
+#: tablo/templates/tablo/judgea.html:15
+msgid "Draw order"
+msgstr "Номер жребия"
+
+#: tablo/templates/tablo/judgea.html:22
 msgid "Number of mistakes:"
 msgstr "Количество ошибок:"
 
-#: tablo/templates/tablo/judgea.html:33 tablo/templates/tablo/judgeb.html:47
-#: tablo/templates/tablo/judgec.html:47
-#: tablo/templates/tablo/participant_create.html:111
-#: tablo/templates/tablo/pnt_element.html:31
-#: tablo/templates/tablo/scores.html:160
-#: tablo/templates/tablo/tablo_detail.html:21
-msgid "Save"
-msgstr "Сохранить"
+#: tablo/templates/tablo/judgea.html:26
+msgid "Click space when encountered mistake!"
+msgstr "При обнаружении ошибки нажмите пробел!"
 
-#: tablo/templates/tablo/judgeb.html:8
-msgid "Enter the result:"
-msgstr "Введите результат:"
+#: tablo/templates/tablo/judgea.html:34 tablo/templates/tablo/judgea.html:62
+msgid "Error code"
+msgstr "Код ошибки"
 
-#: tablo/templates/tablo/judgeb.html:9
-msgid "Enter error code:"
-msgstr "Введите код ошибки:"
+#: tablo/templates/tablo/judgea.html:43
+msgid "Add mistake"
+msgstr "Добавить ошибку"
 
-#: tablo/templates/tablo/judgeb.html:19 tablo/templates/tablo/judgec.html:24
-#: tablo/templates/tablo/participant_create.html:25
-#: tablo/templates/tablo/pnt_element.html:13
-#: tablo/templates/tablo/scores.html:56
-#: tablo/templates/tablo/tablo_detail.html:31
-#: tablo/templates/tablo/tablo_list.html:13
+#: tablo/templates/tablo/judgea.html:48 tablo/templates/tablo/judgec.html:99
+msgid "Save score"
+msgstr "Сохранить оценку"
+
+#: tablo/templates/tablo/judgeb.html:14 tablo/templates/tablo/judgec.html:31
+#: tablo/templates/tablo/participant_create.html:18
+#: tablo/templates/tablo/pnt_element.html:26
+#: tablo/templates/tablo/scores.html:32
+#: tablo/templates/tablo/tablo_detail.html:39
+#: tablo/templates/tablo/tablo_list.html:14
 msgid "Log out"
 msgstr "Выйти"
 
-#: tablo/templates/tablo/judgeb.html:30
-msgid "Please insert participant result"
-msgstr "Пожалуйста введите результат участника!"
+#: tablo/templates/tablo/judgeb.html:21
+msgid "Now scoring"
+msgstr "Сейчас оценивается"
 
-#: tablo/templates/tablo/judgeb.html:42
-msgid "Please insert error code"
-msgstr "Пожалуйста введите код ошибки!"
+#: tablo/templates/tablo/judgeb.html:29
+msgid "Enter the result:"
+msgstr "Введите результат:"
 
-#: tablo/templates/tablo/judgec.html:9
-msgid "If success click"
-msgstr "Для функции \"Да\" нажмите"
+#: tablo/templates/tablo/judgeb.html:38
+msgid "Enter error code:"
+msgstr "Введите код ошибки:"
 
-#: tablo/templates/tablo/judgec.html:10
-msgid "If mistake click"
-msgstr "Для функции \"Нет\" нажмите"
+#: tablo/templates/tablo/judgeb.html:49
+msgid "space"
+msgstr "пробел"
 
-#: tablo/templates/tablo/login.html:32 tablo/templates/tablo/login.html:50
+#: tablo/templates/tablo/judgeb.html:57
+msgid "Submit score"
+msgstr "Отправить оценку"
+
+#: tablo/templates/tablo/judgeb.html:59
+msgid "Space adds an error code · Enter submits"
+msgstr "Пробел добавляет код ошибки · Enter отправляет"
+
+#: tablo/templates/tablo/judgec.html:13
+msgid "Keys"
+msgstr "Клавиши"
+
+#: tablo/templates/tablo/judgec.html:14 tablo/templates/tablo/judgec.html:88
+msgid "Performed"
+msgstr "Выполнено"
+
+#: tablo/templates/tablo/judgec.html:15 tablo/templates/tablo/judgec.html:91
+msgid "Mistake"
+msgstr "Ошибка"
+
+#: tablo/templates/tablo/judgec.html:16 tablo/templates/tablo/judgec.html:94
+msgid "Undo"
+msgstr "Отменить"
+
+#: tablo/templates/tablo/judgec.html:17
+msgid "Submit"
+msgstr "Отправить"
+
+#: tablo/templates/tablo/judgec.html:58
+msgid "Combination"
+msgstr "Комбинация"
+
+#: tablo/templates/tablo/judgec.html:79
+msgid "marked"
+msgstr "отмечено"
+
+#: tablo/templates/tablo/judgec.html:86
+msgid "Score current element"
+msgstr "Оценить текущий элемент"
+
+#: tablo/templates/tablo/judgec.html:154
+msgid "left"
+msgstr "осталось"
+
+#: tablo/templates/tablo/login.html:33
+msgid "Judging system"
+msgstr "Судейская система"
+
+#: tablo/templates/tablo/login.html:36 tablo/templates/tablo/login.html:55
 msgid "Log in"
 msgstr "Вход"
 
-#: tablo/templates/tablo/login.html:38
+#: tablo/templates/tablo/login.html:41
 msgid "Error:"
-msgstr ""
+msgstr "Ошибка:"
 
-#: tablo/templates/tablo/participant_create.html:34
-#: tablo/templates/tablo/participant_create.html:35
+#: tablo/templates/tablo/participant_create.html:38
+#: tablo/templates/tablo/participant_create.html:40
 msgid "Full name"
 msgstr "Ф.И.О"
 
-#: tablo/templates/tablo/participant_create.html:40
+#: tablo/templates/tablo/participant_create.html:49
+msgid "Sex"
+msgstr "Пол"
+
+#: tablo/templates/tablo/participant_create.html:53
 msgid "Man"
 msgstr "Мужчина"
 
-#: tablo/templates/tablo/participant_create.html:45
+#: tablo/templates/tablo/participant_create.html:57
 msgid "Woman"
 msgstr "Женщина"
 
-#: tablo/templates/tablo/participant_create.html:53
-msgid "Club"
-msgstr "Клуб/Страна"
-
-#: tablo/templates/tablo/participant_create.html:65
+#: tablo/templates/tablo/participant_create.html:67
 msgid "Age"
 msgstr "Возраст"
 
-#: tablo/templates/tablo/pnt_element.html:27
-msgid "Add element"
-msgstr "Добавить комбинацию"
+#: tablo/templates/tablo/participant_create.html:96
+msgid "Club"
+msgstr "Клуб/Страна"
 
-#: tablo/templates/tablo/scores.html:48 tablo/templates/tablo/scores.html:50
+#: tablo/templates/tablo/participant_create.html:111
+msgid "Categories"
+msgstr "Категории"
+
+#: tablo/templates/tablo/participant_create.html:112
+msgid "Choose an age first to enable categories"
+msgstr "Сначала выберите возраст, чтобы открыть категории"
+
+#: tablo/templates/tablo/participant_create.html:160
+#: tablo/templates/tablo/pnt_element.html:55
+#: tablo/templates/tablo/scores.html:142
+msgid "Save"
+msgstr "Сохранить"
+
+#: tablo/templates/tablo/pnt_element.html:7
+msgid "Choose an element"
+msgstr "Выберите элемент"
+
+#: tablo/templates/tablo/pnt_element.html:8
+msgid "Remove element"
+msgstr "Убрать элемент"
+
+#: tablo/templates/tablo/pnt_element.html:9
+msgid "No elements yet"
+msgstr "Элементов пока нет"
+
+#: tablo/templates/tablo/pnt_element.html:10
+msgid "Ready"
+msgstr "Готово"
+
+#: tablo/templates/tablo/pnt_element.html:11
+msgid ""
+"Add at least one element to every category, and fill every empty slot, "
+"before saving."
+msgstr "Добавьте хотя бы один элемент в каждую категорию и заполните все пустые слоты перед сохранением."
+
+#: tablo/templates/tablo/pnt_element.html:12
+msgid "Everything set — you can save."
+msgstr "Всё готово — можно сохранять."
+
+#: tablo/templates/tablo/pnt_element.html:32
+msgid "Program of elements"
+msgstr "Программа элементов"
+
+#: tablo/templates/tablo/pnt_element.html:33
+msgid ""
+"Build the ordered element sequence for each category. The current element is "
+"marked in gold."
+msgstr "Соберите упорядоченную последовательность элементов для каждой категории. Текущий элемент отмечен золотым."
+
+#: tablo/templates/tablo/pnt_element.html:49
+msgid "Add element"
+msgstr "Добавить элемент"
+
+#: tablo/templates/tablo/scores.html:24 tablo/templates/tablo/scores.html:26
 msgid "Results for"
 msgstr "Результаты"
 
-#: tablo/templates/tablo/scores.html:78
+#: tablo/templates/tablo/scores.html:44 tablo/templates/tablo/scores.html:81
+#: tablo/templates/tablo/scores.html:116
+msgid "Reopen"
+msgstr "Переоткрыть"
+
+#: tablo/templates/tablo/scores.html:45 tablo/templates/tablo/scores.html:82
+#: tablo/templates/tablo/scores.html:117
+msgid "Re-open the score of this judge?"
+msgstr "Переоткрыть оценку этого судьи?"
+
+#: tablo/templates/tablo/scores.html:60
 msgid "Mistakes"
 msgstr "Ошибки"
 
-#: tablo/templates/tablo/scores.html:88 tablo/templates/tablo/scores.html:119
-#: tablo/templates/tablo/scores.html:149
+#: tablo/templates/tablo/scores.html:66 tablo/templates/tablo/scores.html:99
+#: tablo/templates/tablo/scores.html:124
 msgid "Total for"
 msgstr "Итог"
 
-#: tablo/templates/tablo/scores.html:156
+#: tablo/templates/tablo/scores.html:133
 msgid "Total"
 msgstr "Итого"
 
-#: tablo/templates/tablo/scores.html:161
-msgid "Re-open"
-msgstr "Открывать вновь"
-
-#: tablo/templates/tablo/scores.html:163
-msgid "Print results"
-msgstr "Печать"
-
-#: tablo/templates/tablo/scores.html:164
+#: tablo/templates/tablo/scores.html:146
 msgid "Send to monitor"
-msgstr "Отправить монитор"
+msgstr "Отправить на монитор"
 
-#: tablo/templates/tablo/tablo_detail.html:19
+#: tablo/templates/tablo/scores.html:152
+msgid ""
+"Mark the participant as a no-show? The final score will be reset to zero."
+msgstr "Отметить участника как не явившегося? Итоговый балл будет обнулён."
+
+#: tablo/templates/tablo/scores.html:152
+msgid "Did not show up"
+msgstr "Не пришёл(ла)"
+
+#: tablo/templates/tablo/tablo_detail.html:20
 msgid "Lot"
 msgstr "Жребий"
 
-#: tablo/templates/tablo/tablo_detail.html:20
+#: tablo/templates/tablo/tablo_detail.html:22
 msgid "Stop"
 msgstr "Стоп"
 
 #: tablo/templates/tablo/tablo_detail.html:23
+msgid "Save + Lot"
+msgstr "Сохранить + Жребий"
+
+#: tablo/templates/tablo/tablo_detail.html:25
 msgid "Print"
 msgstr "Печать"
 
-#: tablo/templates/tablo/tablo_detail.html:24
+#: tablo/templates/tablo/tablo_detail.html:27
 msgid "Monitor"
 msgstr "Монитор"
 
-#: tablo/templates/tablo/tablo_detail.html:43
-#: tablo/templates/tablo/tablo_print.html:14
+#: tablo/templates/tablo/tablo_detail.html:51
+msgid "Remove"
+msgstr "Удалить"
+
+#: tablo/templates/tablo/tablo_detail.html:52
+#: tablo/templates/tablo/tablo_print.html:18
 msgid "Place"
 msgstr "Место"
 
-#: tablo/templates/tablo/tablo_detail.html:44
-#: tablo/templates/tablo/tablo_print.html:15
+#: tablo/templates/tablo/tablo_detail.html:53
+#: tablo/templates/tablo/tablo_print.html:19
 msgid "Country"
 msgstr "Страна"
 
-#: tablo/templates/tablo/tablo_detail.html:45
-#: tablo/templates/tablo/tablo_print.html:16
-msgid "Participant"
-msgstr "Участник"
+#: tablo/templates/tablo/tablo_detail.html:55
+msgid "Action"
+msgstr "Действие"
 
-#: tablo/templates/tablo/tablo_detail.html:46
-msgid "State"
-msgstr "Состояние"
-
-#: tablo/templates/tablo/tablo_detail.html:47
-#: tablo/templates/tablo/tablo_detail.html:67
-#: tablo/templates/tablo/tablo_print.html:17
+#: tablo/templates/tablo/tablo_detail.html:56
+#: tablo/templates/tablo/tablo_detail.html:95
+#: tablo/templates/tablo/tablo_print.html:22
 msgid "Score"
-msgstr "Очко"
+msgstr "Балл"
 
+#: tablo/templates/tablo/tablo_detail.html:64
+#: tablo/templates/tablo/tablo_detail.html:68
+#: tablo/templates/tablo/tablo_detail.html:69
+msgid "Delete this participation?"
+msgstr "Удалить это участие?"
+
+#: tablo/templates/tablo/tablo_detail.html:88
 msgid "Activate"
 msgstr "Активировать"
+
+#: tablo/templates/tablo/tablo_list.html:18
+msgid "Pick an age group and sex to open its tablo."
+msgstr "Выберите возрастную группу и пол, чтобы открыть табло."
+
+#: tablo/templates/tablo/tablo_list.html:34
+#: tablo/templates/tablo/tablo_list.html:35
+#: tablo/templates/tablo/tablo_list.html:36
+#: tablo/templates/tablo/tablo_list.html:37
+#: tablo/templates/tablo/tablo_list.html:38
+#: tablo/templates/tablo/tablo_list.html:39
+msgid "M"
+msgstr "М"
+
+#: tablo/templates/tablo/tablo_list.html:34
+#: tablo/templates/tablo/tablo_list.html:35
+#: tablo/templates/tablo/tablo_list.html:36
+#: tablo/templates/tablo/tablo_list.html:37
+#: tablo/templates/tablo/tablo_list.html:38
+#: tablo/templates/tablo/tablo_list.html:39
+msgid "W"
+msgstr "Ж"
+
+#: tablo/templates/tablo/tablo_list.html:80
+msgid "No categories yet."
+msgstr "Категорий пока нет."
+
+#: tablo/templates/tablo/tablo_print.html:20
+msgid "Club "
+msgstr "Клуб "
+
+#: tablo/views.py:143
+msgid "Please choose club"
+msgstr "Пожалуйста, выберите клуб"
+
+#: tablo/views.py:146
+msgid "Please choose sex"
+msgstr "Пожалуйста, выберите пол"
+
+#: tablo/views.py:149
+msgid "Please choose age"
+msgstr "Пожалуйста, выберите возраст"
+
+#: tablo/views.py:152
+msgid "Please give name"
+msgstr "Пожалуйста, укажите имя"
+
+#: tablo/views.py:155
+msgid "Please select categories"
+msgstr "Пожалуйста, выберите категории"
+
+#: tablo/views.py:430 tablo/views.py:437
+msgid "Another participant is already performing."
+msgstr "Сейчас выступает другой участник."
+
+#: tablo/views.py:440
+msgid "Cannot activate: the participant is not waiting."
+msgstr "Нельзя активировать: участник не в статусе ожидания."
+
+#: tablo/views.py:490 tablo/views.py:574
+msgid "The participant was already finalized."
+msgstr "Результат участника уже зафиксирован."
+
+#: tablo/views.py:610 tablo/views.py:648
+#, python-format
+msgid "Ignored invalid error codes: %s"
+msgstr "Проигнорированы неверные коды ошибок: %s"
+
+#: tablo/views.py:625
+msgid "Invalid score value."
+msgstr "Неверное значение оценки."
+
+#: tablo/views.py:684
+msgid "Mark every element before submitting."
+msgstr "Отметьте каждый элемент перед отправкой."
+
+#: tablo/views.py:816
+msgid "Waiting"
+msgstr "Ожидает"
+
+#: tablo/views.py:817
+msgid "On the carpet"
+msgstr "На ковре"
+
+#: tablo/views.py:818
+msgid "Finished"
+msgstr "Завершено"
+
+#: tablo/views.py:968 tablo/views.py:1017
+msgid ""
+"Another participant is already on the carpet. Confirm returning the current "
+"participant to the queue."
+msgstr "На ковре уже есть участник. Подтвердите возврат текущего участника в очередь."
+
+#: tablo/views.py:981 tablo/views.py:1030
+msgid "Another participant is already on the carpet. Try again."
+msgstr "На ковре уже есть участник. Попробуйте ещё раз."
+
+#: tablo/views.py:985
+#, python-format
+msgid "Judge %s can re-enter the score on the judge screen."
+msgstr "Судья %s может заново ввести оценку на экране судьи."
+
+#: tablo/views.py:1034
+msgid ""
+"The participation has been re-opened — judges can re-enter their scores on "
+"the judge screen."
+msgstr "Участие переоткрыто — судьи могут заново ввести оценки на экране судьи."
+
+#: tablo/views.py:1067
+#, python-format
+msgid "Participation withdrawn: %s — %s."
+msgstr "Участие снято: %s — %s."
+
+#: tablo/views.py:1116
+#, python-format
+msgid "Judge %s retired from rotation. Score history is preserved."
+msgstr "Судья %s выведен из ротации. История оценок сохранена."
+
+#~ msgid "Please insert participant result"
+#~ msgstr "Пожалуйста введите результат участника!"
+
+#~ msgid "If success click"
+#~ msgstr "Для функции \"Да\" нажмите"
+
+#~ msgid "If mistake click"
+#~ msgstr "Для функции \"Нет\" нажмите"
+
+#~ msgid "Print results"
+#~ msgstr "Печать"
+
+#~ msgid "State"
+#~ msgstr "Состояние"
