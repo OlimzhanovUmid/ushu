@@ -13,8 +13,9 @@ app dirs, so the branded override wins — no custom AdminSite needed.
 """
 
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 # --- Russian Federation site headers --------------------------------------
-admin.site.site_header = 'Судейская — администрирование'
-admin.site.site_title = 'Ушу · Администрирование'
-admin.site.index_title = 'Настройка и справочные данные'
+admin.site.site_header = _('Judging — Administration')
+admin.site.site_title = _('Wushu · Administration')
+admin.site.index_title = _('Setup and reference data')

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from .models import Participant
 
@@ -12,10 +13,10 @@ class ParticipantAdmin(admin.ModelAdmin):
     search_fields = ('name_ru', 'name_en', 'club__name')
     list_select_related = ('club',)
 
-    @admin.display(description='возраст', ordering='age')
+    @admin.display(description=_('age'), ordering='age')
     def age_label(self, obj):
         return obj.get_age_display()
 
-    @admin.display(description='пол', ordering='sex')
+    @admin.display(description=_('sex'), ordering='sex')
     def sex_label(self, obj):
         return obj.get_sex_display()

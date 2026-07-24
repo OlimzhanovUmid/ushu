@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 
 from judges.models import JUDGE_CATEGORIES
 from .models import (Tablo, Participation, ElementStatus, Score,
@@ -13,11 +14,11 @@ class TabloAdmin(admin.ModelAdmin):
     list_filter = ('started', 'category', 'age', 'sex')
     list_select_related = ('category',)
 
-    @admin.display(description='возраст', ordering='age')
+    @admin.display(description=_('age'), ordering='age')
     def age_label(self, obj):
         return obj.get_age_display()
 
-    @admin.display(description='пол', ordering='sex')
+    @admin.display(description=_('sex'), ordering='sex')
     def sex_label(self, obj):
         return obj.get_sex_display()
 
@@ -35,7 +36,7 @@ class ParticipationAdmin(admin.ModelAdmin):
     list_select_related = ('participant', 'tablo', 'tablo__category')
     ordering = ('tablo', 'order')
 
-    @admin.display(description='участник', ordering='participant__name_ru')
+    @admin.display(description=_('participant'), ordering='participant__name_ru')
     def participant_name(self, obj):
         return obj.participant.name_ru or obj.participant.name_en
 
@@ -57,17 +58,17 @@ class ScoreAdmin(admin.ModelAdmin):
         'participation__tablo', 'participation__tablo__category',
     )
 
-    @admin.display(description='участник', ordering='participation__participant__name_ru')
+    @admin.display(description=_('participant'), ordering='participation__participant__name_ru')
     def participant_name(self, obj):
         p = obj.participation.participant
         return p.name_ru or p.name_en
 
-    @admin.display(description='судья', ordering='judge__category')
+    @admin.display(description=_('judge'), ordering='judge__category')
     def judge_label(self, obj):
         cat = JUDGE_CATEGORIES[obj.judge.category][1]
         return f'{obj.judge.username} ({cat})'
 
-    @admin.display(description='табло', ordering='participation__tablo')
+    @admin.display(description=_('tablo'), ordering='participation__tablo')
     def tablo_label(self, obj):
         return obj.participation.tablo
 
