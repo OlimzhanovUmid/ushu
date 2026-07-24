@@ -2,7 +2,7 @@
 REM Production launcher for the ushu scoreboard.
 REM One laptop serves ~10 LAN clients. Edit the config block per event,
 REM then double-click this file. Requires a local venv at .venv
-REM (create once: py -3.14 -m venv .venv && .venv\Scripts\pip install -r requirements.txt)
+REM (create and update it by running deploy.bat once before the event)
 
 cd /d "%~dp0"
 
