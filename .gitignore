@@ -70,8 +70,8 @@ htmlcov/
 nosetests.xml
 coverage.xml
 
-# Translations
-*.mo
+# Translations — compiled .mo is committed on purpose: the Windows event
+# laptop has no GNU gettext, so it cannot run compilemessages itself.
 *.pot
 
 # Sphinx documentation
