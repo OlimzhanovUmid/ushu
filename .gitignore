@@ -163,3 +163,6 @@ bower_components
 # node-waf configuration
 .lock-wscript
 .idea
+
+# Collected static files (STATIC_ROOT) — build artifact, regenerate via collectstatic
+/static/
