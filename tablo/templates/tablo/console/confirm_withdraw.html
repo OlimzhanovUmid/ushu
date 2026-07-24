@@ -1,22 +1,22 @@
 {% extends "tablo/console/base_console.html" %}
 {% load i18n %}
 
-{% block console_title %}Снять участие{% endblock %}
+{% block console_title %}{% translate "Withdraw a participation" %}{% endblock %}
 
 {% block console_content %}
-    <a class="cn-back btn btn-link" href="{% url "console_participation" pk=participation.pk %}">← Назад к участию</a>
-    <h1 class="cn-title">Снять участие</h1>
+    <a class="cn-back btn btn-link" href="{% url "console_participation" pk=participation.pk %}">← {% translate "Back to the participation" %}</a>
+    <h1 class="cn-title">{% translate "Withdraw a participation" %}</h1>
 
     <div class="cn-confirm is-danger">
         <div class="cn-warn" role="alert">
-            Действие необратимо. Участие и все его судейские оценки будут
-            удалены без возможности восстановления.
+            {% blocktranslate %}This cannot be undone. The participation and all of its
+            judge scores will be deleted with no way to restore them.{% endblocktranslate %}
         </div>
 
         <dl class="cn-confirm-obj">
-            <dt>Участник</dt>
+            <dt>{% translate "Participant" %}</dt>
             <dd>{{ participation.participant.name_en }} — {{ participation.participant.club.name }}</dd>
-            <dt>Табло</dt>
+            <dt>{% translate "Tablo" %}</dt>
             <dd>{{ participation.tablo.category.name }} ·
                 {{ participation.tablo.get_age_display }} ·
                 {{ participation.tablo.get_sex_display }} · {{ state_label }}</dd>
@@ -25,8 +25,8 @@
         <form method="post" action="{% url "console_withdraw" pk=participation.pk %}">
             {% csrf_token %}
             <div class="cn-confirm-actions">
-                <a class="btn btn-white" href="{% url "console_participation" pk=participation.pk %}">Отмена</a>
-                <button class="btn btn-red" type="submit">Снять участие</button>
+                <a class="btn btn-white" href="{% url "console_participation" pk=participation.pk %}">{% translate "Cancel" %}</a>
+                <button class="btn btn-red" type="submit">{% translate "Withdraw participation" %}</button>
             </div>
         </form>
     </div>

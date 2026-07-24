@@ -1,47 +1,48 @@
 {% extends "tablo/console/base_console.html" %}
 {% load i18n %}
 
-{% block console_title %}Переоткрыть судью{% endblock %}
+{% block console_title %}{% translate "Re-open a judge" %}{% endblock %}
 
 {% block console_content %}
-    <a class="cn-back btn btn-link" href="{% url "console_participation" pk=participation.pk %}">← Назад к участию</a>
-    <h1 class="cn-title">Переоткрыть слот судьи</h1>
+    <a class="cn-back btn btn-link" href="{% url "console_participation" pk=participation.pk %}">← {% translate "Back to the participation" %}</a>
+    <h1 class="cn-title">{% translate "Re-open a judge's slot" %}</h1>
 
     <div class="cn-confirm">
-        <p class="cn-note">Слот судьи будет переоткрыт, участие переведётся на
-            ковёр, и судья заново введёт оценку на своём экране. Результат
-            пересчитается по проверенному пути.</p>
+        <p class="cn-note">{% blocktranslate %}The judge's slot will be re-opened, the
+            participation will move onto the carpet, and the judge will re-enter the
+            score on their screen. The result is recalculated along the verified
+            path.{% endblocktranslate %}</p>
 
         <dl class="cn-confirm-obj">
-            <dt>Участник</dt>
+            <dt>{% translate "Participant" %}</dt>
             <dd>{{ participation.participant.name_en }} — {{ participation.participant.club.name }}</dd>
-            <dt>Табло</dt>
+            <dt>{% translate "Tablo" %}</dt>
             <dd>{{ participation.tablo.category.name }} ·
                 {{ participation.tablo.get_age_display }} ·
                 {{ participation.tablo.get_sex_display }} · {{ state_label }}</dd>
-            <dt>Судья</dt>
+            <dt>{% translate "Judge" %}</dt>
             <dd>{{ score.judge.username }}</dd>
         </dl>
 
         {% if other_doing %}
             <div class="cn-warn" role="alert">
-                На ковре уже находится участник:
+                {% translate "Another participant is already on the carpet:" %}
                 <strong>{{ other_doing.participant.name_en }}</strong>
                 ({{ other_doing.tablo.category.name }}).
-                Одновременно может выступать только один участник. Подтвердите
-                возврат текущего участника в очередь ожидания.
+                {% blocktranslate %}Only one participant can perform at a time. Confirm
+                returning the current participant to the waiting queue.{% endblocktranslate %}
             </div>
         {% endif %}
 
         <form method="post" action="{% url "console_reopen_judge" pk=score.pk %}">
             {% csrf_token %}
             <div class="cn-confirm-actions">
-                <a class="btn btn-white" href="{% url "console_participation" pk=participation.pk %}">Отмена</a>
+                <a class="btn btn-white" href="{% url "console_participation" pk=participation.pk %}">{% translate "Cancel" %}</a>
                 {% if other_doing %}
                     <input type="hidden" name="displace" value="1">
-                    <button class="btn btn-red" type="submit">Вернуть текущего в очередь и переоткрыть</button>
+                    <button class="btn btn-red" type="submit">{% translate "Return the current one to the queue and re-open" %}</button>
                 {% else %}
-                    <button class="btn btn-primary" type="submit">Переоткрыть судью</button>
+                    <button class="btn btn-primary" type="submit">{% translate "Re-open the judge" %}</button>
                 {% endif %}
             </div>
         </form>

@@ -1,18 +1,18 @@
 {% extends "tablo/console/base_console.html" %}
 {% load i18n %}
 
-{% block console_title %}Найти участника{% endblock %}
+{% block console_title %}{% translate "Find a participant" %}{% endblock %}
 
 {% block console_content %}
-    <a class="cn-back btn btn-link" href="{% url "staff_console" %}">← Консоль</a>
-    <h1 class="cn-title">Найти участника</h1>
-    <p class="cn-hint">Поиск по имени участника, названию клуба или категории
-        табло. Найдите нужный объект перед любым исправлением.</p>
+    <a class="cn-back btn btn-link" href="{% url "staff_console" %}">← {% translate "Console" %}</a>
+    <h1 class="cn-title">{% translate "Find a participant" %}</h1>
+    <p class="cn-hint">{% blocktranslate %}Search by participant name, club name or tablo
+        category. Find the right object before making any correction.{% endblocktranslate %}</p>
 
     <form class="cn-search" method="get" action="{% url "console_find" %}">
         <input class="form-control" type="search" name="q" value="{{ q }}"
-               placeholder="Имя, клуб или табло" autofocus>
-        <button class="btn btn-primary" type="submit">Искать</button>
+               placeholder="{% translate 'Name, club or tablo' %}" autofocus>
+        <button class="btn btn-primary" type="submit">{% translate "Search" %}</button>
     </form>
 
     {% if q %}
@@ -35,7 +35,7 @@
                                 <div class="cn-part-meta">
                                     {{ part.participation.tablo.get_age_display }} ·
                                     {{ part.participation.tablo.get_sex_display }} ·
-                                    оценок сохранено {{ part.saved_count }}/{{ part.total }}
+                                    {% blocktranslate with saved=part.saved_count total=part.total %}scores saved {{ saved }}/{{ total }}{% endblocktranslate %}
                                 </div>
                             </div>
                             <span class="cn-state{% if part.is_doing %} is-doing{% endif %}">{{ part.state_label }}</span>
@@ -43,21 +43,21 @@
                                 {% for j in part.judges %}
                                     <span class="cn-judge{% if j.saved %} is-saved{% endif %}">
                                         <span class="cn-judge-cat">{{ j.category }}</span>{{ j.username }}
-                                        · {% if j.saved %}сохранено{% else %}нет{% endif %}
+                                        · {% if j.saved %}{% translate "saved" %}{% else %}{% translate "not yet" %}{% endif %}
                                     </span>
                                 {% empty %}
-                                    <span class="cn-judge">нет судейских карточек</span>
+                                    <span class="cn-judge">{% translate "no judge cards" %}</span>
                                 {% endfor %}
                             </div>
-                            <a class="btn btn-white" href="{% url "console_participation" pk=part.participation.pk %}">Открыть</a>
+                            <a class="btn btn-white" href="{% url "console_participation" pk=part.participation.pk %}">{% translate "Open" %}</a>
                         </div>
                     {% empty %}
-                        <div class="cn-part"><span class="cn-part-meta">Нет участий.</span></div>
+                        <div class="cn-part"><span class="cn-part-meta">{% translate "No participations." %}</span></div>
                     {% endfor %}
                 </div>
             </div>
         {% empty %}
-            <div class="cn-empty">Ничего не найдено по запросу «{{ q }}».</div>
+            <div class="cn-empty">{% blocktranslate %}Nothing found for “{{ q }}”.{% endblocktranslate %}</div>
         {% endfor %}
     {% endif %}
 {% endblock %}

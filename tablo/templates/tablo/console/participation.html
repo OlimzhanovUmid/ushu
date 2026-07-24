@@ -1,10 +1,10 @@
 {% extends "tablo/console/base_console.html" %}
 {% load i18n %}
 
-{% block console_title %}Участие · {{ participation.participant.name_en }}{% endblock %}
+{% block console_title %}{% translate "Participation" %} · {{ participation.participant.name_en }}{% endblock %}
 
 {% block console_content %}
-    <a class="cn-back btn btn-link" href="{% url "console_find" %}">← Найти участника</a>
+    <a class="cn-back btn btn-link" href="{% url "console_find" %}">← {% translate "Find a participant" %}</a>
     <h1 class="cn-title">{{ participation.participant.name_en }}</h1>
     <p class="cn-hint">
         {{ participation.tablo.category.name }} ·
@@ -16,7 +16,7 @@
 
     <div class="cn-result">
         <div class="cn-result-head">
-            <span class="cn-result-name">Судьи и состояние оценок</span>
+            <span class="cn-result-name">{% translate "Judges and score state" %}</span>
         </div>
         <div class="cn-result-body">
             <div class="cn-part">
@@ -24,14 +24,14 @@
                     {% for j in judges %}
                         <form method="get" action="{% url "console_reopen_judge" pk=j.score_pk %}">
                             <button class="cn-judge{% if j.saved %} is-saved{% endif %}" type="submit"
-                                    title="Переоткрыть слот судьи {{ j.username }}">
+                                    title="{% blocktranslate with username=j.username %}Re-open the slot of judge {{ username }}{% endblocktranslate %}">
                                 <span class="cn-judge-cat">{{ j.category }}</span>{{ j.username }}
-                                · {% if j.saved %}сохранено{% else %}не сохранено{% endif %}
-                                · переоткрыть
+                                · {% if j.saved %}{% translate "saved" %}{% else %}{% translate "not saved" %}{% endif %}
+                                · {% translate "re-open" %}
                             </button>
                         </form>
                     {% empty %}
-                        <span class="cn-judge">Нет судейских карточек.</span>
+                        <span class="cn-judge">{% translate "No judge cards." %}</span>
                     {% endfor %}
                 </div>
             </div>
@@ -39,11 +39,11 @@
     </div>
 
     <div class="cn-actions">
-        <a class="btn btn-primary" href="{% url "console_reopen_participation" pk=participation.pk %}">Переоткрыть всё участие</a>
+        <a class="btn btn-primary" href="{% url "console_reopen_participation" pk=participation.pk %}">{% translate "Re-open the whole participation" %}</a>
     </div>
 
     <div class="cn-danger-zone">
-        <span class="cn-zone-label">Необратимые действия</span>
-        <a class="btn btn-red" href="{% url "console_withdraw" pk=participation.pk %}">Снять участие</a>
+        <span class="cn-zone-label">{% translate "Irreversible actions" %}</span>
+        <a class="btn btn-red" href="{% url "console_withdraw" pk=participation.pk %}">{% translate "Withdraw participation" %}</a>
     </div>
 {% endblock %}

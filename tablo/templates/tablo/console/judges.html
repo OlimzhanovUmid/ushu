@@ -1,14 +1,14 @@
 {% extends "tablo/console/base_console.html" %}
 {% load i18n %}
 
-{% block console_title %}Судьи{% endblock %}
+{% block console_title %}{% translate "Judges" %}{% endblock %}
 
 {% block console_content %}
-    <a class="cn-back btn btn-link" href="{% url "staff_console" %}">← Консоль</a>
-    <h1 class="cn-title">Вывести судью из ротации</h1>
-    <p class="cn-hint">Деактивация судьи сохраняет всю историю оценок — удаления
-        не происходит. Деактивированный судья не получает карточек на новых
-        участиях.</p>
+    <a class="cn-back btn btn-link" href="{% url "staff_console" %}">← {% translate "Console" %}</a>
+    <h1 class="cn-title">{% translate "Retire a judge from rotation" %}</h1>
+    <p class="cn-hint">{% blocktranslate %}Deactivating a judge preserves the whole score
+        history — nothing is deleted. A deactivated judge no longer receives cards for
+        new participations.{% endblocktranslate %}</p>
 
     <div class="cn-result">
         <div class="cn-result-body">
@@ -19,18 +19,18 @@
                             <span class="cn-judge-cat">{{ j.category }}</span> {{ j.username }}
                         </div>
                         <div class="cn-part-meta">
-                            оценок в истории: {{ j.score_count }}{% if j.is_staff %} · главный судья{% endif %}
+                            {% blocktranslate with count=j.score_count %}scores in history: {{ count }}{% endblocktranslate %}{% if j.is_staff %} · {% translate "chief judge" %}{% endif %}
                         </div>
                     </div>
                     {% if j.is_active %}
-                        <span class="cn-state">В ротации</span>
-                        <a class="btn btn-red" href="{% url "console_retire_judge" pk=j.pk %}">Вывести из ротации</a>
+                        <span class="cn-state">{% translate "In rotation" %}</span>
+                        <a class="btn btn-red" href="{% url "console_retire_judge" pk=j.pk %}">{% translate "Retire from rotation" %}</a>
                     {% else %}
-                        <span class="cn-state">Выведен</span>
+                        <span class="cn-state">{% translate "Retired" %}</span>
                     {% endif %}
                 </div>
             {% empty %}
-                <div class="cn-part"><span class="cn-part-meta">Судей нет.</span></div>
+                <div class="cn-part"><span class="cn-part-meta">{% translate "No judges." %}</span></div>
             {% endfor %}
         </div>
     </div>

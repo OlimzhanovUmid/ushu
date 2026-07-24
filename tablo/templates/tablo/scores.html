@@ -42,7 +42,7 @@
                             <button type="submit" formmethod="post"
                                     formaction="{% url "open_judge" idx=forloop.counter0 %}"
                                     class="reopen-btn" title="{% trans "Reopen" %}"
-                                    onclick="return confirm('Переоткрыть оценку этого судьи?');">&times;</button>
+                                    onclick="return confirm('{% translate "Re-open the score of this judge?" %}');">&times;</button>
                         {% endif %}
                         <span class="judge-chip">A{{ forloop.counter }}</span>
                         {% if score %}
@@ -79,7 +79,7 @@
                             <button type="submit" formmethod="post"
                                     formaction="{% url "open_judge" idx=forloop.counter0|add:"3" %}"
                                     class="reopen-btn" title="{% trans "Reopen" %}"
-                                    onclick="return confirm('Переоткрыть оценку этого судьи?');">&times;</button>
+                                    onclick="return confirm('{% translate "Re-open the score of this judge?" %}');">&times;</button>
                         {% endif %}
                         <span class="judge-chip">B{{ forloop.counter }}</span>
                         <span class="score-tile">{{ score|default:"" }}</span>
@@ -114,7 +114,7 @@
                                 <button type="submit" formmethod="post"
                                         formaction="{% url "open_judge" idx=forloop.counter0|add:"7" %}"
                                         class="reopen-btn" title="{% trans "Reopen" %}"
-                                        onclick="return confirm('Переоткрыть оценку этого судьи?');">&times;</button>
+                                        onclick="return confirm('{% translate "Re-open the score of this judge?" %}');">&times;</button>
                             {% endif %}
                             <span class="judge-chip">C{{ forloop.counter }}</span>
                             {% for els in s.1 %}
@@ -137,7 +137,7 @@
                 <div class="actions-row">
                     <div class="actions-primary">
                         <a href="{% url "tablo_detail" pk=participation.tablo.category_id %}?{% query_transform request age=participation.tablo.age sex=participation.tablo.sex %}"
-                           class="btn btn-white btn-lg">Табло</a>
+                           class="btn btn-white btn-lg">{% translate "Tablo" %}</a>
                         {% if scores.can_be_saved and not scores.saved %}
                             <button type="submit" name="save" class="btn btn-white btn-lg">{% trans "Save" %}</button>
                         {% endif %}
@@ -149,7 +149,7 @@
                     {% if not participation.is_saved %}
                         <div class="actions-danger">
                             <button type="submit" name="notavailable" class="btn btn-red btn-lg"
-                                    onclick="return confirm('Отметить участника как не явившегося? Итоговый балл будет обнулён.');">Не пришел(ла)</button>
+                                    onclick="return confirm('{% translate "Mark the participant as a no-show? The final score will be reset to zero." %}');">{% translate "Did not show up" %}</button>
                         </div>
                     {% endif %}
                 </div>

@@ -1,31 +1,32 @@
 {% extends "tablo/console/base_console.html" %}
 {% load i18n %}
 
-{% block console_title %}Вывести судью из ротации{% endblock %}
+{% block console_title %}{% translate "Retire a judge from rotation" %}{% endblock %}
 
 {% block console_content %}
-    <a class="cn-back btn btn-link" href="{% url "console_judges" %}">← Назад к судьям</a>
-    <h1 class="cn-title">Вывести судью из ротации</h1>
+    <a class="cn-back btn btn-link" href="{% url "console_judges" %}">← {% translate "Back to the judges" %}</a>
+    <h1 class="cn-title">{% translate "Retire a judge from rotation" %}</h1>
 
     <div class="cn-confirm is-danger">
-        <p class="cn-note">Судья будет деактивирован (is_active=False) и перестанет
-            получать судейские карточки на новых участиях. Это не удаление:
-            все уже выставленные оценки и история соревнования сохраняются.</p>
+        <p class="cn-note">{% blocktranslate %}The judge will be deactivated
+            (is_active=False) and will stop receiving judge cards for new
+            participations. This is not a deletion: all recorded scores and the
+            competition history are preserved.{% endblocktranslate %}</p>
 
         <dl class="cn-confirm-obj">
-            <dt>Судья</dt>
+            <dt>{% translate "Judge" %}</dt>
             <dd>{{ judge.username }}</dd>
-            <dt>Категория</dt>
+            <dt>{% translate "Category" %}</dt>
             <dd>{{ category }}</dd>
-            <dt>Сохранено оценок в истории</dt>
+            <dt>{% translate "Scores kept in history" %}</dt>
             <dd>{{ score_count }}</dd>
         </dl>
 
         <form method="post" action="{% url "console_retire_judge" pk=judge.pk %}">
             {% csrf_token %}
             <div class="cn-confirm-actions">
-                <a class="btn btn-white" href="{% url "console_judges" %}">Отмена</a>
-                <button class="btn btn-red" type="submit">Вывести из ротации</button>
+                <a class="btn btn-white" href="{% url "console_judges" %}">{% translate "Cancel" %}</a>
+                <button class="btn btn-red" type="submit">{% translate "Retire from rotation" %}</button>
             </div>
         </form>
     </div>

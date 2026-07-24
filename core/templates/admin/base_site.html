@@ -1,5 +1,5 @@
 {% extends "admin/base.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% comment %}
   Ushu Federation Standard — branded admin shell.
@@ -22,5 +22,5 @@
 {% endblock %}
 
 {% block nav-global %}
-  <a class="ushu-back-link" href="{% url 'tablo_list' %}">&larr; Вернуться в приложение</a>
+  <a class="ushu-back-link" href="{% url 'tablo_list' %}">&larr; {% translate "Back to the app" %}</a>
 {% endblock %}

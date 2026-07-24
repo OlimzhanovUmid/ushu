@@ -1,44 +1,44 @@
 {% extends "tablo/console/base_console.html" %}
 {% load i18n %}
 
-{% block console_title %}Служебная консоль{% endblock %}
+{% block console_title %}{% translate "Staff console" %}{% endblock %}
 
 {% block console_content %}
-    <h1 class="cn-title">Служебная консоль</h1>
-    <p class="cn-hint">Задачи для главного судьи и секретаря во время соревнования.
-        Исправления проходят через обычный экран судьи, чтобы результат
-        пересчитывался по проверенному пути.</p>
+    <h1 class="cn-title">{% translate "Staff console" %}</h1>
+    <p class="cn-hint">{% blocktranslate %}Tasks for the chief judge and the secretary
+        during the competition. Corrections go through the normal judge screen so
+        the result is recalculated along the verified path.{% endblocktranslate %}</p>
 
     <div class="cn-cards">
         <a class="cn-card" href="{% url "console_find" %}">
-            <div class="cn-card-h">Найти участника</div>
-            <p class="cn-card-p">Поиск по имени, клубу или табло. Отсюда видно
-                состояние оценок каждого судьи.</p>
+            <div class="cn-card-h">{% translate "Find a participant" %}</div>
+            <p class="cn-card-p">{% blocktranslate %}Search by name, club or tablo.
+                Shows the state of every judge's score.{% endblocktranslate %}</p>
         </a>
 
         <a class="cn-card" href="{% url "console_find" %}">
-            <div class="cn-card-h">Переоткрыть судью</div>
-            <p class="cn-card-p">Сначала найдите участника, затем переоткройте
-                слот судьи или всё участие для повторного ввода.</p>
+            <div class="cn-card-h">{% translate "Re-open a judge" %}</div>
+            <p class="cn-card-p">{% blocktranslate %}First find the participant, then
+                re-open a judge's slot or the whole participation for re-entry.{% endblocktranslate %}</p>
         </a>
 
         <a class="cn-card cn-card-danger" href="{% url "console_find" %}">
-            <div class="cn-card-h">Снять участие</div>
-            <p class="cn-card-p">Найдите участника, затем удалите ошибочно
-                зарегистрированное участие. Действие необратимо.</p>
+            <div class="cn-card-h">{% translate "Withdraw a participation" %}</div>
+            <p class="cn-card-p">{% blocktranslate %}Find the participant, then delete a
+                participation registered by mistake. This cannot be undone.{% endblocktranslate %}</p>
         </a>
 
         <a class="cn-card cn-card-danger" href="{% url "console_judges" %}">
-            <div class="cn-card-h">Вывести судью из ротации</div>
-            <p class="cn-card-p">Деактивировать судью. Оценки сохраняются —
-                удаления не происходит.</p>
+            <div class="cn-card-h">{% translate "Retire a judge from rotation" %}</div>
+            <p class="cn-card-p">{% blocktranslate %}Deactivate a judge. Scores are
+                preserved — nothing is deleted.{% endblocktranslate %}</p>
         </a>
     </div>
 
     <div class="cn-setup">
-        <span class="cn-setup-t">Настройка</span>
-        <p class="cn-setup-p">Клубы, страны, элементы, коды ошибок, судьи и
-            участники — в полном администрировании.</p>
-        <a class="btn btn-white" href="{% url "admin:index" %}">Открыть админ</a>
+        <span class="cn-setup-t">{% translate "Setup" %}</span>
+        <p class="cn-setup-p">{% blocktranslate %}Clubs, countries, elements, error codes,
+            judges and participants — in the full administration.{% endblocktranslate %}</p>
+        <a class="btn btn-white" href="{% url "admin:index" %}">{% translate "Open admin" %}</a>
     </div>
 {% endblock %}
